@@ -1,14 +1,14 @@
 %{
-	#include <iostream>
-	#include <cstdlib>
-  #include "scanner.h"
-	#include "parser.h"
-	#include "location.hh"
+    #include <iostream>
+    #include <cstdlib>
+    #include "scanner.h"
+    #include "parser.h"
+    #include "location.hh"
 
-	// Original yyterminate() macro returns int. Since we're using Bison 3 variants
-	// as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
+    // Original yyterminate() macro returns int. Since we're using Bison 3 variants
+    // as tokens, we must redefine it to change type from `int` to `Parser::semantic_type`
 
-	#define yyterminate() mcool::Parser::make_YYEOF(mcool::location());
+    #define yyterminate() mcool::Parser::make_END(mcool::location());
 %}
 
 %option nodefault
@@ -25,9 +25,9 @@ WHITE_SPACE        [ \t\r\n\v\f]
 
 
 [a-z]+ { 
-         std::cout << "Scanner: word: " << yytext << std::endl;
-	       return mcool::Parser::make_TEXT(yytext, mcool::location());
-	     }
+          std::cout << "Scanner: word: " << yytext << std::endl;
+	      return mcool::Parser::make_TEXT(yytext, mcool::location());
+	    }
 
 [1-9][0-9]* {
               std::cout << "Scanner: decimal number: " << yytext << std::endl;

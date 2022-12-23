@@ -7,6 +7,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "ast.h"
+
 
 int main (int argc, char* argv[]) {
   mcool::misc::Config config{};
@@ -32,7 +34,9 @@ int main (int argc, char* argv[]) {
   mcool::Scanner scanner(&fileStream);
   mcool::Parser parser(scanner);
   parser.parse();
-  
+
+  mcool::ast::MyDefinition def;
+
   fileStream.close();
   return 0;
 }

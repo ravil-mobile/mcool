@@ -58,6 +58,7 @@
 %nterm <std::string> item;
 %token <std::string> TEXT;
 %token <int> NUMBER;
+%token END 0;
 
 
 %%

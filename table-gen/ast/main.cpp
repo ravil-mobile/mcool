@@ -26,16 +26,21 @@ namespace {
 void GenCustomDefinitions(llvm::raw_ostream &OS,
                           llvm::RecordKeeper &Records) {
   const auto &Defs = Records.getDefs();
+  OS << "#pragma once\n";
+  OS << "using namespace std;\n";
+
+  OS << "namespace mcool::ast {\n";
   if (!Defs.empty()) {
     for (auto &Def: Defs) {
       auto &D = Def.second;
-      llvm::outs() << "class " << D->getName() << " {\n";
+      OS << "class " << D->getName() << " {\n";
       for (auto& Val: D->getValues()) {
-        llvm::outs() << "  " << Val.getType()->getAsString() << " " << Val.getName() << ";\n";
+        OS << "  " << Val.getType()->getAsString() << " " << Val.getName() << ";\n";
       }
-      llvm::outs() << "}; \n";
+      OS << "}; \n";
     }
   }
+  OS << "} // namespace mcool::ast\n";
 }
 
 bool CustomTableGenMain(llvm::raw_ostream &OS,
@@ -56,7 +61,7 @@ bool CustomTableGenMain(llvm::raw_ostream &OS,
     }
   }
 
-  return true;
+  return false;
 }
 
 
@@ -68,7 +73,6 @@ int main(int argc, char **argv) {
   llvm::cl::ParseCommandLineOptions(argc, argv);
 
   llvm::llvm_shutdown_obj Y;
-
 
   return llvm::TableGenMain(argv[0], &CustomTableGenMain);
 }
