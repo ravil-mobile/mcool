@@ -10,7 +10,7 @@ add_subdirectory(table-gen)
 add_custom_command(
   COMMAND
   ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
-  --gen-custom-records
+  --gen-ast-header
   -o=${PROJECT_BINARY_DIR}/generated/ast.h
   ${PROJECT_SOURCE_DIR}/descriptions/ast.td
   WORKING_DIRECTORY
@@ -22,7 +22,25 @@ add_custom_command(
   COMMENT "Generating AST header"
 )
 
-add_custom_target(ast-codegen ALL DEPENDS ${PROJECT_BINARY_DIR}/generated/ast.h)
+add_custom_command(
+        COMMAND
+        ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
+        --gen-visitor-header
+        -o=${PROJECT_BINARY_DIR}/generated/visitor.h
+        ${PROJECT_SOURCE_DIR}/descriptions/ast.td
+        WORKING_DIRECTORY
+        ${PROJECT_BINARY_DIR}
+        DEPENDS
+        ast-tablegen
+        OUTPUT
+        ${PROJECT_BINARY_DIR}/generated/visitor.h
+        COMMENT "Generating AST header"
+)
+
+add_custom_target(ast-codegen ALL DEPENDS
+  ${PROJECT_BINARY_DIR}/generated/ast.h
+  ${PROJECT_BINARY_DIR}/generated/visitor.h
+)
 add_dependencies(ast-codegen ast-tablegen)
 
 

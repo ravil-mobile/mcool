@@ -2,6 +2,8 @@
 #include "parser.h"
 
 #include "Misc.h"
+#include "MemoryManagement.h"
+#include "Printer.h"
 #include "CLI/Error.hpp"
 #include <string>
 #include <fstream>
@@ -35,8 +37,16 @@ int main (int argc, char* argv[]) {
   mcool::Parser parser(scanner);
   parser.parse();
 
-  mcool::ast::MyDefinition def;
+  mcool::MemoryManagement& mm = mcool::MemoryManagement::getInstance();
+  auto* plusNode = mcool::make<mcool::ast::PlusNode>(
+    mcool::make<mcool::ast::Int>(5),
+    mcool::make<mcool::ast::Int>(10));
+
+  std::cout << std::endl;
+  mcool::AstPinter astPinter(std::cout);
+  plusNode->accept(&astPinter);
 
   fileStream.close();
+  std::cout << std::endl << "end" << std::endl;
   return 0;
 }
