@@ -15,6 +15,10 @@ def String : Terminal {
   string value = "unknown";
 }
 
+def ObjectId : Terminal {
+  string str = "unknown";
+}
+
 class Expression : NonTerminal {}
 
 def SingeltonExpression : Expression {

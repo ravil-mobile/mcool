@@ -19,13 +19,14 @@ public:
   }
 
   ast::String* getStringNode(const std::string& str);
+  ast::ObjectId* getObjectIdNode(const std::string& str);
   ast::Int* getIntNode(const int& integer);
   ast::Bool* getBoolNode(const bool& boolean);
 
 private:
   MemoryManagement() = default;
 
-  std::unordered_map<std::string, ast::String*> stringTable{};
+  std::unordered_map<std::string, ast::Node*> stringTable{};
   std::unordered_map<int, ast::Int*> integerTable{};
   std::unordered_map<bool, ast::Bool*> booleanTable{};
   std::vector<void*> memory{};
@@ -36,6 +37,9 @@ Type* make(Args... args) {
   auto& mm = MemoryManagement::getInstance();
   if constexpr(std::is_same_v<Type, ast::String>) {
     return mm.getStringNode(args...);
+  }
+  if constexpr(std::is_same_v<Type, ast::ObjectId>) {
+    return mm.getObjectIdNode(args...);
   }
   else if constexpr(std::is_same_v<Type, ast::Int>) {
     return mm.getIntNode(args...);

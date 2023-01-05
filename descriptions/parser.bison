@@ -15,12 +15,16 @@
 
 %lex-param { mcool::Scanner& scanner }
 %parse-param { mcool::Scanner& scanner }
+%parse-param { mcool::AstTree& astTree }
 
 
 %code requires {
+  #include "AstTree.h"
+  #include "MemoryManagement.h"
   #include <iostream>
   #include <string>
   #include <vector>
+  #include <cstdlib>
 
   namespace mcool {
     class Scanner;
@@ -31,6 +35,7 @@
 {
   #include "scanner.h"
   #include "parser.h"
+  #include "AstTree.h"
 
   static mcool::Parser::symbol_type yylex(mcool::Scanner& scanner) {
     return scanner.get_next_token();
@@ -41,43 +46,59 @@
   #include <iostream>
   #include <string>
   #include <vector>
-
-  // print a list of strings.
-  void print_v(const std::vector<std::string>& str) {
-    std::cout << '{';
-    std::string sep("");
-    for (const auto& item: str) {
-      std::cout << sep << item;
-      sep = std::string("| ");
-    }
-    std::cout << '}';
-  }
 }
 
-%nterm <std::vector<std::string>> list;
-%nterm <std::string> item;
-%token <std::string> TEXT;
-%token <int> NUMBER;
-%token END 0;
+%nterm <mcool::ast::Expressions*> program;
+%nterm <mcool::ast::Expressions*> exprs;
+%nterm <mcool::ast::Expression*> expr;
+%nterm <mcool::ast::Expression*> term;
+%nterm <mcool::ast::Node*> factor;
 
+%token <std::string> STRING;
+%token <std::string> OBJECTID;
+%token <int> NUMBER;
+%token <bool> BOOLEAN;
+
+%token END       0;
+%token PLUS      "+";
+%token MINUS     "-";
+%token STAR      "*";
+%token FSLASH    "/";
+%token LEFTPAR   "(";
+%token RIGHTPAR  ")";
+%token SEMICOLON ";";
 
 %%
-result: 
-  list { print_v($1); }
+
+program:
+   exprs { astTree.set($1); }
+  ;
+
+exprs:
+   expr SEMICOLON { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
+  | exprs expr SEMICOLON { $1->add($2); $$ = $1; }
+  ;
+
+expr:
+    expr PLUS  term { $$ = mcool::make<mcool::ast::PlusNode>($1, $3); }
+  | expr MINUS term { $$ = mcool::make<mcool::ast::MinusNode>($1, $3); }
+  | term { $$ = $1; }
+  ;
+
+term:
+    term STAR factor { $$ = mcool::make<mcool::ast::MultiplyNode>($1, $3); }
+  | term FSLASH factor { $$ = mcool::make<mcool::ast::DivideNode>($1, $3); }
+  | factor { $$ = mcool::make<mcool::ast::SingeltonExpression>($1); }
   ;
 
 
-list:
-  %empty { /* Generates an empty string list */ }
-  | list item { $$ = $1; $$.push_back ($2); }
+factor:
+    NUMBER { $$ = mcool::make<mcool::ast::Int>($1); }
+  | BOOLEAN { $$ = mcool::make<mcool::ast::Bool>($1); }
+  | OBJECTID { $$ = mcool::make<mcool::ast::ObjectId>($1); }
+  | STRING { $$ = mcool::make<mcool::ast::String>($1); }
+  | LEFTPAR expr RIGHTPAR { $$ = $2; }
   ;
-
-
-item:
-  TEXT
-| NUMBER  { $$ = std::to_string($1); }
-;
-
 
 %%
 

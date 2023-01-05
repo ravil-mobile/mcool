@@ -1,15 +1,12 @@
 #include "scanner.h"
 #include "parser.h"
-
+#include "AstTree.h"
 #include "Misc.h"
-#include "MemoryManagement.h"
 #include "Printer.h"
 #include "CLI/Error.hpp"
 #include <string>
 #include <fstream>
 #include <iostream>
-
-#include "ast.h"
 
 
 int main (int argc, char* argv[]) {
@@ -34,17 +31,12 @@ int main (int argc, char* argv[]) {
   }
 
   mcool::Scanner scanner(&fileStream);
-  mcool::Parser parser(scanner);
+  mcool::AstTree astTree;
+  mcool::Parser parser(scanner, astTree);
   parser.parse();
 
-  mcool::MemoryManagement& mm = mcool::MemoryManagement::getInstance();
-  auto* plusNode = mcool::make<mcool::ast::PlusNode>(
-    mcool::make<mcool::ast::Int>(5),
-    mcool::make<mcool::ast::Int>(10));
-
-  std::cout << std::endl;
   mcool::AstPinter astPinter(std::cout);
-  plusNode->accept(&astPinter);
+  astTree.accept(&astPinter);
 
   fileStream.close();
   std::cout << std::endl << "end" << std::endl;

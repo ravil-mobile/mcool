@@ -16,8 +16,16 @@ ast::String* MemoryManagement::getStringNode(const std::string& str) {
   if (stringTable.find(str) == stringTable.end()) {
     stringTable[str] = new ast::String(str);
   }
-  return stringTable[str];
+  return dynamic_cast<ast::String*>(stringTable[str]);
 }
+
+ast::ObjectId* MemoryManagement::getObjectIdNode(const std::string& str) {
+  if (stringTable.find(str) == stringTable.end()) {
+    stringTable[str] = new ast::ObjectId(str);
+  }
+  return dynamic_cast<ast::ObjectId*>(stringTable[str]);
+}
+
 
 ast::Int* MemoryManagement::getIntNode(const int& integer) {
   if (integerTable.find(integer) == integerTable.end()) {

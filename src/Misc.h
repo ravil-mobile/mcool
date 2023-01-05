@@ -9,5 +9,4 @@ struct Config {
 };
 
 Config readCmd(int argc, char* argv[]);
-
 }
