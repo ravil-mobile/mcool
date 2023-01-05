@@ -1,4 +1,5 @@
 class Node {}
+
 class Terminal : Node {}
 class NonTerminal : Node {}
 

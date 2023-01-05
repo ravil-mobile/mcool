@@ -1,8 +1,8 @@
 class MyClass {
-  string Name = "myName";
-  string Namespace = "myNamespace";
+  string name = "myName";
+  string namespace = "myNamespace";
 }
 
 def MyDefinition : MyClass {
-  int X = 5;
+  int x = 5;
 }

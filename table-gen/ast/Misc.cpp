@@ -2,35 +2,36 @@
 #include <string>
 
 namespace ast::misc {
-std::optional<ast::NodeKind> getKind(llvm::RecordRecTy* recordRecTy) {
-  auto typeName = recordRecTy->getAsString();
-  if (typeName == "Terminal") {
+std::vector<llvm::Record*> collectDefsAndClasses(llvm::RecordKeeper& recordKeeper) {
+  std::vector<llvm::Record*> records{};
+  for (auto& record : recordKeeper.getClasses()) {
+    records.push_back(record.second.get());
+  }
+  for (auto& record : recordKeeper.getDefs()) {
+    records.push_back(record.second.get());
+  }
+  return records;
+}
+
+std::optional<ast::NodeKind> getKind(llvm::Record* record) {
+  auto recordName = record->getName().str();
+  if (recordName == "Terminal") {
     return std::make_optional(ast::NodeKind::Terminal);
   }
-  else if (typeName == "NonTerminal") {
+  else if (recordName == "NonTerminal") {
     return std::make_optional(ast::NodeKind::NonTerminal);
   }
-  else if (recordRecTy->getClasses().empty()) {
+  else if (record->getType()->getClasses().empty()) {
     return std::optional<ast::NodeKind>{};
   }
 
-  for (auto parent : recordRecTy->getClasses()) {
-    if (auto subResult = getKind(parent->getType())) {
+  for (auto* parent : record->getType()->getClasses()) {
+    if (auto subResult = getKind(parent)) {
       return subResult;
     }
   }
 
   return std::optional<ast::NodeKind>{};
-}
-
-std::optional<std::string> getParentName(llvm::RecordRecTy* recordRecTy) {
-  if (recordRecTy->getClasses().size() == 1) {
-    auto parent = recordRecTy->getClasses()[0]->getName();
-    return std::make_optional(parent.str());
-  }
-  else {
-    return std::optional<std::string>{};
-  }
 }
 
 
@@ -80,8 +81,9 @@ std::vector<ast::Attribute> getAttributes(llvm::ArrayRef<llvm::RecordVal> record
   return attributes;
 }
 
+
 std::string capitalize(std::string str) {
   str[0] = std::toupper(str[0]);
   return str;
 }
-}
+} // namespace ast::misc

@@ -20,7 +20,6 @@ include(LLVMDistributionSupport)
 
 add_subdirectory(ast)
 
-
 set(CURR_DIR ${CMAKE_CURRENT_BINARY_DIR})
 add_custom_command(
   OUTPUT ${CURR_DIR}/${CUSTOM_TABLEGEN_EXE}

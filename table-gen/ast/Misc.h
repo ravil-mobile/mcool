@@ -4,6 +4,7 @@
 #include "llvm/TableGen/Record.h"
 #include <optional>
 #include <vector>
+#include <list>
 
 
 namespace ast {
@@ -13,6 +14,10 @@ enum class NodeKind {
 };
 
 struct Attribute {
+  bool operator==(const Attribute& other) const {
+    return name == other.name;
+  }
+
   std::string name{};
   std::unique_ptr<ast::Type> type;
   std::optional<std::string> initValue{};
@@ -20,8 +25,8 @@ struct Attribute {
 }
 
 namespace ast::misc {
-std::optional<ast::NodeKind> getKind(llvm::RecordRecTy*);
-std::optional<std::string> getParentName(llvm::RecordRecTy*);
+std::vector<llvm::Record*> collectDefsAndClasses(llvm::RecordKeeper& records);
+std::optional<ast::NodeKind> getKind(llvm::Record*);
 std::optional<std::string> getInitValue(const llvm::RecordVal*);
 
 std::unique_ptr<ast::Type> buildType(llvm::RecTy*);
