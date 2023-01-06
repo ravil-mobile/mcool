@@ -12,33 +12,18 @@ MemoryManagement& MemoryManagement::getInstance() {
   return instance;
 }
 
-ast::String* MemoryManagement::getStringNode(const std::string& str) {
-  if (stringTable.find(str) == stringTable.end()) {
-    stringTable[str] = new ast::String(str);
-  }
-  return dynamic_cast<ast::String*>(stringTable[str]);
-}
-
-ast::ObjectId* MemoryManagement::getObjectIdNode(const std::string& str) {
-  if (stringTable.find(str) == stringTable.end()) {
-    stringTable[str] = new ast::ObjectId(str);
-  }
-  return dynamic_cast<ast::ObjectId*>(stringTable[str]);
-}
-
-
 ast::Int* MemoryManagement::getIntNode(const int& integer) {
   if (integerTable.find(integer) == integerTable.end()) {
-    integerTable[integer] = new ast::Int(integer);
+    integerTable.insert({integer, std::make_unique<ast::Int>(integer)});
   }
-  return integerTable[integer];
+  return integerTable[integer].get();
 }
 
 ast::Bool* MemoryManagement::getBoolNode(const bool& boolean) {
   if (booleanTable.find(boolean) == booleanTable.end()) {
-    booleanTable[boolean] = new ast::Bool(boolean);
+    booleanTable.insert({boolean, std::make_unique<ast::Bool>(boolean)});
   }
-  return booleanTable[boolean];
+  return booleanTable[boolean].get();
 }
 
 } // namespace mcool
