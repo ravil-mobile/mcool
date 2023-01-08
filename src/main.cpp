@@ -30,7 +30,7 @@ int main (int argc, char* argv[]) {
     return -1;
   }
 
-  mcool::Scanner scanner(&fileStream);
+  mcool::Scanner scanner(&fileStream, &config.inputFile);
   mcool::AstTree astTree;
   mcool::Parser parser(scanner, astTree);
   parser.parse();

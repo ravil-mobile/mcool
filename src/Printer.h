@@ -63,12 +63,16 @@ public:
     stream << std::string(indent, ' ') << "id: " << id->getStr() << "\n";
   }
 
+  void visitBool(ast::Bool* item) override {
+    stream << std::string(indent, ' ') << std::boolalpha << item->getValue() << "\n";
+  }
+
   void visitInt(ast::Int* item) override {
     stream << std::string(indent, ' ') << item->getValue() << "\n";
   }
 
-  void visitBool(ast::Bool* item) override {
-    stream << std::string(indent, ' ') << std::boolalpha << item->getValue() << "\n";
+  void visitString(ast::String* str) override {
+    stream << std::string(indent, ' ') << "std: " << str->getValue() << "\n";
   }
 
 private:
