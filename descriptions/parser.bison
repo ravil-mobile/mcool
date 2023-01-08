@@ -59,6 +59,7 @@
 
 %token <std::string> STRING;
 %token <std::string> OBJECTID;
+%token <std::string> TYPEID;
 %token <int> NUMBER;
 %token <bool> BOOLEAN;
 

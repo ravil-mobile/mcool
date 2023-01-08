@@ -9,7 +9,7 @@
 namespace mcool::tests::scanner {
 class TestDriver {
 public:
-  explicit TestDriver(std::istream* stream) : scanner(stream, nullptr) {}
+  explicit TestDriver(std::istream* stream) : scanner(stream, nullptr, false) {}
 
   using TokenStream = std::vector<mcool::Parser::symbol_type>;
   using TokenKindStream = std::vector<mcool::Parser::symbol_kind_type>;

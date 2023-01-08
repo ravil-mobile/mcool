@@ -88,13 +88,26 @@ f[Aa][Ll][Ss][Ee] {
 
 }
 
-{LOWER_CASE_LETTER}({LETTER}|{DIGIT}|"_")*|"self" {
-  return mcool::Parser::make_OBJECTID(yytext, currLocation);
-}
-
 {DIGIT}+ {
   uint64_t number = std::strtoull(yytext, 0, 10);
   return mcool::Parser::make_NUMBER(number, currLocation);
+}
+
+ /* Types */
+"Object" |
+"Int"    |
+"Bool"   |
+"String" |
+"SELF_TYPE" {
+  return mcool::Parser::make_TYPEID(yytext, currLocation);
+}
+
+{UPPER_CASE_LETTER}({LETTER}|{DIGIT}|"_")* {
+  return mcool::Parser::make_TYPEID(yytext, currLocation);
+}
+
+{LOWER_CASE_LETTER}({LETTER}|{DIGIT}|"_")*|"self" {
+  return mcool::Parser::make_OBJECTID(yytext, currLocation);
 }
 
  /* Comments */
