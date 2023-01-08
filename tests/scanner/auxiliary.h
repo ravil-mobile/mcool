@@ -3,7 +3,9 @@
 #include "scanner.h"
 #include "parser.h"
 #include <vector>
+#include <string>
 #include <iostream>
+#include <tuple>
 
 
 namespace mcool::tests::scanner {
@@ -33,6 +35,16 @@ public:
   TokenKindStream getTokensKinds() {
     auto tokens = this->getTokens();
 
+    TokenKindStream tokensKindsStream{};
+    tokensKindsStream.reserve(tokens.size());
+
+    for (const auto& token : tokens) {
+      tokensKindsStream.push_back(token.kind());
+    }
+    return tokensKindsStream;
+  }
+
+  TokenKindStream getTokensKinds(const TokenStream& tokens) {
     TokenKindStream tokensKindsStream{};
     tokensKindsStream.reserve(tokens.size());
 

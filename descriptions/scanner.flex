@@ -88,8 +88,8 @@ f[Aa][Ll][Ss][Ee] {
 
 }
 
-{DIGIT}+ {
-  uint64_t number = std::strtoull(yytext, 0, 10);
+([+-])?{DIGIT}+ {
+  auto number = std::strtol(yytext, nullptr, 10);
   return mcool::Parser::make_NUMBER(number, currLocation);
 }
 
