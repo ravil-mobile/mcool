@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(WITH_TESTS "build with tests" ON)
+
 add_subdirectory(table-gen)
 
 add_custom_command(
@@ -69,19 +71,29 @@ bison_target(parser
 
 add_flex_bison_dependency(scanner parser)
 
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp) 
+set(MAIN_FILE ${PROJECT_SOURCE_DIR}/src/main.cpp)
+file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+list(REMOVE_ITEM SRC_FILES ${MAIN_FILE})
 
-add_executable(${CMAKE_PROJECT_NAME}
+add_library(mcool-core
   ${SRC_FILES}
   ${FLEX_scanner_OUTPUTS}
   ${BISON_parser_OUTPUTS}
-  )
+)
 
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+target_include_directories(mcool-core PUBLIC
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_BINARY_DIR}/generated)
 
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+target_link_libraries(mcool-core PUBLIC
   CLI11::CLI11)
 
-add_dependencies(${CMAKE_PROJECT_NAME} ast-codegen)
+add_dependencies(mcool-core ast-codegen)
+
+add_executable(${CMAKE_PROJECT_NAME} ${MAIN_FILE})
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mcool-core)
+
+if (WITH_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

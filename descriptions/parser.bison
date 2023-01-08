@@ -101,7 +101,8 @@
 %token CURLY_RIGHTPAR "}";
 %token AT             "@";
 
-%token END       0;
+%token ERROR      "ERROR";
+%token END              0;
 
 %%
 

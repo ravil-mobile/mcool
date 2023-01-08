@@ -188,8 +188,7 @@ f[Aa][Ll][Ss][Ee] {
 
 . { std::string msg = "unknown character - ";
     msg += yytext[0];
-    reportError(msg);
-    yyterminate();
+    return reportError(msg);
   }
 
 %%

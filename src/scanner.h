@@ -24,9 +24,9 @@ public:
 	virtual mcool::Parser::symbol_type get_next_token();
 
 
-  mcool::Parser::symbol_type reportError(std::string msg) {
+  mcool::Parser::symbol_type reportError(const std::string& msg) {
     std::cerr << "scanner error: " << msg << " : " << currLocation << std::endl;
-    return mcool::Parser::make_YYerror(currLocation);
+    return mcool::Parser::make_ERROR(currLocation);
   }
 
 
