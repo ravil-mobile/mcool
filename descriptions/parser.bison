@@ -12,6 +12,9 @@
 %define api.namespace { mcool }
 
 %locations
+%define parse.trace
+%define parse.error detailed
+%define parse.lac full
 
 %lex-param { mcool::Scanner& scanner }
 %parse-param { mcool::Scanner& scanner }
@@ -59,14 +62,46 @@
 %token <int> NUMBER;
 %token <bool> BOOLEAN;
 
+%token CLASS     "class";
+%token IF        "if";
+%token THEN      "then";
+%token ELSE      "else";
+%token FI        "fi";
+%token IN        "in";
+%token INHERITS  "inherits";
+%token LET       "let";
+%token LOOP      "loop";
+%token POOL      "pool";
+%token WHILE     "while";
+%token CASE      "case";
+%token ESAC      "esac";
+%token OF        "of";
+%token NEW       "new";
+%token ISVOID    "isvoid";
+%token NOT       "not";
+
+%token DARROW "=>";
+%token LEQ    "<=";
+%token LE     "<";
+%token ASSIGN "<-";
+%token EQ     "=";
+%token PLUS   "+";
+%token MINUS  "-";
+%token STAR   "*";
+%token FSLASH "/";
+%token NEG    "~";
+
+%token SEMICOLON      ";";
+%token COLON          ":";
+%token COMMA          ",";
+%token DOT            ".";
+%token LEFTPAR        "(";
+%token RIGHTPAR       ")";
+%token CURLY_LEFTPAR  "{";
+%token CURLY_RIGHTPAR "}";
+%token AT             "@";
+
 %token END       0;
-%token PLUS      "+";
-%token MINUS     "-";
-%token STAR      "*";
-%token FSLASH    "/";
-%token LEFTPAR   "(";
-%token RIGHTPAR  ")";
-%token SEMICOLON ";";
 
 %%
 
@@ -104,5 +139,5 @@ factor:
 
 // Report an error to the user.
 void mcool::Parser::error(const location &loc , const std::string &msg) {
-  std::cerr << msg << '\n';
+  std::cerr << loc << " : " << msg << '\n';
 }

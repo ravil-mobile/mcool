@@ -33,7 +33,8 @@ int main (int argc, char* argv[]) {
   mcool::Scanner scanner(&fileStream, &config.inputFile);
   mcool::AstTree astTree;
   mcool::Parser parser(scanner, astTree);
-  parser.parse();
+  auto status = parser.parse();
+  std::cout << "parser status: " << status << std::endl; 
 
   mcool::AstPinter astPinter(std::cout);
   astTree.accept(&astPinter);

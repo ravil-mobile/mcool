@@ -36,17 +36,50 @@ LETTER             [a-zA-Z]+
   currLocation.step ();
 %}
 
+ /* Keywords */
+[Cc][Ll][Aa][Ss][Ss]             { return mcool::Parser::make_CLASS(currLocation); }
+[Ii][Ff]                         { return mcool::Parser::make_IF(currLocation); }
+[Tt][Hh][Ee][Nn]                 { return mcool::Parser::make_THEN(currLocation); }
+[Ee][Ll][Ss][Ee]                 { return mcool::Parser::make_ELSE(currLocation); }
+[Ff][Ii]                         { return mcool::Parser::make_FI(currLocation); }
+[Ii][Nn]                         { return mcool::Parser::make_IN(currLocation); }
+[Ii][Nn][Hh][Ee][Rr][Ii][Tt][Ss] { return mcool::Parser::make_INHERITS(currLocation); }
+[Ll][Ee][Tt]                     { return mcool::Parser::make_LET(currLocation); }
+[Ll][Oo][Oo][Pp]                 { return mcool::Parser::make_LOOP(currLocation); }
+[Pp][Oo][Oo][Ll]                 { return mcool::Parser::make_POOL(currLocation); }
+[Ww][Hh][Ii][Ll][Ee]             { return mcool::Parser::make_WHILE(currLocation); }
+[Cc][Aa][Ss][Ee]                 { return mcool::Parser::make_CASE(currLocation); }
+[Ee][Ss][Aa][Cc]                 { return mcool::Parser::make_ESAC(currLocation); }
+[Oo][Ff]                         { return mcool::Parser::make_OF(currLocation); }
+[Nn][Ee][Ww]                     { return mcool::Parser::make_NEW(currLocation); }
+[Ii][Ss][Vv][Oo][Ii][Dd]         { return mcool::Parser::make_ISVOID(currLocation); }
+[Nn][Oo][Tt]                     { return mcool::Parser::make_NOT(currLocation); }
+
+"=>" { return mcool::Parser::make_DARROW(currLocation); }
+"<=" { return mcool::Parser::make_LEQ(currLocation); }
+"<"  { return mcool::Parser::make_LE(currLocation); }
+"<-" { return mcool::Parser::make_ASSIGN(currLocation); }
+
+"=" { return mcool::Parser::make_EQ(currLocation); }
 "+" { return mcool::Parser::make_PLUS(currLocation); }
 "-" { return mcool::Parser::make_MINUS(currLocation); }
 "*" { return mcool::Parser::make_STAR(currLocation); }
 "/" { return mcool::Parser::make_FSLASH(currLocation); }
+"~" { return mcool::Parser::make_NEG(currLocation); }
+
+
+";" { return mcool::Parser::make_SEMICOLON(currLocation); }
+":" { return mcool::Parser::make_COLON(currLocation); }
+"," { return mcool::Parser::make_COMMA(currLocation); }
+"." { return mcool::Parser::make_DOT(currLocation); }
 "(" { return mcool::Parser::make_LEFTPAR(currLocation); }
 ")" { return mcool::Parser::make_RIGHTPAR(currLocation); }
-";" { return mcool::Parser::make_SEMICOLON(currLocation); }
+"{" { return mcool::Parser::make_CURLY_LEFTPAR(currLocation); }
+"}" { return mcool::Parser::make_CURLY_RIGHTPAR(currLocation); }
+"@" { return mcool::Parser::make_AT(currLocation); }
 
 
 t[Rr][Uu][Ee] {
-  yylineno;
   return mcool::Parser::make_BOOLEAN(true, currLocation);
 }
 
