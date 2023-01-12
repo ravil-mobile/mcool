@@ -1,3 +1,7 @@
+class StringPtr {
+  string str;
+}
+
 class Node {}
 
 class Terminal : Node {}
@@ -7,21 +11,25 @@ def Bool : Terminal {
   bit value = false;
 }
 
-def Int : Terminal {
+class Int : Terminal {
   int value = 0;
 }
 
-def String : Terminal {
-  string value = "unknown";
+class String : Terminal {
+  StringPtr value;
 }
 
-def ObjectId : Terminal {
-  string str = "unknown";
+class ObjectId : Terminal {
+  StringPtr name;
+}
+
+class TypeId : Terminal {
+  StringPtr typeName;
 }
 
 class Expression : NonTerminal {}
 
-def SingeltonExpression : Expression {
+class SingeltonExpression : Expression {
   Node term;
 }
 
@@ -30,11 +38,24 @@ class BinaryNode : Expression {
     Node right;
 }
 
-def PlusNode : BinaryNode {}
-def MinusNode : BinaryNode {}
-def MultiplyNode : BinaryNode {}
-def DivideNode : BinaryNode {}
+class PlusNode : BinaryNode {}
+class MinusNode : BinaryNode {}
+class MultiplyNode : BinaryNode {}
+class DivideNode : BinaryNode {}
 
-def Expressions : Expression {
+class Expressions : Expression {
   list<Node> expressions;
+}
+
+class Dispatch : Expression {
+  Node dispatchObject;
+  ObjectId dispatchMethod;
+  Expressions arguments;
+}
+
+class StaticDispatch : Expression {
+  Node dispatchObject;
+  TypeId castType;
+  ObjectId dispatchMethod;
+  Expressions arguments;
 }

@@ -20,17 +20,19 @@ public:
   }
 
   template<typename Type>
-  std::enable_if_t<std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::ObjectId>, Type*>
-  getStringNode(const std::string& str) {
-    std::unordered_map<std::string, std::unique_ptr<Type>>* table;
-    if constexpr(std::is_same_v<Type, ast::String>) {
-      table = &stringTable;
+  std::enable_if_t<std::is_same_v<Type, ast::String> ||
+                   std::is_same_v<Type, ast::TypeId> ||
+                   std::is_same_v<Type, ast::ObjectId>, ast::StringPtr*>
+  getStringPtr(std::string& str) {
+    std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>>* table;
+    if constexpr(std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId>) {
+      table = &staticStringTable;
     }
     else {
-      table = &objectIdTable;
+      table = &objectStringTable;
     }
     if (table->find(str) == table->end()) {
-      table->insert({str, std::make_unique<Type>(str)});
+      table->insert({str, std::make_unique<ast::StringPtr>(str)});
     }
     return (table->operator[](str)).get();
   }
@@ -41,8 +43,8 @@ public:
 private:
   MemoryManagement() = default;
 
-  std::unordered_map<std::string, std::unique_ptr<ast::String>> stringTable{};
-  std::unordered_map<std::string, std::unique_ptr<ast::ObjectId>> objectIdTable{};
+  std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> staticStringTable{};
+  std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> objectStringTable{};
   std::unordered_map<int, std::unique_ptr<ast::Int>> integerTable{};
   std::unordered_map<bool, std::unique_ptr<ast::Bool>> booleanTable{};
   std::vector<void*> memory{};
@@ -51,24 +53,31 @@ private:
 template<typename Type, typename ...Args>
 Type* make(Args... args) {
   auto& mm = MemoryManagement::getInstance();
-  if constexpr(std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::ObjectId>) {
-    return mm.getStringNode<Type>(args...);
+  Type *ptr{nullptr};
+  if constexpr(std::is_same_v<Type, ast::String>
+               || std::is_same_v<Type, ast::TypeId>
+               || std::is_same_v<Type, ast::ObjectId>) {
+    using FirstParamType = std::tuple_element_t<0, std::tuple<Args...>>;
+    static_assert(sizeof...(args) == 1 && std::is_same_v<FirstParamType, std::string>,
+                  "expected std::string as parameter");
+    auto param = std::get<0>(std::make_tuple(args...));
+    auto stringPtr = mm.getStringPtr<Type>(param);
+    ptr = new Type(stringPtr);
   }
   else if constexpr(std::is_same_v<Type, ast::Int>) {
-    return mm.getIntNode(args...);
+    ptr = mm.getIntNode(args...);
   }
   else if constexpr(std::is_same_v<Type, ast::Bool>) {
-    return mm.getBoolNode(args...);
+    ptr = mm.getBoolNode(args...);
   }
   else if constexpr(sizeof...(args)) {
-    Type *ptr = new Type(args...);
+    ptr = new Type(args...);
     mm.obtain(static_cast<void *>(ptr));
-    return ptr;
   }
   else {
-    Type *ptr = new Type();
+    ptr = new Type();
     mm.obtain(static_cast<void *>(ptr));
-    return ptr;
   }
+  return ptr;
 }
 } // namespace mcool

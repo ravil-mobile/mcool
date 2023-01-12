@@ -88,8 +88,7 @@ std::string genConstructorCall(const std::string& className,
 void genGetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attributes) {
   for (auto& attr : attributes) {
     auto typeName = attr->type->getName();
-    bool useReference = attr->type->isComposite();
-    if (useReference) {
+    if (attr->type->preferReference()) {
       typeName += '&';
     }
 

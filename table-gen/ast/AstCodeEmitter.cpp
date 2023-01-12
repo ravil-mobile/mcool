@@ -7,6 +7,12 @@
 
 namespace ast {
 void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
+  OS << "class StringPtr {\n";
+  OS << "public:\n";
+  OS << "  explicit StringPtr(std::string& str) : str(str) {}\n";
+  OS << "  std::string str{};\n";
+  OS << "};\n\n";
+
   auto className = node->getName();
   OS << "class " << className << " {\n";
   OS << "public:\n";
@@ -17,7 +23,7 @@ void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
 
   OS << "  virtual ~Node() = default;\n";
   OS << "  virtual void accept(Visitor*) = 0;\n";
-  OS << "  virtual std::string getName() = 0;\n\n";
+  OS << "  virtual const std::string& getClassName() = 0;\n\n";
 
   ast::genGetters(OS, node->getAttributes());
   ast::genSetters(OS, node->getAttributes());
@@ -62,7 +68,7 @@ void AstCodeEmitter::visitLeaf(inheritance::tree::LeafNode* node) {
   OS << constructor;
 
   OS << "  void accept(Visitor* visitor) override { visitor->visit" << node->getName() << "(this); }\n";
-  OS << "  std::string getName() override { return \"" << node->getName() << "\"; }\n";
+  OS << "  const std::string& getClassName() override { return className; }\n";
 
   ast::genGetters(OS, node->getAttributes());
   ast::genSetters(OS, node->getAttributes());
@@ -75,13 +81,12 @@ void AstCodeEmitter::visitLeaf(inheritance::tree::LeafNode* node) {
 void AstCodeEmitter::genAttributes(inheritance::tree::Node* node) {
   auto attrs = node->getAttributes();
 
-  if (not attrs.empty()) {
-    OS << "\nprotected: \n";
+  OS << "\nprotected: \n";
 
-    for (auto *attr: attrs) {
-      OS << "  " << attr->type->getName() << " " << attr->name << ";\n";
-    }
+  for (auto *attr: attrs) {
+    OS << "  " << attr->type->getName() << " " << attr->name << ";\n";
   }
+  OS << "  " << "static const inline std::string className{\"" << node->getName() << "\"};\n";
 }
 
 std::vector<inheritance::tree::Node*>

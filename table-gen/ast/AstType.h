@@ -15,39 +15,43 @@ class Type {
 public:
   Type(bool builtinFlag,
        bool compositeFlag,
-       bool ptrFlag)
+       bool ptrFlag,
+       bool preferReferenceFlag)
        : builtinFlag(builtinFlag),
          compositeFlag(compositeFlag),
-         ptrFlag(ptrFlag) {}
+         ptrFlag(ptrFlag),
+         preferReferenceFlag(preferReferenceFlag) {}
 
   virtual std::string getName() = 0;
   bool isBuiltin() { return builtinFlag; }
   bool isComposite() { return compositeFlag; }
   bool isPtr() { return ptrFlag; }
+  bool preferReference() { return preferReferenceFlag; }
 
 private:
   bool builtinFlag;
   bool compositeFlag;
   bool ptrFlag;
+  bool preferReferenceFlag;
 };
 
 
-template <typename T>
+template <typename T, bool PreferReferenceFlag>
 class BuiltinType : public Type {
 public:
   using ConcreteType = T;
 
-  BuiltinType() : Type(true, false, false) {}
+  BuiltinType() : Type(true, false, false, PreferReferenceFlag) {}
   std::string getName() override { return std::string(T::asString()); }
 };
 
-using BoolType = BuiltinType<type::details::Bool>;
-using IntType = BuiltinType<type::details::Int>;
-using StringType = BuiltinType<type::details::String>;
+using BoolType = BuiltinType<type::details::Bool, false>;
+using IntType = BuiltinType<type::details::Int, false>;
+using StringType = BuiltinType<type::details::String, true>;
 
 class PtrType : public Type {
 public:
-  PtrType(std::string name) : Type(false, false, true), name(name + "*") {}
+  PtrType(std::string name) : Type(false, false, true, false), name(name + "*") {}
   std::string getName() override { return name; }
 
 private:
@@ -58,10 +62,10 @@ private:
 class Composite : public Type {
 public:
   Composite(std::unique_ptr<Type> type)
-  : Type(false, true, false),
+  : Type(false, true, false, true),
     innerType(std::move(type)) {}
 
-  Composite(Composite&& other) : Type(false, true, false) {
+  Composite(Composite&& other) : Type(false, true, false, true) {
     innerType = std::move(other.innerType);
   }
 
@@ -79,5 +83,4 @@ public:
 private:
   std::unique_ptr<Type> innerType{nullptr};
 };
-
 }

@@ -53,7 +53,9 @@
 
 %nterm <mcool::ast::Expressions*> program;
 %nterm <mcool::ast::Expressions*> exprs;
-%nterm <mcool::ast::Expression*> expr;
+%nterm <mcool::ast::Expressions*> arg_list;
+%nterm <mcool::ast::Expression*> math_expr;
+%nterm <mcool::ast::Expression*> dispatch;
 %nterm <mcool::ast::Expression*> term;
 %nterm <mcool::ast::Node*> factor;
 
@@ -112,13 +114,13 @@ program:
   ;
 
 exprs:
-   expr SEMICOLON { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
-  | exprs expr SEMICOLON { $1->add($2); $$ = $1; }
+   math_expr SEMICOLON { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
+  | exprs math_expr SEMICOLON { $1->add($2); $$ = $1; }
   ;
 
-expr:
-    expr PLUS  term { $$ = mcool::make<mcool::ast::PlusNode>($1, $3); }
-  | expr MINUS term { $$ = mcool::make<mcool::ast::MinusNode>($1, $3); }
+math_expr:
+    math_expr PLUS  term { $$ = mcool::make<mcool::ast::PlusNode>($1, $3); }
+  | math_expr MINUS term { $$ = mcool::make<mcool::ast::MinusNode>($1, $3); }
   | term { $$ = $1; }
   ;
 
@@ -134,8 +136,31 @@ factor:
   | BOOLEAN { $$ = mcool::make<mcool::ast::Bool>($1); }
   | OBJECTID { $$ = mcool::make<mcool::ast::ObjectId>($1); }
   | STRING { $$ = mcool::make<mcool::ast::String>($1); }
-  | LEFTPAR expr RIGHTPAR { $$ = $2; }
+  | LEFTPAR math_expr RIGHTPAR { $$ = $2; }
+  | dispatch { $$ = $1; }
   ;
+
+dispatch
+    : OBJECTID LEFTPAR arg_list RIGHTPAR {
+        auto* selfObject = mcool::make<mcool::ast::ObjectId>(std::string("self"));
+        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($1));
+        $$ = mcool::make<mcool::ast::Dispatch>(selfObject, method, $3);
+    }
+    | factor DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
+        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($3));
+        $$ = mcool::make<mcool::ast::Dispatch>($1, method, $5);
+    }
+    | math_expr AT TYPEID DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
+        auto* typeId = mcool::make<mcool::ast::TypeId>(std::string($3));
+        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($5));
+        $$ = mcool::make<mcool::ast::StaticDispatch>($1, typeId, method, $7);
+    }
+
+arg_list
+    : /*empty*/                 { $$ = mcool::make<mcool::ast::Expressions>(); }
+    | math_expr                 { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
+    | arg_list COMMA math_expr    { $1->add($3); $$ = $1; }
+    ;
 
 %%
 

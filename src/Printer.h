@@ -60,7 +60,7 @@ public:
   }
 
   void visitObjectId(ast::ObjectId* id) override {
-    stream << std::string(indent, ' ') << "id: " << id->getStr() << "\n";
+    stream << std::string(indent, ' ') << "id: " << id->getName()->str << "\n";
   }
 
   void visitBool(ast::Bool* item) override {
@@ -72,7 +72,16 @@ public:
   }
 
   void visitString(ast::String* str) override {
-    stream << std::string(indent, ' ') << "std: " << str->getValue() << "\n";
+    stream << std::string(indent, ' ') << "str: " << str->getValue()->str << "\n";
+  }
+
+  void visitDispatch(ast::Dispatch* dispatch) override {
+    stream << std::string(indent, ' ') << "call: \n";
+    indent += 2;
+    dispatch->getDispatchObject()->accept(this);
+    dispatch->getDispatchMethod()->accept(this);
+    dispatch->getArguments()->accept(this);
+    indent -= 2;
   }
 
 private:

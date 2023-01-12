@@ -28,7 +28,7 @@ void InheritanceBuilder::assignChildren() {
     auto type = currNode.record->getType();
 
     if (type->getClasses().empty()) {
-      assert(currNode.record->getName() == "Node");
+      assert(currNode.record->getName() == "Node" || currNode.record->getName() == "StringPtr");
     }
     else {
       assert(type->getClasses().size() == 1);
