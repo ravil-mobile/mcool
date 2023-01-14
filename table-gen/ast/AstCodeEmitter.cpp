@@ -10,6 +10,9 @@ void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
   OS << "class StringPtr {\n";
   OS << "public:\n";
   OS << "  explicit StringPtr(std::string& str) : str(str) {}\n";
+  OS << "  std::string& get() { return str; }";
+  OS << "  const std::string& get() const { return str; }";
+  OS << "private:\n";
   OS << "  std::string str{};\n";
   OS << "};\n\n";
 

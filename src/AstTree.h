@@ -7,11 +7,11 @@
 namespace mcool {
 class AstTree {
 public:
-  void set(mcool::ast::Expressions* program) {
+  void set(mcool::ast::CoolClassList* program) {
     this->tree = program;
   }
 
-  mcool::ast::Expressions* get() {
+  mcool::ast::CoolClassList* get() {
     return this->tree;
   }
 
@@ -21,6 +21,6 @@ public:
   }
 
 private:
-  mcool::ast::Expressions* tree{nullptr};
+  mcool::ast::CoolClassList* tree{nullptr};
 };
 } // namespace mcool

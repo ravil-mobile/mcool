@@ -332,7 +332,7 @@ TEST(Keywords, Less) {
   auto tokensKinds = driver.getTokensKinds();
 
   mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_LE,
+      mcool::Parser::symbol_kind_type::S_LESS,
       mcool::Parser::symbol_kind_type::S_YYEOF
   };
 

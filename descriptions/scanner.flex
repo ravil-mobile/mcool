@@ -57,7 +57,7 @@ LETTER             [a-zA-Z]+
 
 "=>" { return mcool::Parser::make_DARROW(currLocation); }
 "<=" { return mcool::Parser::make_LEQ(currLocation); }
-"<"  { return mcool::Parser::make_LE(currLocation); }
+"<"  { return mcool::Parser::make_LESS(currLocation); }
 "<-" { return mcool::Parser::make_ASSIGN(currLocation); }
 
 "=" { return mcool::Parser::make_EQ(currLocation); }

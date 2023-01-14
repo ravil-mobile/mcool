@@ -3,6 +3,7 @@
 #include "AstTree.h"
 #include "Misc.h"
 #include "Printer.h"
+#include "DotPrinter.h"
 #include "CLI/Error.hpp"
 #include <string>
 #include <fstream>
@@ -36,10 +37,30 @@ int main (int argc, char* argv[]) {
   auto status = parser.parse();
   std::cout << "parser status: " << status << std::endl; 
 
-  mcool::AstPinter astPinter(std::cout);
-  astTree.accept(&astPinter);
+  if (config.verbose) {
+    mcool::AstPinter astPinter(std::cout);
+    astTree.accept(&astPinter);
+  }
+  else if (config.dotOutput) {
+    std::string dotFileName = config.outputFile + ".dot";
+    std::fstream dotOutputFile(dotFileName.c_str(), std::ios::out);
+    if (dotOutputFile.is_open()) {
+      mcool::DotPrinter dotPrinter(dotOutputFile);
+      astTree.accept(&dotPrinter);
+      dotOutputFile.close();
+
+      std::fstream dotInputFile(dotFileName.c_str(), std::ios::in);
+      std::string line;
+      while (std::getline(dotInputFile, line)) {
+        std::cout << line << std::endl;
+      }
+      dotInputFile.close();
+    }
+    else {
+      std::cerr << "cannot open dot output file: " << dotFileName << std::endl;
+    }
+  }
 
   fileStream.close();
-  std::cout << std::endl << "end" << std::endl;
   return 0;
 }

@@ -51,13 +51,37 @@
   #include <vector>
 }
 
-%nterm <mcool::ast::Expressions*> program;
+%nterm <mcool::ast::CoolClassList*>  program;
+%nterm <mcool::ast::CoolClassList*>  class_list;
+%nterm <mcool::ast::CoolClass*>      class;
+%nterm <mcool::ast::AttributeList*>  attribute_list;
+%nterm <mcool::ast::ClassAttribute*> single_method;
+%nterm <mcool::ast::ClassAttribute*> single_member;
+%nterm <mcool::ast::FormalList*>     formal_list;
+%nterm <mcool::ast::SingleFormal*>   single_formal;
+
+%nterm <mcool::ast::Expression*>  expr;
+%nterm <mcool::ast::Expression*>  loop_expr;
+%nterm <mcool::ast::Expression*>  new_expr;
+%nterm <mcool::ast::Expression*>  move_expr;
+%nterm <mcool::ast::Expression*>  cond_expr;
+%nterm <mcool::ast::Expression*>  not_expr;
+%nterm <mcool::ast::Expression*>  block_expr;
+%nterm <mcool::ast::SingleCase*>  single_case;
+%nterm <mcool::ast::CaseList*>    case_list;
+%nterm <mcool::ast::Expression*>  case_expr;
+%nterm <mcool::ast::Expression*>  let_expr;
+%nterm <mcool::ast::Expression*>  let_tail_expr;
 %nterm <mcool::ast::Expressions*> exprs;
 %nterm <mcool::ast::Expressions*> arg_list;
-%nterm <mcool::ast::Expression*> math_expr;
-%nterm <mcool::ast::Expression*> dispatch;
-%nterm <mcool::ast::Expression*> term;
-%nterm <mcool::ast::Node*> factor;
+
+%nterm <mcool::ast::Expression*>  relational_expr;
+%nterm <mcool::ast::Expression*>  additive_expr;
+%nterm <mcool::ast::Expression*>  multiplicative_expr;
+%nterm <mcool::ast::Expression*>  unary_expr;
+%nterm <mcool::ast::Expression*>  dispatch;
+%nterm <mcool::ast::Node*>        primary_expr;
+
 
 %token <std::string> STRING;
 %token <std::string> OBJECTID;
@@ -85,7 +109,7 @@
 
 %token DARROW "=>";
 %token LEQ    "<=";
-%token LE     "<";
+%token LESS   "<";
 %token ASSIGN "<-";
 %token EQ     "=";
 %token PLUS   "+";
@@ -109,57 +133,282 @@
 
 %%
 
-program:
-   exprs { astTree.set($1); }
+program
+  : class_list { astTree.set($1); }
   ;
 
-exprs:
-   math_expr SEMICOLON { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
-  | exprs math_expr SEMICOLON { $1->add($2); $$ = $1; }
+class_list
+  : class {
+    $$ = mcool::make<mcool::ast::CoolClassList>();
+    $$->add($1);
+  }
+  | class_list class {
+    $1->add($2);
+    $$ = $1;
+  }
   ;
 
-math_expr:
-    math_expr PLUS  term { $$ = mcool::make<mcool::ast::PlusNode>($1, $3); }
-  | math_expr MINUS term { $$ = mcool::make<mcool::ast::MinusNode>($1, $3); }
-  | term { $$ = $1; }
+class
+  : CLASS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR SEMICOLON {
+    auto* className = mcool::make<mcool::ast::TypeId>($2);
+    auto* parentClassName = mcool::make<mcool::ast::TypeId>(std::string("Object"));
+    auto* fileName = mcool::make<mcool::ast::String>(std::string("no file"));
+    $$ = mcool::make<mcool::ast::CoolClass>(className, parentClassName, $4, fileName);
+  }
+  | CLASS TYPEID INHERITS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR SEMICOLON {
+    auto* className = mcool::make<mcool::ast::TypeId>($2);
+    auto* parentClassName = mcool::make<mcool::ast::TypeId>($4);
+    auto* fileName = mcool::make<mcool::ast::String>(std::string("no file"));
+    $$ = mcool::make<mcool::ast::CoolClass>(className, parentClassName, $6, fileName);
+  }
   ;
 
-term:
-    term STAR factor { $$ = mcool::make<mcool::ast::MultiplyNode>($1, $3); }
-  | term FSLASH factor { $$ = mcool::make<mcool::ast::DivideNode>($1, $3); }
-  | factor { $$ = mcool::make<mcool::ast::SingeltonExpression>($1); }
+attribute_list
+  : /* empty */ {
+    $$ = mcool::make<mcool::ast::AttributeList>();
+  }
+  | attribute_list single_method {
+    $1->add($2);
+    $$ = $1;
+  }
+  | attribute_list single_member {
+    $1->add($2);
+    $$ = $1;
+  }
+  ;
+
+single_method
+  : OBJECTID LEFTPAR formal_list RIGHTPAR COLON TYPEID CURLY_LEFTPAR expr CURLY_RIGHTPAR SEMICOLON {
+    auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
+    auto* returnType = mcool::make<mcool::ast::TypeId>($6);
+    $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, $8);
+  }
+  ;
+
+single_member
+  : OBJECTID COLON TYPEID SEMICOLON {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* variableType = mcool::make<mcool::ast::TypeId>($3);
+    auto* noExpr = mcool::make<mcool::ast::NoExpr>();
+    $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, noExpr);
+  }
+  | OBJECTID COLON TYPEID move_expr SEMICOLON {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* variableType = mcool::make<mcool::ast::TypeId>($3);
+    $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, $4);
+  }
+  ;
+
+formal_list
+  : /* empty */ {
+    $$ = mcool::make<mcool::ast::FormalList>();
+  }
+  | single_formal {
+    $$ = mcool::make<mcool::ast::FormalList>();
+    $$->add($1);
+  }
+  | formal_list COMMA single_formal {
+    $1->add($3);
+    $$ = $1;
+  }
+  ;
+
+single_formal
+  : OBJECTID COLON TYPEID  {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* variableType = mcool::make<mcool::ast::TypeId>($3);
+    $$ = mcool::make<mcool::ast::SingleFormal>(variable, variableType);
+  }
+  ;
+
+expr
+  : relational_expr { $$ = $1; }
+  | loop_expr       { $$ = $1; }
+  | new_expr        { $$ = $1; }
+  | cond_expr       { $$ = $1; }
+  | not_expr        { $$ = $1; }
+  | block_expr      { $$ = $1; }
+  | case_expr       { $$ = $1; }
+  | OBJECTID move_expr {
+    auto* variableName = mcool::make<mcool::ast::ObjectId>($1);
+    $$ = mcool::make<mcool::ast::AssignExpr>(variableName, $2);
+  }
+  | LET let_expr    { $$ = $2; }
+  ;
+
+loop_expr
+  : WHILE expr LOOP expr POOL {
+    $$ = mcool::make<mcool::ast::WhileLoop>($2, $4);
+  }
+  ;
+
+move_expr
+  : ASSIGN expr { $$ = $2; }
+  ;
+
+new_expr
+  : NEW TYPEID {
+    auto* typeName = mcool::make<mcool::ast::TypeId>($2);
+    $$ = mcool::make<mcool::ast::NewExpr>(typeName);
+  }
+  ;
+
+cond_expr
+  : IF expr THEN expr FI {
+    $$ = mcool::make<mcool::ast::IfThenExpr>($2, $4);
+  }
+  | IF expr THEN expr ELSE expr FI {
+    $$ = mcool::make<mcool::ast::IfThenElseExpr>($2, $4, $6);
+  }
+  ;
+
+not_expr
+  : NOT relational_expr {
+    $$ = mcool::make<mcool::ast::NotExpr>($2);
+  }
+  ;
+
+block_expr
+  : CURLY_LEFTPAR exprs CURLY_RIGHTPAR {
+    $$ = mcool::make<mcool::ast::BlockExpr>($2);
+  }
+  ;
+
+exprs
+  : expr SEMICOLON {
+    $$ = mcool::make<mcool::ast::Expressions>();
+    $$->add($1);
+  }
+  | exprs expr SEMICOLON {
+    $1->add($2);
+    $$ = $1;
+  }
+  ;
+
+case_expr
+  : CASE expr OF case_list ESAC {
+    $$ = mcool::make<mcool::ast::CaseExpr>($2, $4);
+  }
+  ;
+
+case_list
+  : single_case {
+    $$ = mcool::make<mcool::ast::CaseList>();
+    $$->add($1);
+  }
+  | case_list single_case {
+    $1->add($2);
+    $$ = $1;
+  }
+  ;
+
+single_case
+   : OBJECTID COLON TYPEID DARROW expr SEMICOLON {
+     auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+     auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+     $$ = mcool::make<mcool::ast::SingleCase>(variable, typeName, $5);
+   }
+   ;
+
+let_expr
+  : let_tail_expr { $$ = $1; }
+  | OBJECTID COLON TYPEID COMMA let_expr {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+    auto* noExpr = mcool::make<mcool::ast::NoExpr>();
+    $$ = mcool::make<mcool::ast::LetExpr>(variable, typeName, noExpr, $5);
+  }
+  | OBJECTID COLON TYPEID move_expr COMMA let_expr {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+    $$ = mcool::make<mcool::ast::LetExpr>(variable, typeName, $4, $6);
+  }
+  ;
+
+let_tail_expr
+  : OBJECTID COLON TYPEID IN expr {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+    auto* noExpr = mcool::make<mcool::ast::NoExpr>();
+    $$ = mcool::make<mcool::ast::LetExpr>(variable, typeName, noExpr, $5);
+  }
+  | OBJECTID COLON TYPEID move_expr IN expr {
+    auto* variable = mcool::make<mcool::ast::ObjectId>($1);
+    auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+    $$ = mcool::make<mcool::ast::LetExpr>(variable, typeName, $4, $6);
+  }
+  ;
+
+relational_expr
+  : relational_expr LEQ additive_expr {
+    $$ = mcool::make<mcool::ast::LessEqualNode>($1, $3);
+  }
+  | relational_expr LESS additive_expr {
+    $$ = mcool::make<mcool::ast::LessNode>($1, $3);
+  }
+  | relational_expr EQ additive_expr {
+    $$ = mcool::make<mcool::ast::EqualNode>($1, $3);
+  }
+  | additive_expr { $$ = $1; }
+  ;
+
+additive_expr
+  : additive_expr PLUS  multiplicative_expr {
+    $$ = mcool::make<mcool::ast::PlusNode>($1, $3);
+  }
+  | additive_expr MINUS multiplicative_expr {
+    $$ = mcool::make<mcool::ast::MinusNode>($1, $3);
+  }
+  | multiplicative_expr { $$ = $1; }
+  ;
+
+multiplicative_expr
+  : multiplicative_expr STAR unary_expr {
+    $$ = mcool::make<mcool::ast::MultiplyNode>($1, $3);
+  }
+  | multiplicative_expr FSLASH unary_expr {
+    $$ = mcool::make<mcool::ast::DivideNode>($1, $3);
+  }
+  | unary_expr { $$ = $1; }
+  ;
+
+unary_expr
+  : primary_expr { $$ = mcool::make<mcool::ast::PrimaryExpression>($1); }
+  | NEG unary_expr { $$ = mcool::make<mcool::ast::NegationNode>($2); }
+  | ISVOID unary_expr { $$ = mcool::make<mcool::ast::IsVoidNode>($2); }
   ;
 
 
-factor:
-    NUMBER { $$ = mcool::make<mcool::ast::Int>($1); }
+primary_expr
+  : NUMBER { $$ = mcool::make<mcool::ast::Int>($1); }
+  | STRING { $$ = mcool::make<mcool::ast::String>($1); }
   | BOOLEAN { $$ = mcool::make<mcool::ast::Bool>($1); }
   | OBJECTID { $$ = mcool::make<mcool::ast::ObjectId>($1); }
-  | STRING { $$ = mcool::make<mcool::ast::String>($1); }
-  | LEFTPAR math_expr RIGHTPAR { $$ = $2; }
+  | LEFTPAR relational_expr RIGHTPAR { $$ = $2; }
   | dispatch { $$ = $1; }
   ;
 
 dispatch
-    : OBJECTID LEFTPAR arg_list RIGHTPAR {
-        auto* selfObject = mcool::make<mcool::ast::ObjectId>(std::string("self"));
-        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($1));
-        $$ = mcool::make<mcool::ast::Dispatch>(selfObject, method, $3);
-    }
-    | factor DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
-        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($3));
-        $$ = mcool::make<mcool::ast::Dispatch>($1, method, $5);
-    }
-    | math_expr AT TYPEID DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
-        auto* typeId = mcool::make<mcool::ast::TypeId>(std::string($3));
-        auto* method = mcool::make<mcool::ast::ObjectId>(std::string($5));
-        $$ = mcool::make<mcool::ast::StaticDispatch>($1, typeId, method, $7);
-    }
+  : OBJECTID LEFTPAR arg_list RIGHTPAR {
+      auto* selfObject = mcool::make<mcool::ast::ObjectId>(std::string("self"));
+      auto* method = mcool::make<mcool::ast::ObjectId>($1);
+      $$ = mcool::make<mcool::ast::Dispatch>(selfObject, method, $3);
+  }
+  | primary_expr DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
+      auto* methodName = mcool::make<mcool::ast::ObjectId>($3);
+      $$ = mcool::make<mcool::ast::Dispatch>($1, methodName, $5);
+  }
+  | primary_expr AT TYPEID DOT OBJECTID LEFTPAR arg_list RIGHTPAR {
+      auto* typeName = mcool::make<mcool::ast::TypeId>($3);
+      auto* methodName = mcool::make<mcool::ast::ObjectId>($5);
+      $$ = mcool::make<mcool::ast::StaticDispatch>($1, typeName, methodName, $7);
+  }
+  ;
 
 arg_list
-    : /*empty*/                 { $$ = mcool::make<mcool::ast::Expressions>(); }
-    | math_expr                 { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
-    | arg_list COMMA math_expr    { $1->add($3); $$ = $1; }
+    : /*empty*/            { $$ = mcool::make<mcool::ast::Expressions>(); }
+    | expr                 { $$ = mcool::make<mcool::ast::Expressions>(); $$->add($1); }
+    | arg_list COMMA expr  { $1->add($3); $$ = $1; }
     ;
 
 %%

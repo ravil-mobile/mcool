@@ -24,38 +24,143 @@ class ObjectId : Terminal {
 }
 
 class TypeId : Terminal {
-  StringPtr typeName;
+  StringPtr name;
 }
 
 class Expression : NonTerminal {}
 
-class SingeltonExpression : Expression {
+class UnaryExpression : Expression {
   Node term;
 }
 
-class BinaryNode : Expression {
-    Node left;
-    Node right;
+class BinaryExpression : Expression {
+    Expression left;
+    Expression right;
 }
 
-class PlusNode : BinaryNode {}
-class MinusNode : BinaryNode {}
-class MultiplyNode : BinaryNode {}
-class DivideNode : BinaryNode {}
+class PrimaryExpression : UnaryExpression {}
+class NegationNode : UnaryExpression {}
+class IsVoidNode : UnaryExpression {}
+
+
+class PlusNode : BinaryExpression {}
+class MinusNode : BinaryExpression {}
+class MultiplyNode : BinaryExpression {}
+class DivideNode : BinaryExpression {}
+
+class LessEqualNode : BinaryExpression {}
+class LessNode : BinaryExpression {}
+class EqualNode : BinaryExpression {}
 
 class Expressions : Expression {
-  list<Node> expressions;
+  list<Node> data;
 }
 
 class Dispatch : Expression {
-  Node dispatchObject;
-  ObjectId dispatchMethod;
+  Node objectId;
+  ObjectId methodId;
   Expressions arguments;
 }
 
 class StaticDispatch : Expression {
-  Node dispatchObject;
+  Node objectId;
   TypeId castType;
-  ObjectId dispatchMethod;
+  ObjectId methodId;
   Expressions arguments;
+}
+
+class WhileLoop : Expression {
+  Expression predicate;
+  Expression body;
+}
+
+class NewExpr : Expression {
+  TypeId newType;
+}
+
+class AssignExpr : Expression {
+  ObjectId id;
+  Expression initExpr;
+}
+
+class IfThenExpr : Expression {
+  Expression condition;
+  Expression thenBody;
+}
+
+class IfThenElseExpr : Expression {
+  Expression condition;
+  Expression thenBody;
+  Expression elseBody;
+}
+
+class NotExpr : Expression {
+  Expression expr;
+}
+
+class BlockExpr : Expression {
+  Expressions exprs;
+}
+
+class NoExpr : Expression {}
+
+class LetExpr : Expression {
+  ObjectId id;
+  TypeId idType;
+  Expression initExpr;
+  Expression body;
+}
+
+class SingleCase : NonTerminal {
+  ObjectId id;
+  TypeId idType;
+  Expression body;
+}
+
+class CaseList : NonTerminal {
+  list<SingleCase> data;
+}
+
+class CaseExpr : Expression {
+  Expression expr;
+  CaseList casses;
+}
+
+class SingleFormal : NonTerminal {
+  ObjectId id;
+  TypeId idType;
+}
+
+class FormalList : NonTerminal {
+  list<SingleFormal> formals;
+}
+
+class ClassAttribute : NonTerminal {}
+
+class SingleMemeber : ClassAttribute {
+  ObjectId id;
+  TypeId idType;
+  Expression initExpr;
+}
+
+class SingleMethod : ClassAttribute {
+  ObjectId id;
+  FormalList parameters;
+  TypeId returnType;
+  Expression body;
+}
+
+class AttributeList : NonTerminal {
+  list<ClassAttribute> data;
+}
+
+class CoolClass : NonTerminal {
+  TypeId coolType;
+  TypeId parentType;
+  AttributeList attributes;
+  String fileName;
+}
+
+class CoolClassList : NonTerminal {
+  list<CoolClass> data;
 }

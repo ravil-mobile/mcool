@@ -88,12 +88,22 @@ std::string genConstructorCall(const std::string& className,
 void genGetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attributes) {
   for (auto& attr : attributes) {
     auto typeName = attr->type->getName();
-    if (attr->type->preferReference()) {
-      typeName += '&';
-    }
 
-    OS << "  " << typeName << " get" << ast::misc::capitalize(attr->name);
-    OS << "() { return " << attr->name << "; }\n";
+    if (typeName == "StringPtr*") {
+      OS << "  std::string&" << " get" << ast::misc::capitalize(attr->name) << "AsStr";
+      OS << "() { return " << attr->name << "->get(); }\n";
+
+      OS << "  const std::string&" << " get" << ast::misc::capitalize(attr->name) << "AsStr";
+      OS << "() const { return " << attr->name << "->get(); }\n";
+    }
+    else {
+      if (attr->type->preferReference()) {
+        typeName += '&';
+      }
+
+      OS << "  " << typeName << " get" << ast::misc::capitalize(attr->name);
+      OS << "() { return " << attr->name << "; }\n";
+    }
   }
 }
 
