@@ -33,6 +33,15 @@ public:
     return mcool::Parser::make_ERROR(currLocation);
   }
 
+std::string getFileName() {
+  if (filename) {
+    return *filename;
+  }
+  else {
+    return std::string("no filename given");
+  }
+}
+
 
 private:
   int commentCounter{};

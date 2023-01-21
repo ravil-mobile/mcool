@@ -20,7 +20,16 @@ public:
     this->tree->accept(visitor);
   }
 
+  void setError() {
+    isOk = false;
+  }
+
+  bool isAstOk() {
+    return isOk;
+  }
+
 private:
   mcool::ast::CoolClassList* tree{nullptr};
+  bool isOk{true};
 };
 } // namespace mcool

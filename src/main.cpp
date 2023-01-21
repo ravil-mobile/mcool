@@ -35,30 +35,35 @@ int main (int argc, char* argv[]) {
   mcool::AstTree astTree;
   mcool::Parser parser(scanner, astTree);
   auto status = parser.parse();
-  std::cout << "parser status: " << status << std::endl; 
+  if (status == 0) {
+    if (not astTree.isAstOk()) {
+      std::cerr << "parsing error" << std::endl;
+    }
 
-  if (config.verbose) {
-    mcool::AstPinter astPinter(std::cout);
-    astTree.accept(&astPinter);
-  }
-  else if (config.dotOutput) {
-    std::string dotFileName = config.outputFile + ".dot";
-    std::fstream dotOutputFile(dotFileName.c_str(), std::ios::out);
-    if (dotOutputFile.is_open()) {
-      mcool::DotPrinter dotPrinter(dotOutputFile);
-      astTree.accept(&dotPrinter);
-      dotOutputFile.close();
+    if (config.verbose) {
+      mcool::AstPinter astPinter(std::cout);
+      astTree.accept(&astPinter);
+    } else if (config.dotOutput) {
+      std::string dotFileName = config.outputFile + ".dot";
+      std::fstream dotOutputFile(dotFileName.c_str(), std::ios::out);
+      if (dotOutputFile.is_open()) {
+        mcool::DotPrinter dotPrinter(dotOutputFile);
+        astTree.accept(&dotPrinter);
+        dotOutputFile.close();
 
-      std::fstream dotInputFile(dotFileName.c_str(), std::ios::in);
-      std::string line;
-      while (std::getline(dotInputFile, line)) {
-        std::cout << line << std::endl;
+        std::fstream dotInputFile(dotFileName.c_str(), std::ios::in);
+        std::string line;
+        while (std::getline(dotInputFile, line)) {
+          std::cout << line << std::endl;
+        }
+        dotInputFile.close();
+      } else {
+        std::cerr << "cannot open dot output file: " << dotFileName << std::endl;
       }
-      dotInputFile.close();
     }
-    else {
-      std::cerr << "cannot open dot output file: " << dotFileName << std::endl;
-    }
+  }
+  else {
+    std::cerr << "parsing failed" << std::endl;
   }
 
   fileStream.close();

@@ -138,27 +138,39 @@ program
   ;
 
 class_list
-  : class {
+  : class SEMICOLON {
     $$ = mcool::make<mcool::ast::CoolClassList>();
     $$->add($1);
   }
-  | class_list class {
+  | class_list class SEMICOLON {
     $1->add($2);
     $$ = $1;
+  }
+  | error CURLY_RIGHTPAR SEMICOLON {
+    astTree.setError();
+    error(@1, "class error");
+    $$ = mcool::make<mcool::ast::CoolClassList>();
+    yyerrok;
+  }
+  | class_list error CURLY_RIGHTPAR SEMICOLON {
+    error(@2, "class error");
+    astTree.setError();
+    $$ = $1;
+    yyerrok;
   }
   ;
 
 class
-  : CLASS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR SEMICOLON {
+  : CLASS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR {
     auto* className = mcool::make<mcool::ast::TypeId>($2);
     auto* parentClassName = mcool::make<mcool::ast::TypeId>(std::string("Object"));
-    auto* fileName = mcool::make<mcool::ast::String>(std::string("no file"));
+    auto* fileName = mcool::make<mcool::ast::String>(scanner.getFileName());
     $$ = mcool::make<mcool::ast::CoolClass>(className, parentClassName, $4, fileName);
   }
-  | CLASS TYPEID INHERITS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR SEMICOLON {
+  | CLASS TYPEID INHERITS TYPEID CURLY_LEFTPAR attribute_list CURLY_RIGHTPAR {
     auto* className = mcool::make<mcool::ast::TypeId>($2);
     auto* parentClassName = mcool::make<mcool::ast::TypeId>($4);
-    auto* fileName = mcool::make<mcool::ast::String>(std::string("no file"));
+    auto* fileName = mcool::make<mcool::ast::String>(scanner.getFileName());
     $$ = mcool::make<mcool::ast::CoolClass>(className, parentClassName, $6, fileName);
   }
   ;
@@ -167,32 +179,60 @@ attribute_list
   : /* empty */ {
     $$ = mcool::make<mcool::ast::AttributeList>();
   }
-  | attribute_list single_method {
+  | attribute_list single_method SEMICOLON {
     $1->add($2);
     $$ = $1;
   }
-  | attribute_list single_member {
+  | attribute_list single_member SEMICOLON {
     $1->add($2);
     $$ = $1;
+  }
+  | attribute_list error SEMICOLON {
+    error(@2, "in attribute of a class");
+    astTree.setError();
+    $$ = $1;
+    yyerrok;
   }
   ;
 
 single_method
-  : OBJECTID LEFTPAR formal_list RIGHTPAR COLON TYPEID CURLY_LEFTPAR expr CURLY_RIGHTPAR SEMICOLON {
+  : OBJECTID LEFTPAR formal_list RIGHTPAR COLON TYPEID CURLY_LEFTPAR expr CURLY_RIGHTPAR {
     auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
     auto* returnType = mcool::make<mcool::ast::TypeId>($6);
     $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, $8);
   }
+  | OBJECTID LEFTPAR formal_list RIGHTPAR error CURLY_RIGHTPAR {
+    std::string msg = "near or in the body of method `" + $1 + "`";
+    error(@5, msg);
+    astTree.setError();
+
+    auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
+    auto* returnType = mcool::make<mcool::ast::TypeId>(std::string("Object"));
+    auto* noExpr = mcool::make<mcool::ast::NoExpr>();
+    $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, noExpr);
+    yyerrok;
+  }
+  | OBJECTID LEFTPAR error RIGHTPAR COLON TYPEID CURLY_LEFTPAR expr CURLY_RIGHTPAR {
+    std::string msg = "in parameter list of method `" + $1 + "`";
+    error(@3, msg);
+    astTree.setError();
+
+    auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
+    auto* returnType = mcool::make<mcool::ast::TypeId>($6);
+    auto* noParam = mcool::make<mcool::ast::FormalList>();
+    $$ = mcool::make<mcool::ast::SingleMethod>(methodName, noParam, returnType, $8);
+    yyerrok;
+  }
   ;
 
 single_member
-  : OBJECTID COLON TYPEID SEMICOLON {
+  : OBJECTID COLON TYPEID {
     auto* variable = mcool::make<mcool::ast::ObjectId>($1);
     auto* variableType = mcool::make<mcool::ast::TypeId>($3);
     auto* noExpr = mcool::make<mcool::ast::NoExpr>();
     $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, noExpr);
   }
-  | OBJECTID COLON TYPEID move_expr SEMICOLON {
+  | OBJECTID COLON TYPEID move_expr {
     auto* variable = mcool::make<mcool::ast::ObjectId>($1);
     auto* variableType = mcool::make<mcool::ast::TypeId>($3);
     $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, $4);
@@ -283,6 +323,18 @@ exprs
     $1->add($2);
     $$ = $1;
   }
+  | error SEMICOLON {
+    error(@1, "invalid expression inside a block");
+    astTree.setError();
+    $$ = mcool::make<mcool::ast::Expressions>();
+    yyerrok;
+  }
+  | exprs error SEMICOLON {
+    error(@2 + @3, "invalid expression inside a block");
+    astTree.setError();
+    $$ = $1;
+    yyerrok;
+  }
   ;
 
 case_expr
@@ -292,18 +344,32 @@ case_expr
   ;
 
 case_list
-  : single_case {
+  : single_case SEMICOLON {
     $$ = mcool::make<mcool::ast::CaseList>();
     $$->add($1);
   }
-  | case_list single_case {
+  | case_list single_case SEMICOLON {
     $1->add($2);
     $$ = $1;
+  }
+  | error SEMICOLON {
+    error(@1, "invalid case");
+    astTree.setError();
+
+    $$ = mcool::make<mcool::ast::CaseList>();
+    yyerrok;
+  }
+  | case_list error SEMICOLON {
+    error(@1, "invalid case");
+    astTree.setError();
+
+    $$ = $1;
+    yyerrok;
   }
   ;
 
 single_case
-   : OBJECTID COLON TYPEID DARROW expr SEMICOLON {
+   : OBJECTID COLON TYPEID DARROW expr {
      auto* variable = mcool::make<mcool::ast::ObjectId>($1);
      auto* typeName = mcool::make<mcool::ast::TypeId>($3);
      $$ = mcool::make<mcool::ast::SingleCase>(variable, typeName, $5);
@@ -415,5 +481,5 @@ arg_list
 
 // Report an error to the user.
 void mcool::Parser::error(const location &loc , const std::string &msg) {
-  std::cerr << loc << " : " << msg << '\n';
+  std::cerr << loc <<  " : " << msg << '\n';
 }
