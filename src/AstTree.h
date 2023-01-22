@@ -8,7 +8,14 @@ namespace mcool {
 class AstTree {
 public:
   void set(mcool::ast::CoolClassList* program) {
-    this->tree = program;
+    if (tree == nullptr) {
+      tree = program;
+    }
+    else {
+      for (auto* coolClass : program->getData()) {
+        tree->add(coolClass);
+      }
+    }
   }
 
   mcool::ast::CoolClassList* get() {

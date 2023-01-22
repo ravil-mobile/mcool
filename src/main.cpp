@@ -1,6 +1,4 @@
-#include "scanner.h"
-#include "parser.h"
-#include "AstTree.h"
+#include "ParserDriver.h"
 #include "Misc.h"
 #include "Printer.h"
 #include "DotPrinter.h"
@@ -25,17 +23,10 @@ int main (int argc, char* argv[]) {
     return -1;
   }
 
-  std::ifstream fileStream(config.inputFile.c_str());
-  if (fileStream.fail()) {
-    std::cerr << "cannot open file: " << config.inputFile << std::endl;
-    return -1;
-  }
-
-  mcool::Scanner scanner(&fileStream, &config.inputFile);
-  mcool::AstTree astTree;
-  mcool::Parser parser(scanner, astTree);
-  auto status = parser.parse();
-  if (status == 0) {
+  mcool::ParserDriver driver;
+  auto status = driver.parse(config);
+  auto& astTree = driver.getAstTree();
+  if (status) {
     if (not astTree.isAstOk()) {
       std::cerr << "parsing error" << std::endl;
     }
@@ -65,7 +56,4 @@ int main (int argc, char* argv[]) {
   else {
     std::cerr << "parsing failed" << std::endl;
   }
-
-  fileStream.close();
-  return 0;
 }

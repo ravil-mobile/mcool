@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include <list>
 #include <ostream>
 #include <Loc.h>
 
 namespace mcool::misc {
 struct Config {
-  std::string inputFile{};
+  std::list<std::string> inputFiles{};
   std::string outputFile{"./a.out"};
   bool verbose{false};
   bool dotOutput{false};

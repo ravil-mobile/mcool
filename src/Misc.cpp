@@ -6,6 +6,7 @@
 #include "CLI/Config.hpp"
 
 #include <filesystem>
+#include <cassert>
 
 namespace mcool::misc {
 Config readCmd(int argc, char* argv[]) {
@@ -13,7 +14,7 @@ Config readCmd(int argc, char* argv[]) {
 
   CLI::App cmd{"MCool compiler"};
 
-  cmd.add_option("-i,--input", config.inputFile, "path to the input file");
+  cmd.add_option("-i,--input", config.inputFiles, "path to the input file");
   cmd.add_option("-o,--output", config.outputFile, "output file name");
   auto* dotOption = cmd.add_flag("--dot-output", "print ast in dot format (graphviz)");
   auto* verboseOption = cmd.add_flag("-v,--verbose", "verbose mode");
@@ -30,14 +31,17 @@ Config readCmd(int argc, char* argv[]) {
     throw std::runtime_error("no input file was provided");
   }
 
-  std::filesystem::path inputPath{config.inputFile};
-  if (not std::filesystem::exists(inputPath)) {
-    throw std::runtime_error("input file does not exist");
-  }
+  for (auto& inputFile : config.inputFiles) {
+    std::filesystem::path inputPath{inputFile};
+    if (not std::filesystem::exists(inputPath)) {
+      throw std::runtime_error("input file does not exist. See: " + inputFile);
+    }
 
-  if (inputPath.extension() != std::string(".cl")) {
-    throw std::runtime_error("unknown input file extension. Expected `.cl`");
+    if (inputPath.extension() != std::string(".cl")) {
+      throw std::runtime_error("unknown input file extension. Expected `.cl`. See: " + inputFile);
+    }
   }
+  assert((not config.inputFiles.empty()) && "no input files");
 
   std::filesystem::path outputPath{config.outputFile};
   auto parentPath = outputPath.parent_path();
