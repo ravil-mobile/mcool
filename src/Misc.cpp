@@ -1,5 +1,8 @@
 #include "Misc.h"
 #include "ast.h"
+#include "AstTree.h"
+#include "Printer.h"
+#include "DotPrinter.h"
 
 #include "CLI/App.hpp"
 #include "CLI/Formatter.hpp"
@@ -7,6 +10,7 @@
 
 #include <filesystem>
 #include <cassert>
+
 
 namespace mcool::misc {
 Config readCmd(int argc, char* argv[]) {
@@ -59,7 +63,32 @@ Config readCmd(int argc, char* argv[]) {
 
   return config;
 }
+
+
+void analyseUntypedAst(mcool::AstTree& astTree, mcool::misc::Config& config) {
+  if (config.verbose) {
+    mcool::AstPinter astPinter(std::cout);
+    astTree.accept(&astPinter);
+  } else if (config.dotOutput) {
+    std::string dotFileName = config.outputFile + ".dot";
+    std::fstream dotOutputFile(dotFileName.c_str(), std::ios::out);
+    if (dotOutputFile.is_open()) {
+      mcool::DotPrinter dotPrinter(dotOutputFile);
+      astTree.accept(&dotPrinter);
+      dotOutputFile.close();
+
+      std::fstream dotInputFile(dotFileName.c_str(), std::ios::in);
+      std::string line;
+      while (std::getline(dotInputFile, line)) {
+        std::cout << line << std::endl;
+      }
+      dotInputFile.close();
+    } else {
+      std::cerr << "cannot open dot output file: " << dotFileName << std::endl;
+    }
+  }
 }
+} // namespace mcool::misc
 
 
 std::ostream& operator<<(std::ostream& stream, const mcool::Loc& loc) {

@@ -2,15 +2,19 @@
 
 #include "Misc.h"
 #include "AstTree.h"
+#include <optional>
+
 
 namespace mcool {
-class ParserDriver{
+class ParserDriver {
 public:
-  bool parse(misc::Config& config);
-  mcool::AstTree& getAstTree() { return astTree; }
-  void beginScan();
-  void endScan();
+  ParserDriver(misc::Config& config) : config(config) {}
+  void parse();
+  std::optional<mcool::AstTree> getAst();
+
 private:
-  mcool::AstTree astTree;
+  misc::Config& config;
+  mcool::AstTree astTree{};
+  bool isParserOk{false};
 };
 }

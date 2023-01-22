@@ -6,6 +6,7 @@
 #include <vector>
 #include <stack>
 #include <sstream>
+#include <cassert>
 
 
 namespace mcool {

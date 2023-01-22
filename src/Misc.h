@@ -5,6 +5,10 @@
 #include <ostream>
 #include <Loc.h>
 
+namespace mcool {
+  class AstTree;
+}
+
 namespace mcool::misc {
 struct Config {
   std::list<std::string> inputFiles{};
@@ -14,6 +18,7 @@ struct Config {
 };
 
 Config readCmd(int argc, char* argv[]);
+void analyseUntypedAst(mcool::AstTree& astTree, mcool::misc::Config& config);
 } // namespace mcool::misc
 
 

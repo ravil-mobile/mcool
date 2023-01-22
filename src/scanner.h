@@ -20,7 +20,7 @@ public:
 	~Scanner() override = default;
 	virtual mcool::Parser::symbol_type get_next_token();
 
-  void reset(std::istream* stream, std::string* intputFilename) {
+  void set(std::istream* stream, std::string* intputFilename) {
     filename = intputFilename;
     currLocation = mcool::location(intputFilename);
     yyrestart(stream);

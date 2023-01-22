@@ -5,21 +5,33 @@
 #include <iostream>
 
 
-bool mcool::ParserDriver::parse(misc::Config& config) {
-  bool isOk{true};
+void mcool::ParserDriver::parse() {
+  isParserOk = true;
+  astTree = mcool::AstTree{};
 
-  mcool::Scanner scanner;
+  mcool::Scanner scanner(true);
   mcool::Parser parser(scanner, astTree);
 
   for (auto& inputFile : config.inputFiles) {
     std::ifstream fileStream(inputFile);
     if (fileStream.fail()) {
       std::cerr << "cannot open file: " << inputFile << std::endl;
-      isOk = false;
+      isParserOk = false;
       continue;
     }
-    scanner.reset(&fileStream, &inputFile);
-    isOk &= (parser.parse() == 0);
+    scanner.set(&fileStream, &inputFile);
+    int currParserStatus = parser.parse();
+    isParserOk &= (currParserStatus == 0);
   }
-  return isOk;
+}
+
+
+std::optional<mcool::AstTree> mcool::ParserDriver::getAst() {
+  if (isParserOk) {
+    isParserOk = false;
+    return std::optional<mcool::AstTree>(astTree);
+  }
+  else {
+    return std::optional<mcool::AstTree>{};
+  }
 }

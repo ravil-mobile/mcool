@@ -2,7 +2,6 @@
 
 
 namespace mcool::semant {
-
 enum class TypeKind {
   Object,
   SelfType,
