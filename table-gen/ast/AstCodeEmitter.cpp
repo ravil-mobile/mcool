@@ -10,8 +10,8 @@ void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
   OS << "class StringPtr {\n";
   OS << "public:\n";
   OS << "  explicit StringPtr(std::string& str) : str(str) {}\n";
-  OS << "  std::string& get() { return str; }";
-  OS << "  const std::string& get() const { return str; }";
+  OS << "  std::string& get() { return str; }\n";
+  OS << "  const std::string& get() const { return str; }\n";
   OS << "private:\n";
   OS << "  std::string str{};\n";
   OS << "};\n\n";
@@ -28,10 +28,18 @@ void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
   OS << "  virtual void accept(Visitor*) = 0;\n";
   OS << "  virtual const std::string& getClassName() = 0;\n\n";
 
+  OS << "  void setLocation(mcool::Loc& loc) { location = loc; }\n";
+  OS << "  mcool::Loc& getLocation() { return location; }\n\n";
+
+  OS << "  void setSemantType(mcool::semant::Type* type) { semantType = type; }\n";
+  OS << "  mcool::semant::Type* getSemantType() { return semantType; }\n";
+
   ast::genGetters(OS, node->getAttributes());
   ast::genSetters(OS, node->getAttributes());
 
   genAttributes(node);
+  OS << "  mcool::Loc location;\n";
+  OS << "  mcool::semant::Type* semantType{nullptr};\n";
 
   OS << "};\n\n";
 

@@ -2,7 +2,7 @@
 
 #include "visitor.h"
 #include "ast.h"
-#include <ostream>
+#include "Misc.h"
 #include <vector>
 #include <stack>
 #include <sstream>

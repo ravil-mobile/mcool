@@ -20,13 +20,17 @@ public:
   }
 
   template<typename Type>
-  std::enable_if_t<std::is_same_v<Type, ast::String> ||
-                   std::is_same_v<Type, ast::TypeId> ||
-                   std::is_same_v<Type, ast::ObjectId>, ast::StringPtr*>
+  std::enable_if_t<std::is_same_v<Type, ast::String>   ||
+                   std::is_same_v<Type, ast::TypeId>   ||
+                   std::is_same_v<Type, ast::ObjectId> ||
+                   std::is_same_v<Type, ast::StringPtr>, ast::StringPtr*>
   getStringPtr(std::string& str) {
     std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>>* table;
-    if constexpr(std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId>) {
+    if constexpr (std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId>) {
       table = &staticStringTable;
+    }
+    else if constexpr (std::is_same_v<Type, ast::StringPtr>) {
+      table = &rawStringTable;
     }
     else {
       table = &objectStringTable;
@@ -44,6 +48,7 @@ private:
   MemoryManagement() = default;
 
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> staticStringTable{};
+  std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> rawStringTable{};
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> objectStringTable{};
   std::unordered_map<int, std::unique_ptr<ast::Int>> integerTable{};
   std::unordered_map<bool, std::unique_ptr<ast::Bool>> booleanTable{};

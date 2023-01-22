@@ -7,6 +7,7 @@ namespace ast::type::details {
   struct Bool { static const char* asString() { return "bool"; } };
   struct Int { static const char* asString() { return "int"; } };
   struct String { static const char* asString() { return "std::string"; } };
+  struct Location { static const char* asString() { return "mcool::Loc"; } };
 }
 
 
@@ -48,6 +49,8 @@ public:
 using BoolType = BuiltinType<type::details::Bool, false>;
 using IntType = BuiltinType<type::details::Int, false>;
 using StringType = BuiltinType<type::details::String, true>;
+using LocationType = BuiltinType<type::details::Location, true>;
+
 
 class PtrType : public Type {
 public:

@@ -1,4 +1,5 @@
 #include "Misc.h"
+#include "ast.h"
 
 #include "CLI/App.hpp"
 #include "CLI/Formatter.hpp"
@@ -54,4 +55,14 @@ Config readCmd(int argc, char* argv[]) {
 
   return config;
 }
+}
+
+
+std::ostream& operator<<(std::ostream& stream, const mcool::Loc& loc) {
+  if (loc.filename) {
+    stream << loc.filename->get() << " ";
+  }
+  stream << loc.begin.line << ':' << loc.begin.column << '-'
+         << loc.end.line << ':' << loc.end.column << '\n';
+  return stream;
 }

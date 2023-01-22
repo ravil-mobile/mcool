@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <ostream>
+#include <Loc.h>
 
 namespace mcool::misc {
 struct Config {
@@ -11,4 +13,7 @@ struct Config {
 };
 
 Config readCmd(int argc, char* argv[]);
-}
+} // namespace mcool::misc
+
+
+std::ostream& operator<<(std::ostream& stream, const mcool::Loc& loc);

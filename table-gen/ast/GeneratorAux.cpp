@@ -50,14 +50,10 @@ std::string genConstructorInitList(std::vector<inheritance::tree::Node*>& chain)
       }
     }
 
-    for (size_t i{1}; i < chain.size(); ++i) {
-      auto *node = chain[i];
-      auto attrs = node->getAttributes();
-      if (not attrs.empty()) {
-        stream << genConstructorCall(node->getName(), attrs);
-        stream << ", ";
-        cleanTail = true;
-      }
+    auto parentConstructor = genParentConstructorCall(chain);
+    if (not parentConstructor.empty()) {
+      stream << parentConstructor;
+      cleanTail = false;
     }
 
   }
@@ -72,7 +68,6 @@ std::string genConstructorCall(const std::string& className,
 
   stream << className << "(";
   for (auto *attr: attrs) {
-
     if (attr->type->isBuiltin() || attr->type->isPtr()) {
       stream << attr->name << ", ";
       cleanTail = true;
@@ -81,6 +76,35 @@ std::string genConstructorCall(const std::string& className,
   mcool::removeFromBack(stream, cleanTail ? 2 : 0);
 
   stream << ")";
+  return stream.str();
+}
+
+std::string genParentConstructorCall(std::vector<inheritance::tree::Node*>& chain) {
+  std::stringstream stream;
+  bool cleanTail{false};
+
+  if (chain.size() > 1) {
+    std::string parentClass{chain[1]->getName()};
+    stream << chain[1]->getName() << "(";
+
+    for (size_t i{1}; i < chain.size(); ++i) {
+      auto *node = chain[i];
+      auto attrs = node->getAttributes();
+
+      if (not attrs.empty()) {
+        for (auto *attr: attrs) {
+          if (attr->type->isBuiltin() || attr->type->isPtr()) {
+            stream << attr->name << ", ";
+            cleanTail = true;
+          }
+        }
+      }
+    }
+    mcool::removeFromBack(stream, cleanTail ? 2 : 0);
+
+    stream << ")";
+  }
+
   return stream.str();
 }
 
@@ -109,10 +133,13 @@ void genGetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attri
 
 void genSetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attributes) {
   for (auto& attr: attributes) {
-    if (attr->type->isComposite()) {
-      auto* compositeType = dynamic_cast<ast::Composite*>(attr->type.get());
+    auto *type = attr->type.get();
+    if (auto* compositeType = dynamic_cast<ast::Composite*>(type)) {
       auto* elementType = compositeType->getInnerType();
       OS << "  void add(" << elementType->getName() << " item) { " << attr->name << ".push_back(item); }";
+    }
+    if (auto* locationType = dynamic_cast<ast::LocationType*>(type)) {
+      OS << "  void setLocation(" << locationType->getName() << "& loc) { location = loc; }";
     }
   }
 }
