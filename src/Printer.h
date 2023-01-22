@@ -95,7 +95,7 @@ public:
     indent -= 2;
   }
 
-  void visitPrimaryExpression(ast::PrimaryExpression* node) override {
+  void visitPrimaryExpr(ast::PrimaryExpr* node) override {
     auto* term = node->getTerm();
     term->accept(this);
   }

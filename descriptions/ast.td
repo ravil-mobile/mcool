@@ -38,7 +38,7 @@ class BinaryExpression : Expression {
     Expression right;
 }
 
-class PrimaryExpression : UnaryExpression {}
+class PrimaryExpr : UnaryExpression {}
 class NegationNode : UnaryExpression {}
 class IsVoidNode : UnaryExpression {}
 
@@ -137,7 +137,7 @@ class FormalList : NonTerminal {
 
 class ClassAttribute : NonTerminal {}
 
-class SingleMemeber : ClassAttribute {
+class SingleMember : ClassAttribute {
   ObjectId id;
   TypeId idType;
   Expression initExpr;

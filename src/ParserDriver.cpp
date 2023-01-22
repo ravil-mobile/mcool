@@ -19,6 +19,7 @@ void mcool::ParserDriver::parse() {
       isParserOk = false;
       continue;
     }
+
     scanner.set(&fileStream, &inputFile);
     int currParserStatus = parser.parse();
     isParserOk &= (currParserStatus == 0);

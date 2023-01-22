@@ -58,7 +58,7 @@ public:
     }
   }
 
-  void visitSingleMemeber(ast::SingleMemeber* member) override {
+  void visitSingleMember(ast::SingleMember* member) override {
     std::string memberName = buildNodeName();
     addNodeLabel(memberName, "member");
     nodeStack.push(memberName);
@@ -164,7 +164,7 @@ public:
     edgeStream << "  " << negName << " -> " << termNode << '\n';
   }
 
-  void visitPrimaryExpression(ast::PrimaryExpression* node) override {
+  void visitPrimaryExpr(ast::PrimaryExpr* node) override {
     node->getTerm()->accept(this);
   }
 

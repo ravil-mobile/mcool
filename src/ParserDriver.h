@@ -8,7 +8,7 @@
 namespace mcool {
 class ParserDriver {
 public:
-  ParserDriver(misc::Config& config) : config(config) {}
+  explicit ParserDriver(misc::Config& config) : config(config) {}
   void parse();
   std::optional<mcool::AstTree> getAst();
 

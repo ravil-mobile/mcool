@@ -220,15 +220,26 @@ single_method
     $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, $8);
     setLoc($$, @$);
   }
-  | OBJECTID LEFTPAR formal_list RIGHTPAR error CURLY_RIGHTPAR {
+  | OBJECTID LEFTPAR formal_list RIGHTPAR COLON TYPEID CURLY_LEFTPAR error CURLY_RIGHTPAR {
     std::string msg = "near or in the body of method `" + $1 + "`";
     error(@5, msg);
     astTree.setError();
 
     auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
-    auto* returnType = mcool::make<mcool::ast::TypeId>(std::string("Object"));
+    auto* returnType = mcool::make<mcool::ast::TypeId>($6);
     auto* noExpr = mcool::make<mcool::ast::NoExpr>();
     $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, noExpr);
+    setLoc($$, @$);
+    yyerrok;
+  }
+  | OBJECTID LEFTPAR formal_list RIGHTPAR error CURLY_LEFTPAR expr CURLY_RIGHTPAR {
+    std::string msg = "in return type of method `" + $1 + "`";
+    error(@6, msg);
+    astTree.setError();
+
+    auto* methodName = mcool::make<mcool::ast::ObjectId>($1);
+    auto* returnType = mcool::make<mcool::ast::TypeId>(std::string("Object"));
+    $$ = mcool::make<mcool::ast::SingleMethod>(methodName, $3, returnType, $7);
     setLoc($$, @$);
     yyerrok;
   }
@@ -251,13 +262,13 @@ single_member
     auto* variable = mcool::make<mcool::ast::ObjectId>($1);
     auto* variableType = mcool::make<mcool::ast::TypeId>($3);
     auto* noExpr = mcool::make<mcool::ast::NoExpr>();
-    $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, noExpr);
+    $$ = mcool::make<mcool::ast::SingleMember>(variable, variableType, noExpr);
     setLoc($$, @$);
   }
   | OBJECTID COLON TYPEID move_expr {
     auto* variable = mcool::make<mcool::ast::ObjectId>($1);
     auto* variableType = mcool::make<mcool::ast::TypeId>($3);
-    $$ = mcool::make<mcool::ast::SingleMemeber>(variable, variableType, $4);
+    $$ = mcool::make<mcool::ast::SingleMember>(variable, variableType, $4);
     setLoc($$, @$);
   }
   ;
@@ -491,7 +502,7 @@ multiplicative_expr
   ;
 
 unary_expr
-  : primary_expr { $$ = mcool::make<mcool::ast::PrimaryExpression>($1); setLoc($$, @$); }
+  : primary_expr { $$ = mcool::make<mcool::ast::PrimaryExpr>($1); setLoc($$, @$); }
   | NEG unary_expr { $$ = mcool::make<mcool::ast::NegationNode>($2); setLoc($$, @$); }
   | ISVOID unary_expr { $$ = mcool::make<mcool::ast::IsVoidNode>($2); setLoc($$, @$); }
   ;
