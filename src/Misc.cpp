@@ -1,8 +1,8 @@
 #include "Misc.h"
 #include "ast.h"
 #include "AstTree.h"
-#include "Printer.h"
-#include "DotPrinter.h"
+#include "printers/Printer.h"
+#include "printers/DotPrinter.h"
 
 #include "CLI/App.hpp"
 #include "CLI/Formatter.hpp"
