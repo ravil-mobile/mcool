@@ -1,6 +1,5 @@
 #include "GeneratorAux.h"
 #include "StreamMisc.h"
-#include <sstream>
 
 namespace ast {
 std::string genConstructor(const std::string& className, std::vector<inheritance::tree::Node*>& chain) {
@@ -109,7 +108,7 @@ std::string genParentConstructorCall(std::vector<inheritance::tree::Node*>& chai
 }
 
 
-void genGetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attributes) {
+void genGetters(std::ostream& OS, const std::vector<ast::Attribute*>& attributes) {
   for (auto& attr : attributes) {
     auto typeName = attr->type->getName();
 
@@ -131,7 +130,7 @@ void genGetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attri
   }
 }
 
-void genSetters(llvm::raw_ostream& OS, const std::vector<ast::Attribute*>& attributes) {
+void genSetters(std::ostream& OS, const std::vector<ast::Attribute*>& attributes) {
   for (auto& attr: attributes) {
     auto *type = attr->type.get();
     if (auto* compositeType = dynamic_cast<ast::Composite*>(type)) {

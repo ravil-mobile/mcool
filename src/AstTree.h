@@ -7,28 +7,15 @@
 namespace mcool {
 class AstTree {
   public:
-  void set(mcool::ast::CoolClassList* program) {
-    if (tree == nullptr) {
-      tree = program;
-    } else {
-      for (auto* coolClass : program->getData()) {
-        tree->add(coolClass);
-      }
-    }
-  }
-
+  void set(mcool::ast::CoolClassList* program);
   mcool::ast::CoolClassList* get() { return this->tree; }
-
-  void accept(mcool::ast::Visitor* visitor) {
-    assert(this->tree && "tree is not set");
-    this->tree->accept(visitor);
-  }
-
+  void accept(mcool::ast::Visitor* visitor);
+  static void addBuildinClasses(mcool::ast::CoolClassList* classes);
   void setError() { isOk = false; }
-
   bool isAstOk() { return isOk; }
 
-  private:
+private:
+
   mcool::ast::CoolClassList* tree{nullptr};
   bool isOk{true};
 };

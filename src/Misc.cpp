@@ -1,8 +1,8 @@
 #include "Misc.h"
 #include "ast.h"
 #include "AstTree.h"
-#include "printers/Printer.h"
-#include "printers/DotPrinter.h"
+#include "Printers/Printer.h"
+#include "Printers/DotPrinter.h"
 
 #include "CLI/App.hpp"
 #include "CLI/Formatter.hpp"
@@ -20,6 +20,7 @@ Config readCmd(int argc, char* argv[]) {
   cmd.add_option("-i,--input", config.inputFiles, "path to the input file");
   cmd.add_option("-o,--output", config.outputFile, "output file name");
   auto* dotOption = cmd.add_flag("--dot-output", "print ast in dot format (graphviz)");
+  auto* inheritancePrintingOption = cmd.add_flag("--print-inheritance", "print inheritance graph");
   auto* verboseOption = cmd.add_flag("-v,--verbose", "verbose mode");
 
   try {
@@ -53,6 +54,10 @@ Config readCmd(int argc, char* argv[]) {
 
   if (*dotOption) {
     config.dotOutput = true;
+  }
+
+  if (*inheritancePrintingOption) {
+    config.printInheritance = true;
   }
 
   if (*verboseOption) {

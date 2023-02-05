@@ -6,6 +6,7 @@
 #include "OrderedDict.h"
 #include <list>
 #include <tuple>
+#include <sstream>
 
 
 namespace ast {
@@ -22,5 +23,7 @@ private:
   std::vector<inheritance::tree::Node*> getInheritanceChain(inheritance::tree::Node* node);
 
   llvm::raw_ostream& OS;
+  std::stringstream headerStream;
+  std::stringstream bodyStream;
 };
 } // namespace ast::inheritance

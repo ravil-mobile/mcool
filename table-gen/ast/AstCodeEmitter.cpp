@@ -1,68 +1,70 @@
 #include "AstCodeEmitter.h"
 #include "InheritanceTree.h"
 #include "GeneratorAux.h"
-#include <sstream>
-#include <iostream>
 
 
 namespace ast {
 void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
-  OS << "class StringPtr {\n";
-  OS << "public:\n";
-  OS << "  explicit StringPtr(std::string& str) : str(str) {}\n";
-  OS << "  std::string& get() { return str; }\n";
-  OS << "  const std::string& get() const { return str; }\n";
-  OS << "private:\n";
-  OS << "  std::string str{};\n";
-  OS << "};\n\n";
+  bodyStream << "class StringPtr {\n";
+  bodyStream << "public:\n";
+  bodyStream << "  explicit StringPtr(std::string& str) : str(str) {}\n";
+  bodyStream << "  std::string& get() { return str; }\n";
+  bodyStream << "  const std::string& get() const { return str; }\n";
+  bodyStream << "private:\n";
+  bodyStream << "  std::string str{};\n";
+  bodyStream << "};\n\n";
 
   auto className = node->getName();
-  OS << "class " << className << " {\n";
-  OS << "public:\n";
+  bodyStream << "class " << className << " {\n";
+  bodyStream << "public:\n";
 
   auto inheritanceChain = getInheritanceChain(node);
   auto constructor = genConstructor(className, inheritanceChain);
-  OS << constructor;
+  bodyStream << constructor;
 
-  OS << "  virtual ~Node() = default;\n";
-  OS << "  virtual void accept(Visitor*) = 0;\n";
-  OS << "  virtual const std::string& getClassName() = 0;\n\n";
+  bodyStream << "  virtual ~Node() = default;\n";
+  bodyStream << "  virtual void accept(Visitor*) = 0;\n";
+  bodyStream << "  virtual const std::string& getClassName() = 0;\n\n";
 
-  OS << "  void setLocation(mcool::Loc& loc) { location = loc; }\n";
-  OS << "  mcool::Loc& getLocation() { return location; }\n\n";
+  bodyStream << "  void setLocation(mcool::Loc& loc) { location = loc; }\n";
+  bodyStream << "  mcool::Loc& getLocation() { return location; }\n\n";
 
-  OS << "  void setSemantType(mcool::semant::Type* type) { semantType = type; }\n";
-  OS << "  mcool::semant::Type* getSemantType() { return semantType; }\n";
+  bodyStream << "  void setSemantType(mcool::semant::Type* type) { semantType = type; }\n";
+  bodyStream << "  mcool::semant::Type* getSemantType() { return semantType; }\n";
 
-  ast::genGetters(OS, node->getAttributes());
-  ast::genSetters(OS, node->getAttributes());
+  ast::genGetters(bodyStream, node->getAttributes());
+  ast::genSetters(bodyStream, node->getAttributes());
 
   genAttributes(node);
-  OS << "  mcool::Loc location;\n";
-  OS << "  mcool::semant::Type* semantType{nullptr};\n";
+  bodyStream << "  mcool::Loc location;\n";
+  bodyStream << "  mcool::semant::Type* semantType{nullptr};\n";
 
-  OS << "};\n\n";
+  bodyStream << "};\n\n";
 
   for (auto& child : node->getChildren()) {
     child->accept(this);
   }
+
+  OS << headerStream.str() << '\n';
+  OS << bodyStream.str();
 }
 
 void AstCodeEmitter::visitInnerNode(inheritance::tree::InnerNode* node) {
   auto className = node->getName();
-  OS << "class " << className << " : public " << node->getParent()->getName() << " {\n";
-  OS << "public:\n";
+  headerStream << "class " << className << ";\n";
+  bodyStream << "class " << className << " : public " << node->getParent()->getName() << " {\n";
+  bodyStream << "public:\n";
 
   auto inheritanceChain = getInheritanceChain(node);
   auto constructor = genConstructor(className, inheritanceChain);
-  OS << constructor;
+  bodyStream << constructor;
 
-  ast::genGetters(OS, node->getAttributes());
-  ast::genSetters(OS, node->getAttributes());
+  ast::genGetters(bodyStream, node->getAttributes());
+  ast::genSetters(bodyStream, node->getAttributes());
 
   genAttributes(node);
 
-  OS << "};\n\n";
+  bodyStream << "};\n\n";
 
   for (auto& child : node->getChildren()) {
     child->accept(this);
@@ -71,33 +73,34 @@ void AstCodeEmitter::visitInnerNode(inheritance::tree::InnerNode* node) {
 
 void AstCodeEmitter::visitLeaf(inheritance::tree::LeafNode* node) {
   auto className = node->getName();
-  OS << "class " << className << " : public " << node->getParent()->getName() << " {\n";
-  OS << "public:\n";
+  headerStream << "class " << className << ";\n";
+  bodyStream << "class " << className << " : public " << node->getParent()->getName() << " {\n";
+  bodyStream << "public:\n";
 
   auto inheritanceChain = getInheritanceChain(node);
   auto constructor = genConstructor(className, inheritanceChain);
-  OS << constructor;
+  bodyStream << constructor;
 
-  OS << "  void accept(Visitor* visitor) override { visitor->visit" << node->getName() << "(this); }\n";
-  OS << "  const std::string& getClassName() override { return className; }\n";
+  bodyStream << "  void accept(Visitor* visitor) override { visitor->visit" << node->getName() << "(this); }\n";
+  bodyStream << "  const std::string& getClassName() override { return className; }\n";
 
-  ast::genGetters(OS, node->getAttributes());
-  ast::genSetters(OS, node->getAttributes());
+  ast::genGetters(bodyStream, node->getAttributes());
+  ast::genSetters(bodyStream, node->getAttributes());
 
   genAttributes(node);
 
-  OS << "};\n\n";
+  bodyStream << "};\n\n";
 }
 
 void AstCodeEmitter::genAttributes(inheritance::tree::Node* node) {
   auto attrs = node->getAttributes();
 
-  OS << "\nprotected: \n";
+  bodyStream << "\nprotected: \n";
 
   for (auto *attr: attrs) {
-    OS << "  " << attr->type->getName() << " " << attr->name << ";\n";
+    bodyStream << "  " << attr->type->getName() << " " << attr->name << ";\n";
   }
-  OS << "  " << "static const inline std::string className{\"" << node->getName() << "\"};\n";
+  bodyStream << "  " << "static const inline std::string className{\"" << node->getName() << "\"};\n";
 }
 
 std::vector<inheritance::tree::Node*>

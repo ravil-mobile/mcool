@@ -9,7 +9,7 @@
 #undef YY_DECL
 #define YY_DECL mcool::Parser::symbol_type mcool::Scanner::get_next_token()
 
-#include "parser.h"
+#include "Parser.h"
 #include <istream>
 
 namespace mcool {

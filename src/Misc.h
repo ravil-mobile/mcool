@@ -13,8 +13,9 @@ namespace mcool::misc {
 struct Config {
   std::list<std::string> inputFiles{};
   std::string outputFile{"./a.out"};
-  bool verbose{false};
   bool dotOutput{false};
+  bool printInheritance{false};
+  bool verbose{false};
 };
 
 Config readCmd(int argc, char* argv[]);

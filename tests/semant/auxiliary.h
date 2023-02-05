@@ -3,6 +3,7 @@
 #include "Scanner.h"
 #include "Parser.h"
 #include "ast.h"
+#include "TypeDriver.h"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -13,7 +14,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-namespace mcool::tests::parser {
+namespace mcool::tests::semant {
 class TestDriver {
   public:
   explicit TestDriver(std::istream& stream) : stream(stream) {}
@@ -26,6 +27,8 @@ class TestDriver {
 
     scanner.set(&stream, &inputFileName);
     bool parserStatus = parser.parse() == 0;
+
+    mcool::AstTree::addBuildinClasses(astTree.get());
 
     return std::make_tuple(parserStatus, astTree);
   }
@@ -40,7 +43,7 @@ namespace mcool::tests {
 class AttrExtractor {
   public:
   AttrExtractor(std::istream& stream, bool expectedAstStatus = true) {
-    mcool::tests::parser::TestDriver driver(stream);
+    mcool::tests::semant::TestDriver driver(stream);
     auto [status, ast] = driver.run();
 
     assert(status == true);

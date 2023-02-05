@@ -1,8 +1,8 @@
 %{
     #include <iostream>
     #include <cstdlib>
-    #include "scanner.h"
-    #include "parser.h"
+    #include "Scanner.h"
+    #include "Parser.h"
     #include "location.hh"
 
     // Original yyterminate() macro returns int. Since we're using Bison 3 variants

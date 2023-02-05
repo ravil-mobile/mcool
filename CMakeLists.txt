@@ -61,18 +61,18 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/generated)
 
 flex_target(scanner
             ${PROJECT_SOURCE_DIR}/descriptions/scanner.flex
-            ${PROJECT_BINARY_DIR}/generated/scanner.cpp)
+            ${PROJECT_BINARY_DIR}/generated/Scanner.cpp)
 
 bison_target(parser
              ${PROJECT_SOURCE_DIR}/descriptions/parser.bison
-             ${PROJECT_BINARY_DIR}/generated/parser.cpp
-             DEFINES_FILE ${PROJECT_BINARY_DIR}/generated/parser.h
+             ${PROJECT_BINARY_DIR}/generated/Parser.cpp
+             DEFINES_FILE ${PROJECT_BINARY_DIR}/generated/Parser.h
              )
 
 add_flex_bison_dependency(scanner parser)
 
 set(MAIN_FILE ${PROJECT_SOURCE_DIR}/src/main.cpp)
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 list(REMOVE_ITEM SRC_FILES ${MAIN_FILE})
 
 add_library(mcool-core
@@ -83,6 +83,7 @@ add_library(mcool-core
 
 target_include_directories(mcool-core PUBLIC
   ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/common
   ${PROJECT_BINARY_DIR}/generated)
 
 target_link_libraries(mcool-core PUBLIC

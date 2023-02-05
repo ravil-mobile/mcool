@@ -23,6 +23,12 @@ add_executable(parser-tests ${PARSER_TEST_SRC})
 target_include_directories(parser-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/parser)
 target_link_libraries(parser-tests PRIVATE tester)
 
+file(GLOB SEMANT_TEST_SRC ${CMAKE_CURRENT_SOURCE_DIR}/semant/*.cpp)
+add_executable(semant-tests ${SEMANT_TEST_SRC})
+target_include_directories(semant-tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/semant)
+target_link_libraries(semant-tests PRIVATE tester)
 
 add_test(NAME scanner COMMAND scanner-tests)
 add_test(NAME parser COMMAND parser-tests)
+add_test(NAME semant COMMAND semant-tests)
+

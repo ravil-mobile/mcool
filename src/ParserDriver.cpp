@@ -1,6 +1,6 @@
 #include "ParserDriver.h"
-#include "scanner.h"
-#include "parser.h"
+#include "Scanner.h"
+#include "Parser.h"
 #include <fstream>
 #include <iostream>
 

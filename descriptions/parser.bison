@@ -37,15 +37,15 @@
 
 %code top
 {
-  #include "scanner.h"
-  #include "parser.h"
+  #include "Scanner.h"
+  #include "Parser.h"
   #include "AstTree.h"
 
   static mcool::Parser::symbol_type yylex(mcool::Scanner& scanner) {
     return scanner.get_next_token();
   }
 
-  mcool::Loc setLoc(mcool::ast::Node* node, mcool::location &yyLoc) {
+  void setLoc(mcool::ast::Node* node, mcool::location &yyLoc) {
     auto begin = mcool::Position{yyLoc.begin.line, yyLoc.begin.column};
     auto end = mcool::Position{yyLoc.end.line, yyLoc.end.column};
     auto* filename = mcool::make<mcool::ast::StringPtr>(*(yyLoc.begin.filename));

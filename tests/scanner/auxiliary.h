@@ -1,7 +1,7 @@
 #pragma once
 
-#include "scanner.h"
-#include "parser.h"
+#include "Scanner.h"
+#include "Parser.h"
 #include <vector>
 #include <string>
 #include <iostream>
