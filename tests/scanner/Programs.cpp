@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 TEST(Programs, SimpleProgram) {
   std::stringstream stream;
   stream << "class Main {\n"
@@ -105,8 +104,7 @@ TEST(Programs, SimpleProgram) {
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_CURLY_RIGHTPAR,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   for (size_t index{0}; index < expectedTokensKinds.size(); ++index) {
     auto kind = tokensKinds[index];
@@ -217,8 +215,7 @@ TEST(Programs, Conditions) {
       mcool::Parser::symbol_kind_type::S_CURLY_RIGHTPAR,
       mcool::Parser::symbol_kind_type::S_CURLY_RIGHTPAR,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   for (size_t index{0}; index < expectedTokensKinds.size(); ++index) {
     auto kind = tokensKinds[index];

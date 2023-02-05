@@ -1,22 +1,17 @@
 #include "ParserDriver.h"
 #include "Misc.h"
 #include "CLI/Error.hpp"
-#include <string>
-#include <fstream>
 #include <iostream>
 
-
-int main (int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
   mcool::misc::Config config{};
 
   try {
     config = mcool::misc::readCmd(argc, argv);
-  }
-  catch (const CLI::ParseError &err) {
+  } catch (const CLI::ParseError& err) {
     std::cerr << err.what() << std::endl;
     return -1;
-  }
-  catch(std::runtime_error& err) {
+  } catch (std::runtime_error& err) {
     std::cerr << err.what() << std::endl;
     return -1;
   }
@@ -33,8 +28,7 @@ int main (int argc, char* argv[]) {
 
     mcool::misc::analyseUntypedAst(astTree, config);
 
-  }
-  else {
+  } else {
     std::cerr << "parsing failed. cannot continue" << std::endl;
   }
 }

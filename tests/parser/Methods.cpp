@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(MethodsDecl, SingleEmptyMethod) {
   std::stringstream stream;
   stream << "class A {\n main() : Object { true }; \n };";

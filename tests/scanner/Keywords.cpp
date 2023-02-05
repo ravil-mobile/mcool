@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 TEST(Keywords, Class) {
   std::stringstream stream;
   stream << " class ClAsS ";
@@ -10,15 +9,13 @@ TEST(Keywords, Class) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_CLASS,
       mcool::Parser::symbol_kind_type::S_CLASS,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, If) {
   std::stringstream stream;
@@ -27,15 +24,13 @@ TEST(Keywords, If) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_IF,
       mcool::Parser::symbol_kind_type::S_IF,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Then) {
   std::stringstream stream;
@@ -44,15 +39,13 @@ TEST(Keywords, Then) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_THEN,
       mcool::Parser::symbol_kind_type::S_THEN,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Else) {
   std::stringstream stream;
@@ -61,15 +54,13 @@ TEST(Keywords, Else) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_ELSE,
       mcool::Parser::symbol_kind_type::S_ELSE,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Fi) {
   std::stringstream stream;
@@ -78,15 +69,13 @@ TEST(Keywords, Fi) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_FI,
       mcool::Parser::symbol_kind_type::S_FI,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, In) {
   std::stringstream stream;
@@ -95,15 +84,13 @@ TEST(Keywords, In) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_IN,
       mcool::Parser::symbol_kind_type::S_IN,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Inherits) {
   std::stringstream stream;
@@ -112,15 +99,13 @@ TEST(Keywords, Inherits) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_INHERITS,
       mcool::Parser::symbol_kind_type::S_INHERITS,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Let) {
   std::stringstream stream;
@@ -129,15 +114,13 @@ TEST(Keywords, Let) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_LET,
       mcool::Parser::symbol_kind_type::S_LET,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Loop) {
   std::stringstream stream;
@@ -146,15 +129,13 @@ TEST(Keywords, Loop) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_LOOP,
       mcool::Parser::symbol_kind_type::S_LOOP,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Pool) {
   std::stringstream stream;
@@ -163,15 +144,13 @@ TEST(Keywords, Pool) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_POOL,
       mcool::Parser::symbol_kind_type::S_POOL,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, While) {
   std::stringstream stream;
@@ -180,15 +159,13 @@ TEST(Keywords, While) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_WHILE,
       mcool::Parser::symbol_kind_type::S_WHILE,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Case) {
   std::stringstream stream;
@@ -197,15 +174,13 @@ TEST(Keywords, Case) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_CASE,
       mcool::Parser::symbol_kind_type::S_CASE,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Esac) {
   std::stringstream stream;
@@ -214,15 +189,13 @@ TEST(Keywords, Esac) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_ESAC,
       mcool::Parser::symbol_kind_type::S_ESAC,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Of) {
   std::stringstream stream;
@@ -231,15 +204,13 @@ TEST(Keywords, Of) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_OF,
       mcool::Parser::symbol_kind_type::S_OF,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, New) {
   std::stringstream stream;
@@ -248,15 +219,13 @@ TEST(Keywords, New) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_NEW,
       mcool::Parser::symbol_kind_type::S_NEW,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Isvoid) {
   std::stringstream stream;
@@ -265,15 +234,13 @@ TEST(Keywords, Isvoid) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_ISVOID,
       mcool::Parser::symbol_kind_type::S_ISVOID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Not) {
   std::stringstream stream;
@@ -282,15 +249,13 @@ TEST(Keywords, Not) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_NOT,
       mcool::Parser::symbol_kind_type::S_NOT,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Darrow) {
   std::stringstream stream;
@@ -299,14 +264,11 @@ TEST(Keywords, Darrow) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_DARROW,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_DARROW, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Assign) {
   std::stringstream stream;
@@ -315,14 +277,11 @@ TEST(Keywords, Assign) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_ASSIGN,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_ASSIGN, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, Less) {
   std::stringstream stream;
@@ -331,14 +290,11 @@ TEST(Keywords, Less) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_LESS,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_LESS, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }
-
 
 TEST(Keywords, LessOrEqual) {
   std::stringstream stream;
@@ -347,10 +303,8 @@ TEST(Keywords, LessOrEqual) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_LEQ,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_LEQ, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expectedKinds));
 }

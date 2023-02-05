@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(LetExpression, SimpleWithoutInit) {
   std::stringstream stream;
   stream << "class A {\n"
@@ -61,7 +60,6 @@ TEST(LetExpression, SimpleWithInit) {
   ASSERT_TRUE(dynamic_cast<mcool::ast::PlusNode*>(letBodyExpr) != nullptr);
 }
 
-
 TEST(LetExpression, MultipleLocalVariables) {
   std::stringstream stream;
   stream << "class A {\n"
@@ -71,7 +69,7 @@ TEST(LetExpression, MultipleLocalVariables) {
          << "};\n";
 
   mcool::tests::AttrExtractor extractor(stream);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
   mcool::ast::Expression* methodBodyExpr = method->getBody();
@@ -81,7 +79,7 @@ TEST(LetExpression, MultipleLocalVariables) {
   ASSERT_STREQ(currLetExpr->getId()->getNameAsStr().c_str(), "x");
   ASSERT_STREQ(currLetExpr->getIdType()->getNameAsStr().c_str(), "Int");
   {
-    auto *initExpr = currLetExpr->getInitExpr();
+    auto* initExpr = currLetExpr->getInitExpr();
     auto* primaryExpr = dynamic_cast<mcool::ast::PrimaryExpr*>(initExpr);
     ASSERT_TRUE(primaryExpr != nullptr);
     ASSERT_TRUE(dynamic_cast<mcool::ast::Int*>(primaryExpr->getTerm()) != nullptr);
@@ -94,7 +92,7 @@ TEST(LetExpression, MultipleLocalVariables) {
   ASSERT_STREQ(currLetExpr->getId()->getNameAsStr().c_str(), "y");
   ASSERT_STREQ(currLetExpr->getIdType()->getNameAsStr().c_str(), "MyType");
   {
-    auto *initExpr = currLetExpr->getInitExpr();
+    auto* initExpr = currLetExpr->getInitExpr();
     ASSERT_TRUE(dynamic_cast<mcool::ast::NoExpr*>(initExpr) != nullptr);
 
     auto* letBodyExpr = currLetExpr->getBody();
@@ -106,9 +104,9 @@ TEST(LetExpression, MultipleLocalVariables) {
   ASSERT_STREQ(currLetExpr->getIdType()->getNameAsStr().c_str(), "String");
 
   {
-    auto *initExpr = currLetExpr->getInitExpr();
+    auto* initExpr = currLetExpr->getInitExpr();
     auto* primaryExpr = dynamic_cast<mcool::ast::PrimaryExpr*>(initExpr);
-    ASSERT_TRUE(primaryExpr!= nullptr);
+    ASSERT_TRUE(primaryExpr != nullptr);
     ASSERT_TRUE(dynamic_cast<mcool::ast::String*>(primaryExpr->getTerm()) != nullptr);
 
     auto* letBodyExpr = currLetExpr->getBody();

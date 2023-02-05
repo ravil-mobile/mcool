@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(Members, ClassWithSingleAttribute) {
   std::stringstream stream;
   stream << "class A {\n some : Int;\n };";

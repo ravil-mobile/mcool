@@ -6,7 +6,7 @@
 #include <Loc.h>
 
 namespace mcool {
-  class AstTree;
+class AstTree;
 }
 
 namespace mcool::misc {
@@ -20,6 +20,5 @@ struct Config {
 Config readCmd(int argc, char* argv[]);
 void analyseUntypedAst(mcool::AstTree& astTree, mcool::misc::Config& config);
 } // namespace mcool::misc
-
 
 std::ostream& operator<<(std::ostream& stream, const mcool::Loc& loc);

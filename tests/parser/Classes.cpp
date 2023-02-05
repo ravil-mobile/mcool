@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(Classes, EmptyClasses) {
   std::stringstream stream;
   stream << "class A {\n}; \n class B inherits A {\n};";

@@ -4,10 +4,9 @@
 #include "ast.h"
 #include <ostream>
 
-
 namespace mcool {
 class AstPinter : public ast::Visitor {
-public:
+  public:
   explicit AstPinter(std::ostream& stream) : stream(stream) {}
 
   void visitCoolClassList(ast::CoolClassList* classList) override {
@@ -35,10 +34,7 @@ public:
   void visitSingleMember(ast::SingleMember* member) override {
     auto& id = member->getId()->getNameAsStr();
     auto& type = member->getIdType()->getNameAsStr();
-    stream << std::string(indent, ' ')
-           << "member: "
-           << id << " : "
-           << type << "\n";
+    stream << std::string(indent, ' ') << "member: " << id << " : " << type << "\n";
     indent += 2;
     member->getInitExpr()->accept(this);
     indent -= 2;
@@ -54,7 +50,8 @@ public:
     stream << std::string(indent, ' ') << "parameters: " << std::endl;
     method->getParameters()->accept(this);
 
-    stream << std::string(indent, ' ') << "body: " << "\n";
+    stream << std::string(indent, ' ') << "body: "
+           << "\n";
     method->getBody()->accept(this);
     indent -= 2;
   };
@@ -109,7 +106,8 @@ public:
   }
 
   void visitNegationNode(ast::NegationNode* node) override {
-    stream << std::string(indent, ' ') << "negate: " << "\n";
+    stream << std::string(indent, ' ') << "negate: "
+           << "\n";
     indent += 2;
     auto* term = node->getTerm();
     term->accept(this);
@@ -122,7 +120,8 @@ public:
   }
 
   void visitIsVoidNode(ast::IsVoidNode* node) override {
-    stream << std::string(indent, ' ') << "is void: " << "\n";
+    stream << std::string(indent, ' ') << "is void: "
+           << "\n";
     indent += 2;
     auto* term = node->getTerm();
     term->accept(this);
@@ -130,7 +129,8 @@ public:
   }
 
   void visitNotExpr(ast::NotExpr* noExpr) override {
-    stream << std::string(indent, ' ') << "not: " << "\n";
+    stream << std::string(indent, ' ') << "not: "
+           << "\n";
     indent += 2;
     noExpr->getExpr()->accept(this);
     indent -= 2;
@@ -157,7 +157,8 @@ public:
 
     dispatch->getMethodId()->accept(this);
     dispatch->getArguments()->accept(this);
-    indent -= 2;  }
+    indent -= 2;
+  }
 
   void visitNewExpr(ast::NewExpr* newExpr) override {
     stream << std::string(indent, ' ') << "new:\n";
@@ -308,9 +309,7 @@ public:
     indent -= 2;
   }
 
-  void visitNoExpr(ast::NoExpr*) override {
-    stream << std::string(indent, ' ') << "no expr.\n";
-  }
+  void visitNoExpr(ast::NoExpr*) override { stream << std::string(indent, ' ') << "no expr.\n"; }
 
   void visitLetExpr(ast::LetExpr* letExpr) override {
     stream << std::string(indent, ' ') << "let:\n";
@@ -352,8 +351,8 @@ public:
     stream << std::string(indent, ' ') << "str: " << str->getValueAsStr() << "\n";
   }
 
-private:
+  private:
   std::ostream& stream;
   size_t indent{0};
 };
-}
+} // namespace mcool

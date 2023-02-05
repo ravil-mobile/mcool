@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 TEST(NumericalLiterals, PositiveIntLiterals) {
   std::stringstream stream;
   stream << " 2 ; +1245 ; 0000; 0001 ";
@@ -11,7 +10,7 @@ TEST(NumericalLiterals, PositiveIntLiterals) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_NUMBER,
@@ -19,17 +18,11 @@ TEST(NumericalLiterals, PositiveIntLiterals) {
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_NUMBER,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
-  std::vector<std::pair<size_t, int>> expectedValues {
-      {0, 2},
-      {2, 1245},
-      {4, 0},
-      {6, 1}
-  };
+  std::vector<std::pair<size_t, int>> expectedValues{{0, 2}, {2, 1245}, {4, 0}, {6, 1}};
 
   for (const auto& expectedPair : expectedValues) {
     auto index = expectedPair.first;
@@ -48,7 +41,7 @@ TEST(NumericalLiterals, NegativeIntLiterals) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_NUMBER,
@@ -56,17 +49,11 @@ TEST(NumericalLiterals, NegativeIntLiterals) {
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_NUMBER,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
-  std::vector<std::pair<size_t, int>> expectedValues {
-      {0, -2},
-      {2, -1245},
-      {4, 0},
-      {6, -1}
-  };
+  std::vector<std::pair<size_t, int>> expectedValues{{0, -2}, {2, -1245}, {4, 0}, {6, -1}};
 
   for (const auto& expectedPair : expectedValues) {
     auto index = expectedPair.first;
@@ -77,7 +64,6 @@ TEST(NumericalLiterals, NegativeIntLiterals) {
   }
 }
 
-
 TEST(NumericalLiterals, BooleanLiterals) {
   std::stringstream stream;
   stream << " false fALSe true tRuE ";
@@ -86,13 +72,12 @@ TEST(NumericalLiterals, BooleanLiterals) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_BOOLEAN,
       mcool::Parser::symbol_kind_type::S_BOOLEAN,
       mcool::Parser::symbol_kind_type::S_BOOLEAN,
       mcool::Parser::symbol_kind_type::S_BOOLEAN,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   std::vector<bool> expectedValues{false, false, true, true};
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));

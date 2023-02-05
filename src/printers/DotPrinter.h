@@ -8,16 +8,17 @@
 #include <sstream>
 #include <cassert>
 
-
 namespace mcool {
 class DotPrinter : public ast::Visitor {
-public:
+  public:
   DotPrinter(std::ostream& stream) : OS(stream) {}
 
   void visitCoolClassList(ast::CoolClassList* classList) override {
     auto& list = classList->getData();
 
-    OS << "digraph " << "Program" << " {\n";
+    OS << "digraph "
+       << "Program"
+       << " {\n";
     for (auto* coolClass : list) {
       coolClass->accept(this);
       ++classCounter;
@@ -95,7 +96,6 @@ public:
     edgeStream << "  " << methodNodeName << " -> " << bodyNode << "\n";
   }
 
-
   void visitFormalList(ast::FormalList* formalList) override {
     std::string formalListNode = buildNodeName();
     addNodeLabel(formalListNode, "formal-list");
@@ -123,9 +123,7 @@ public:
     edgeStream << "  " << formalNode << " -> " << typeNode << "\n";
   }
 
-  void visitBlockExpr(ast::BlockExpr* block) override {
-    block->getExprs()->accept(this);
-  }
+  void visitBlockExpr(ast::BlockExpr* block) override { block->getExprs()->accept(this); }
 
   void visitExpressions(ast::Expressions* exprs) override {
     std::string exprsName = buildNodeName();
@@ -164,9 +162,7 @@ public:
     edgeStream << "  " << negName << " -> " << termNode << '\n';
   }
 
-  void visitPrimaryExpr(ast::PrimaryExpr* node) override {
-    node->getTerm()->accept(this);
-  }
+  void visitPrimaryExpr(ast::PrimaryExpr* node) override { node->getTerm()->accept(this); }
 
   void visitIsVoidNode(ast::IsVoidNode* node) override {
     std::string isvoidName = buildNodeName();
@@ -205,7 +201,6 @@ public:
     auto argsName = pop(nodeStack);
     edgeStream << "  " << dispatchName << " -> " << argsName << '\n';
   }
-
 
   void visitStaticDispatch(ast::StaticDispatch* dispatch) override {
     std::string dispatchName = buildNodeName();
@@ -444,7 +439,7 @@ public:
     nodeStack.push(nodeName);
   }
 
-private:
+  private:
   std::string buildNodeName() {
     std::string prefix = "c" + std::to_string(classCounter);
     std::string nodeName = prefix + "node" + std::to_string(nodeCounter);
@@ -469,4 +464,4 @@ private:
   size_t classCounter{0};
   size_t nodeCounter{0};
 };
-}
+} // namespace mcool

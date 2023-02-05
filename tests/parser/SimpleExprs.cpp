@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(SimpleExpressions, SingleSimpleExpr) {
   std::stringstream stream;
   stream << "class A {\n main() : Object { true }; \n };";
@@ -18,7 +17,6 @@ TEST(SimpleExpressions, SingleSimpleExpr) {
   ASSERT_TRUE(boolExpr != nullptr);
   ASSERT_EQ(boolExpr->getValue(), true);
 }
-
 
 TEST(SimpleExpressions, Block) {
   std::stringstream stream;
@@ -46,14 +44,13 @@ TEST(SimpleExpressions, Block) {
 
   size_t counter{0};
   for (auto it = exprs.begin(); it != exprs.end(); ++it, ++counter) {
-    auto *primaryExpr = dynamic_cast<mcool::ast::PrimaryExpr *>(*it);
+    auto* primaryExpr = dynamic_cast<mcool::ast::PrimaryExpr*>(*it);
 
-    auto *boolExpr = dynamic_cast<mcool::ast::Bool *>(primaryExpr->getTerm());
+    auto* boolExpr = dynamic_cast<mcool::ast::Bool*>(primaryExpr->getTerm());
     ASSERT_TRUE(boolExpr != nullptr);
     ASSERT_EQ(boolExpr->getValue(), expectedValues[counter]);
   }
 }
-
 
 TEST(SimpleExpressions, Literals) {
   std::stringstream stream;
@@ -80,23 +77,20 @@ TEST(SimpleExpressions, Literals) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
-    TestAstTokens::Bool,
-    TestAstTokens::Bool,
-    TestAstTokens::Int,
-    TestAstTokens::String,
-    TestAstTokens::Object
-  };
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
+                                     TestAstTokens::Bool,
+                                     TestAstTokens::Bool,
+                                     TestAstTokens::Int,
+                                     TestAstTokens::String,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, SimpleArithmetics) {
   std::stringstream stream;
@@ -114,7 +108,7 @@ TEST(SimpleExpressions, SimpleArithmetics) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-  
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -126,50 +120,29 @@ TEST(SimpleExpressions, SimpleArithmetics) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{
+      TestAstTokens::CoolClass, TestAstTokens::Method, TestAstTokens::Object,
+      TestAstTokens::Type,      TestAstTokens::Block,
 
-    TestAstTokens::Plus,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Plus,      TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Minus,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Minus,     TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Mult,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Mult,      TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Div,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Div,       TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Less,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Less,      TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Leq,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Leq,       TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Eq,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Eq,        TestAstTokens::Object, TestAstTokens::Object,
 
-    TestAstTokens::Neg,
-    TestAstTokens::Object
-  };
-
+      TestAstTokens::Neg,       TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, ArithmeticsPrecedence) {
   std::stringstream stream;
@@ -186,7 +159,7 @@ TEST(SimpleExpressions, ArithmeticsPrecedence) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-    
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -198,60 +171,34 @@ TEST(SimpleExpressions, ArithmeticsPrecedence) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{
+      TestAstTokens::CoolClass, TestAstTokens::Method, TestAstTokens::Object,
+      TestAstTokens::Type,      TestAstTokens::Block,
 
-    TestAstTokens::Plus,
-    TestAstTokens::Plus,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Plus,      TestAstTokens::Plus,   TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Minus,
-    TestAstTokens::Object,
-    TestAstTokens::Mult,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Minus,     TestAstTokens::Object, TestAstTokens::Mult,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Minus,
-    TestAstTokens::Mult,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Minus,     TestAstTokens::Mult,   TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Div,
-    TestAstTokens::Plus,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Div,       TestAstTokens::Plus,   TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Less,
-    TestAstTokens::Object,
-    TestAstTokens::Plus,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Less,      TestAstTokens::Object, TestAstTokens::Plus,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Less,
-    TestAstTokens::Div,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Less,      TestAstTokens::Div,    TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Div,
-    TestAstTokens::Object,
-    TestAstTokens::Neg,
-    TestAstTokens::Object
-  };
-
+      TestAstTokens::Div,       TestAstTokens::Object, TestAstTokens::Neg,
+      TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, IsVoidPrecendece) {
   std::stringstream stream;
@@ -262,7 +209,7 @@ TEST(SimpleExpressions, IsVoidPrecendece) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-      
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -274,23 +221,20 @@ TEST(SimpleExpressions, IsVoidPrecendece) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::Mult,
-    TestAstTokens::Isvoid,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+                                     TestAstTokens::Mult,
+                                     TestAstTokens::Isvoid,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, NotPrecendece) {
   std::stringstream stream;
@@ -301,7 +245,7 @@ TEST(SimpleExpressions, NotPrecendece) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-      
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -313,24 +257,21 @@ TEST(SimpleExpressions, NotPrecendece) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::Not,
-    TestAstTokens::Mult,
-    TestAstTokens::Isvoid,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+                                     TestAstTokens::Not,
+                                     TestAstTokens::Mult,
+                                     TestAstTokens::Isvoid,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, SelfMethodCall) {
   std::stringstream stream;
@@ -341,7 +282,7 @@ TEST(SimpleExpressions, SelfMethodCall) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-      
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -353,28 +294,25 @@ TEST(SimpleExpressions, SelfMethodCall) {
   auto& testAstTokens = visitor.getTestAstTokens();
 
   using namespace mcool::tests::parser;
-    std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Mult,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Plus,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+                                     TestAstTokens::Dispatch,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Mult,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Plus,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, ObjectMethodCall) {
   std::stringstream stream;
@@ -385,7 +323,7 @@ TEST(SimpleExpressions, ObjectMethodCall) {
          << "    }\n"
          << "  };\n"
          << "};\n";
-      
+
   mcool::tests::parser::TestDriver driver(stream);
   auto [status, ast] = driver.run();
 
@@ -396,22 +334,19 @@ TEST(SimpleExpressions, ObjectMethodCall) {
   ast.accept(&visitor);
   auto& testAstTokens = visitor.getTestAstTokens();
   using namespace mcool::tests::parser;
-    std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+                                     TestAstTokens::Dispatch,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, StaticDispatch) {
   std::stringstream stream;
@@ -433,25 +368,22 @@ TEST(SimpleExpressions, StaticDispatch) {
   ast.accept(&visitor);
   auto& testAstTokens = visitor.getTestAstTokens();
   using namespace mcool::tests::parser;
-    std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::StaticDispatch,
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Object
-  };
+                                     TestAstTokens::StaticDispatch,
+                                     TestAstTokens::Dispatch,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, DispatchInArrithmetics) {
   std::stringstream stream;
@@ -475,36 +407,22 @@ TEST(SimpleExpressions, DispatchInArrithmetics) {
   ast.accept(&visitor);
   auto& testAstTokens = visitor.getTestAstTokens();
   using namespace mcool::tests::parser;
-    std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{
+      TestAstTokens::CoolClass, TestAstTokens::Method,   TestAstTokens::Object,
+      TestAstTokens::Type,      TestAstTokens::Block,
 
-    TestAstTokens::Mult,
-    TestAstTokens::Object,
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Mult,      TestAstTokens::Object,   TestAstTokens::Dispatch,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Less,
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Less,      TestAstTokens::Dispatch, TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Dispatch,
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+      TestAstTokens::Dispatch,  TestAstTokens::Dispatch, TestAstTokens::Object,
+      TestAstTokens::Object,    TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, NewOperator) {
   std::stringstream stream;
@@ -528,27 +446,24 @@ TEST(SimpleExpressions, NewOperator) {
   ast.accept(&visitor);
   auto& testAstTokens = visitor.getTestAstTokens();
   using namespace mcool::tests::parser;
-    std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{TestAstTokens::CoolClass,
+                                     TestAstTokens::Method,
+                                     TestAstTokens::Object,
+                                     TestAstTokens::Type,
+                                     TestAstTokens::Block,
 
-    TestAstTokens::New,
-    TestAstTokens::Type,
+                                     TestAstTokens::New,
+                                     TestAstTokens::Type,
 
-    TestAstTokens::New,
-    TestAstTokens::Type,
+                                     TestAstTokens::New,
+                                     TestAstTokens::Type,
 
-    TestAstTokens::New,
-    TestAstTokens::Type
-  };
+                                     TestAstTokens::New,
+                                     TestAstTokens::Type};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));
 }
-
 
 TEST(SimpleExpressions, Assignments) {
   std::stringstream stream;
@@ -573,40 +488,23 @@ TEST(SimpleExpressions, Assignments) {
   mcool::tests::parser::TestVisitor visitor;
   ast.accept(&visitor);
   auto& testAstTokens = visitor.getTestAstTokens();
-  
+
   using namespace mcool::tests::parser;
-  std::vector<int> expectedAstTokens {
-    TestAstTokens::CoolClass,
-    TestAstTokens::Method,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Block,
+  std::vector<int> expectedAstTokens{
+      TestAstTokens::CoolClass, TestAstTokens::Method, TestAstTokens::Object,
+      TestAstTokens::Type,      TestAstTokens::Block,
 
-    TestAstTokens::Assign,
-    TestAstTokens::Object,
-    TestAstTokens::Int,
+      TestAstTokens::Assign,    TestAstTokens::Object, TestAstTokens::Int,
 
-    TestAstTokens::Assign,
-    TestAstTokens::Object,
-    TestAstTokens::Dispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
+      TestAstTokens::Assign,    TestAstTokens::Object, TestAstTokens::Dispatch,
+      TestAstTokens::Object,    TestAstTokens::Object,
 
-    TestAstTokens::Assign,
-    TestAstTokens::Object,
-    TestAstTokens::StaticDispatch,
-    TestAstTokens::Object,
-    TestAstTokens::Type,
-    TestAstTokens::Object,
+      TestAstTokens::Assign,    TestAstTokens::Object, TestAstTokens::StaticDispatch,
+      TestAstTokens::Object,    TestAstTokens::Type,   TestAstTokens::Object,
 
-    TestAstTokens::Assign,
-    TestAstTokens::Object,
-    TestAstTokens::Minus,
-    TestAstTokens::Div,
-    TestAstTokens::Object,
-    TestAstTokens::Object,
-    TestAstTokens::Object
-  };
+      TestAstTokens::Assign,    TestAstTokens::Object, TestAstTokens::Minus,
+      TestAstTokens::Div,       TestAstTokens::Object, TestAstTokens::Object,
+      TestAstTokens::Object};
 
   ASSERT_EQ(testAstTokens.size(), expectedAstTokens.size());
   ASSERT_THAT(testAstTokens, ::testing::ElementsAreArray(expectedAstTokens));

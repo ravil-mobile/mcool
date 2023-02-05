@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 TEST(Types, ObjectType) {
   std::stringstream stream;
   stream << " Object ";
@@ -11,18 +10,15 @@ TEST(Types, ObjectType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "Object");
 }
-
 
 TEST(Types, IntType) {
   std::stringstream stream;
@@ -32,18 +28,15 @@ TEST(Types, IntType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "Int");
 }
-
 
 TEST(Types, BoolType) {
   std::stringstream stream;
@@ -53,18 +46,15 @@ TEST(Types, BoolType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "Bool");
 }
-
 
 TEST(Types, StringType) {
   std::stringstream stream;
@@ -74,18 +64,15 @@ TEST(Types, StringType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "String");
 }
-
 
 TEST(Types, SelfType) {
   std::stringstream stream;
@@ -95,18 +82,15 @@ TEST(Types, SelfType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "SELF_TYPE");
 }
-
 
 TEST(Types, DerivedType) {
   std::stringstream stream;
@@ -116,14 +100,12 @@ TEST(Types, DerivedType) {
   auto tokens = driver.getTokens();
   auto kinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(kinds, ::testing::ElementsAreArray(expectedKinds));
 
   auto token = tokens.at(0);
-  auto value =  token.value.as<std::string>();
+  auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "DerivedType");
 }

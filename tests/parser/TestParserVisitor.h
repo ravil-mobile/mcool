@@ -5,10 +5,9 @@
 #include "visitor.h"
 #include <vector>
 
-
 namespace mcool::tests::parser {
 class TestVisitor : public ast::Visitor {
-public:
+  public:
   void visitCoolClassList(ast::CoolClassList* classList) override {
     auto& list = classList->getData();
     for (auto* coolClass : list) {
@@ -19,7 +18,7 @@ public:
   void visitCoolClass(ast::CoolClass* coolClass) override {
     testTokens.push_back(TestAstTokens::CoolClass);
     coolClass->getAttributes()->accept(this);
-}
+  }
 
   void visitAttributeList(ast::AttributeList* attributeList) override {
     auto& attributes = attributeList->getData();
@@ -42,7 +41,6 @@ public:
     method->getReturnType()->accept(this);
     method->getBody()->accept(this);
   }
-
 
   void visitFormalList(ast::FormalList* formalList) override {
     auto& formals = formalList->getFormals();
@@ -82,9 +80,7 @@ public:
     node->getTerm()->accept(this);
   }
 
-  void visitPrimaryExpr(ast::PrimaryExpr* node) override {
-    node->getTerm()->accept(this);
-  }
+  void visitPrimaryExpr(ast::PrimaryExpr* node) override { node->getTerm()->accept(this); }
 
   void visitIsVoidNode(ast::IsVoidNode* node) override {
     testTokens.push_back(TestAstTokens::Isvoid);
@@ -102,7 +98,6 @@ public:
     dispatch->getMethodId()->accept(this);
     dispatch->getArguments()->accept(this);
   }
-
 
   void visitStaticDispatch(ast::StaticDispatch* dispatch) override {
     testTokens.push_back(TestAstTokens::StaticDispatch);
@@ -202,9 +197,7 @@ public:
     condExpr->getElseBody()->accept(this);
   }
 
-  void visitNoExpr(ast::NoExpr*) override {
-    testTokens.push_back(TestAstTokens::NoExpr);
-  }
+  void visitNoExpr(ast::NoExpr*) override { testTokens.push_back(TestAstTokens::NoExpr); }
 
   void visitLetExpr(ast::LetExpr* letExpr) override {
     testTokens.push_back(TestAstTokens::Let);
@@ -214,29 +207,19 @@ public:
     letExpr->getBody()->accept(this);
   }
 
-  void visitTypeId(ast::TypeId* type) override {
-    testTokens.push_back(TestAstTokens::Type);
-  }
+  void visitTypeId(ast::TypeId* type) override { testTokens.push_back(TestAstTokens::Type); }
 
-  void visitObjectId(ast::ObjectId* id) override {
-    testTokens.push_back(TestAstTokens::Object);
-  }
+  void visitObjectId(ast::ObjectId* id) override { testTokens.push_back(TestAstTokens::Object); }
 
-  void visitString(ast::String*) override {
-    testTokens.push_back(TestAstTokens::String);
-  }
+  void visitString(ast::String*) override { testTokens.push_back(TestAstTokens::String); }
 
-  void visitBool(ast::Bool* node) override {
-    testTokens.push_back(TestAstTokens::Bool);
-  }
+  void visitBool(ast::Bool* node) override { testTokens.push_back(TestAstTokens::Bool); }
 
-  void visitInt(ast::Int* node) override {
-    testTokens.push_back(TestAstTokens::Int);
-  }
+  void visitInt(ast::Int* node) override { testTokens.push_back(TestAstTokens::Int); }
 
   std::vector<int>& getTestAstTokens() { return testTokens; }
 
-private:
+  private:
   std::vector<int> testTokens{};
 };
 } // namespace mcool::tests::parser

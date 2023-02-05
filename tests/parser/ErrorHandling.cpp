@@ -2,7 +2,6 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(ErrorHandling, MemberSyntaxError) {
   std::stringstream stream;
   stream << "class A {\n"
@@ -20,7 +19,6 @@ TEST(ErrorHandling, MemberSyntaxError) {
   auto& attrs = coolClass->getAttributes()->getData();
   ASSERT_TRUE(attrs.empty());
 }
-
 
 TEST(ErrorHandling, ReturnMethodTypeSyntaxError1) {
   std::stringstream stream;
@@ -72,7 +70,7 @@ TEST(ErrorHandling, ParameterListMethodSyntaxError) {
 
   const bool expectedAstStatus{false};
   mcool::tests::AttrExtractor extractor(stream, expectedAstStatus);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
   auto& formals = method->getParameters()->getFormals();
@@ -109,7 +107,7 @@ TEST(ErrorHandling, MethodBodySyntaxError1) {
 
   const bool expectedAstStatus{false};
   mcool::tests::AttrExtractor extractor(stream, expectedAstStatus);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
   auto* body = method->getBody();
@@ -130,7 +128,7 @@ TEST(ErrorHandling, MethodBodySyntaxError2) {
 
   const bool expectedAstStatus{false};
   mcool::tests::AttrExtractor extractor(stream, expectedAstStatus);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
   auto* blockExpr = dynamic_cast<mcool::ast::BlockExpr*>(method->getBody());

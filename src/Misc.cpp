@@ -11,7 +11,6 @@
 #include <filesystem>
 #include <cassert>
 
-
 namespace mcool::misc {
 Config readCmd(int argc, char* argv[]) {
   Config config{};
@@ -25,8 +24,7 @@ Config readCmd(int argc, char* argv[]) {
 
   try {
     cmd.parse(argc, argv);
-  }
-  catch (const CLI::ParseError &err) {
+  } catch (const CLI::ParseError& err) {
     cmd.exit(err);
     throw std::runtime_error("");
   }
@@ -64,7 +62,6 @@ Config readCmd(int argc, char* argv[]) {
   return config;
 }
 
-
 void analyseUntypedAst(mcool::AstTree& astTree, mcool::misc::Config& config) {
   if (config.verbose) {
     mcool::AstPinter astPinter(std::cout);
@@ -90,12 +87,11 @@ void analyseUntypedAst(mcool::AstTree& astTree, mcool::misc::Config& config) {
 }
 } // namespace mcool::misc
 
-
 std::ostream& operator<<(std::ostream& stream, const mcool::Loc& loc) {
   if (loc.filename) {
     stream << loc.filename->get() << " ";
   }
-  stream << loc.begin.line << ':' << loc.begin.column << '-'
-         << loc.end.line << ':' << loc.end.column << '\n';
+  stream << loc.begin.line << ':' << loc.begin.column << '-' << loc.end.line << ':'
+         << loc.end.column << '\n';
   return stream;
 }

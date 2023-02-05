@@ -1,11 +1,10 @@
 #pragma once
 
-#if ! defined(yyFlexLexerOnce)
+#if !defined(yyFlexLexerOnce)
 #undef yyFlexLexer
 #define yyFlexLexer mcool_FlexLexer
 #include <FlexLexer.h>
 #endif
-
 
 #undef YY_DECL
 #define YY_DECL mcool::Parser::symbol_type mcool::Scanner::get_next_token()
@@ -15,10 +14,10 @@
 
 namespace mcool {
 class Scanner : public yyFlexLexer {
-public:
+  public:
   explicit Scanner(bool verbose = true) : verbose(verbose) {}
-	~Scanner() override = default;
-	virtual mcool::Parser::symbol_type get_next_token();
+  ~Scanner() override = default;
+  virtual mcool::Parser::symbol_type get_next_token();
 
   void set(std::istream* stream, std::string* intputFilename) {
     filename = intputFilename;
@@ -33,17 +32,15 @@ public:
     return mcool::Parser::make_ERROR(currLocation);
   }
 
-std::string getFileName() {
-  if (filename) {
-    return *filename;
+  std::string getFileName() {
+    if (filename) {
+      return *filename;
+    } else {
+      return std::string("no filename given");
+    }
   }
-  else {
-    return std::string("no filename given");
-  }
-}
 
-
-private:
+  private:
   bool verbose{true};
 
   int commentCounter{};
@@ -53,4 +50,4 @@ private:
   mcool::location currLocation{};
   // https://panthema.net/2007/flex-bison-cpp-example/flex-bison-cpp-example-0.1/doxygen-html/classExampleFlexLexer.html
 };
-}
+} // namespace mcool

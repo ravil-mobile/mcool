@@ -2,10 +2,9 @@
 #include "TestParserVisitor.h"
 #include <iostream>
 
-
 TEST(ConditionalExpr, SimpleIfExpr) {
   std::stringstream stream;
-  stream <<  "class A {\n"
+  stream << "class A {\n"
          << "  main() : Object {\n"
          << "    {\n"
          << "      if not i <= 0 then { foo(); i <- i - 1; } fi;"
@@ -15,17 +14,17 @@ TEST(ConditionalExpr, SimpleIfExpr) {
          << "};\n";
 
   mcool::tests::AttrExtractor extractor(stream);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
-  mcool::ast::Expression *bodyExpr = method->getBody();
+  mcool::ast::Expression* bodyExpr = method->getBody();
   ASSERT_TRUE(dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr) != nullptr);
 
   auto& exprs = dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr)->getExprs()->getData();
   auto exprIt = exprs.begin();
 
   {
-    auto *ifExpr = dynamic_cast<mcool::ast::IfThenExpr*>(*exprIt);
+    auto* ifExpr = dynamic_cast<mcool::ast::IfThenExpr*>(*exprIt);
     ASSERT_TRUE(ifExpr != nullptr);
 
     auto* notExpr = dynamic_cast<mcool::ast::NotExpr*>(ifExpr->getCondition());
@@ -37,7 +36,7 @@ TEST(ConditionalExpr, SimpleIfExpr) {
 
   std::advance(exprIt, 1);
   {
-    auto *ifExpr = dynamic_cast<mcool::ast::IfThenElseExpr*>(*exprIt);
+    auto* ifExpr = dynamic_cast<mcool::ast::IfThenElseExpr*>(*exprIt);
     ASSERT_TRUE(ifExpr != nullptr);
 
     auto* lessExpr = dynamic_cast<mcool::ast::LessNode*>(ifExpr->getCondition());
@@ -63,17 +62,17 @@ TEST(ConditionalExpr, NestedIfExpr) {
          << "};\n";
 
   mcool::tests::AttrExtractor extractor(stream);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
-  mcool::ast::Expression *bodyExpr = method->getBody();
+  mcool::ast::Expression* bodyExpr = method->getBody();
   ASSERT_TRUE(dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr) != nullptr);
 
   auto& exprs = dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr)->getExprs()->getData();
   auto exprIt = exprs.begin();
 
   {
-    auto *ifExpr = dynamic_cast<mcool::ast::IfThenExpr*>(*exprIt);
+    auto* ifExpr = dynamic_cast<mcool::ast::IfThenExpr*>(*exprIt);
     ASSERT_TRUE(ifExpr != nullptr);
 
     auto* lessEqExpr = dynamic_cast<mcool::ast::LessEqualNode*>(ifExpr->getCondition());
@@ -98,7 +97,7 @@ TEST(ConditionalExpr, NestedIfExpr) {
 
   std::advance(exprIt, 1);
   {
-    auto *ifExprThen = dynamic_cast<mcool::ast::IfThenElseExpr*>(*exprIt);
+    auto* ifExprThen = dynamic_cast<mcool::ast::IfThenElseExpr*>(*exprIt);
     ASSERT_TRUE(ifExprThen != nullptr);
 
     auto* lessEqExpr = dynamic_cast<mcool::ast::LessNode*>(ifExprThen->getCondition());
@@ -134,10 +133,10 @@ TEST(ConditionalExpr, WhileLoop) {
          << "};\n";
 
   mcool::tests::AttrExtractor extractor(stream);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
-  mcool::ast::Expression *bodyExpr = method->getBody();
+  mcool::ast::Expression* bodyExpr = method->getBody();
   auto* blockExpr = dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr);
   ASSERT_TRUE(blockExpr != nullptr);
 
@@ -168,10 +167,10 @@ TEST(ConditionalExpr, CaseExpr) {
          << "};\n";
 
   mcool::tests::AttrExtractor extractor(stream);
-  mcool::ast::SingleMethod *method{nullptr};
+  mcool::ast::SingleMethod* method{nullptr};
   extractor.getAttr(method, 0, 0);
 
-  mcool::ast::Expression *bodyExpr = method->getBody();
+  mcool::ast::Expression* bodyExpr = method->getBody();
   auto* blockExpr = dynamic_cast<mcool::ast::BlockExpr*>(bodyExpr);
   ASSERT_TRUE(blockExpr != nullptr);
 

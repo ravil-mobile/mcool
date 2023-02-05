@@ -2,7 +2,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 TEST(Comments, LeadingSingleLineComment) {
   std::stringstream stream;
   stream << " -- it is a comment \n Int i <- 3; ";
@@ -10,18 +9,16 @@ TEST(Comments, LeadingSingleLineComment) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
       mcool::Parser::symbol_kind_type::S_TYPEID,
       mcool::Parser::symbol_kind_type::S_OBJECTID,
       mcool::Parser::symbol_kind_type::S_ASSIGN,
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, TrailingSingleLineComment) {
   std::stringstream stream;
@@ -30,18 +27,16 @@ TEST(Comments, TrailingSingleLineComment) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
       mcool::Parser::symbol_kind_type::S_TYPEID,
       mcool::Parser::symbol_kind_type::S_OBJECTID,
       mcool::Parser::symbol_kind_type::S_ASSIGN,
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, SingleLineCommentInBetween) {
   std::stringstream stream;
@@ -50,19 +45,17 @@ TEST(Comments, SingleLineCommentInBetween) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
       mcool::Parser::symbol_kind_type::S_TYPEID,
       mcool::Parser::symbol_kind_type::S_OBJECTID,
       mcool::Parser::symbol_kind_type::S_ASSIGN,
       mcool::Parser::symbol_kind_type::S_NUMBER,
       mcool::Parser::symbol_kind_type::S_SEMICOLON,
       mcool::Parser::symbol_kind_type::S_BOOLEAN,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, CommentInBetweenLine) {
   std::stringstream stream;
@@ -71,16 +64,14 @@ TEST(Comments, CommentInBetweenLine) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-    mcool::Parser::symbol_kind_type::S_BOOLEAN,
-    mcool::Parser::symbol_kind_type::S_BOOLEAN,
-    mcool::Parser::symbol_kind_type::S_NUMBER,
-    mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_BOOLEAN,
+      mcool::Parser::symbol_kind_type::S_BOOLEAN,
+      mcool::Parser::symbol_kind_type::S_NUMBER,
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, MissingBeginingOfComment) {
   std::stringstream stream;
@@ -89,14 +80,11 @@ TEST(Comments, MissingBeginingOfComment) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-      mcool::Parser::symbol_kind_type::S_ERROR,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_ERROR, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, ForgottenClosingComment) {
   std::stringstream stream;
@@ -105,14 +93,11 @@ TEST(Comments, ForgottenClosingComment) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-      mcool::Parser::symbol_kind_type::S_ERROR,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_ERROR, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, NestedComments) {
   std::stringstream stream;
@@ -121,14 +106,11 @@ TEST(Comments, NestedComments) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-      mcool::Parser::symbol_kind_type::S_TYPEID,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_TYPEID, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, CommentWithoutWhiteSpaces) {
   std::stringstream stream;
@@ -137,14 +119,11 @@ TEST(Comments, CommentWithoutWhiteSpaces) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-      mcool::Parser::symbol_kind_type::S_CLASS,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_CLASS, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }
-
 
 TEST(Comments, CommentWithStartsInBetween) {
   std::stringstream stream;
@@ -153,10 +132,8 @@ TEST(Comments, CommentWithStartsInBetween) {
   mcool::tests::scanner::TestDriver driver(&stream);
   auto tokensKinds = driver.getTokensKinds();
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expected {
-      mcool::Parser::symbol_kind_type::S_CLASS,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expected{
+      mcool::Parser::symbol_kind_type::S_CLASS, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   ASSERT_THAT(tokensKinds, ::testing::ElementsAreArray(expected));
 }

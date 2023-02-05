@@ -1,7 +1,5 @@
 #include "auxiliary.h"
 #include "gtest/gtest.h"
-#include "gmock/gmock-matchers.h"
-
 
 TEST(StringLiterals, SimpleString) {
   std::stringstream stream;
@@ -11,12 +9,11 @@ TEST(StringLiterals, SimpleString) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
       mcool::Parser::symbol_kind_type::S_STRING,
       mcool::Parser::symbol_kind_type::S_STRING,
       mcool::Parser::symbol_kind_type::S_STRING,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+      mcool::Parser::symbol_kind_type::S_YYEOF};
 
   std::vector<std::string> expectedStrings{" String", " String ", "String "};
   for (size_t index{0}; index < expectedStrings.size(); ++index) {
@@ -26,7 +23,6 @@ TEST(StringLiterals, SimpleString) {
   }
 }
 
-
 TEST(StringLiterals, EofInStringLiteral) {
   std::stringstream stream;
   stream << " \" not closed string   ";
@@ -35,12 +31,9 @@ TEST(StringLiterals, EofInStringLiteral) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_ERROR,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_ERROR, mcool::Parser::symbol_kind_type::S_YYEOF};
 }
-
 
 TEST(StringLiterals, StringWithNullCharacter) {
   std::stringstream stream;
@@ -50,12 +43,9 @@ TEST(StringLiterals, StringWithNullCharacter) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_ERROR,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_ERROR, mcool::Parser::symbol_kind_type::S_YYEOF};
 }
-
 
 TEST(StringLiterals, MultiLineString) {
   std::stringstream stream;
@@ -65,16 +55,13 @@ TEST(StringLiterals, MultiLineString) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_STRING,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_STRING, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   auto token = tokens[0];
   auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "This  is OK");
 }
-
 
 TEST(StringLiterals, ComplexString1) {
   std::stringstream stream;
@@ -84,10 +71,8 @@ TEST(StringLiterals, ComplexString1) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_STRING,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_STRING, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   auto token = tokens[0];
   auto value = token.value.as<std::string>();
@@ -102,16 +87,13 @@ TEST(StringLiterals, ComplexString2) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_STRING,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_STRING, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   auto token = tokens[0];
   auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), " c \n s ");
 }
-
 
 TEST(StringLiterals, SmallString) {
   std::stringstream stream;
@@ -121,22 +103,18 @@ TEST(StringLiterals, SmallString) {
   auto tokens = driver.getTokens();
   auto tokensKinds = driver.getTokensKinds(tokens);
 
-  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds {
-      mcool::Parser::symbol_kind_type::S_STRING,
-      mcool::Parser::symbol_kind_type::S_YYEOF
-  };
+  mcool::tests::scanner::TestDriver::TokenKindStream expectedKinds{
+      mcool::Parser::symbol_kind_type::S_STRING, mcool::Parser::symbol_kind_type::S_YYEOF};
 
   auto token = tokens[0];
   auto value = token.value.as<std::string>();
   ASSERT_STREQ(value.c_str(), "x");
 }
 
-
 TEST(StringLiterals, StringWithSpcialChars) {
   auto get = [](std::istream& stream) {
     mcool::tests::scanner::TestDriver driver(&stream);
     return driver.getTokens();
-
   };
 
   {

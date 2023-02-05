@@ -4,17 +4,16 @@
 #include "AstTree.h"
 #include <optional>
 
-
 namespace mcool {
 class ParserDriver {
-public:
+  public:
   explicit ParserDriver(misc::Config& config) : config(config) {}
   void parse();
   std::optional<mcool::AstTree> getAst();
 
-private:
+  private:
   misc::Config& config;
   mcool::AstTree astTree{};
   bool isParserOk{false};
 };
-}
+} // namespace mcool

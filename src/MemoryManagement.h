@@ -8,31 +8,25 @@
 #include <vector>
 #include <type_traits>
 
-
 namespace mcool {
 class MemoryManagement {
-public:
+  public:
   ~MemoryManagement();
   static MemoryManagement& getInstance();
 
-  void obtain(void* ptr) {
-    memory.push_back(ptr);
-  }
+  void obtain(void* ptr) { memory.push_back(ptr); }
 
-  template<typename Type>
-  std::enable_if_t<std::is_same_v<Type, ast::String>   ||
-                   std::is_same_v<Type, ast::TypeId>   ||
-                   std::is_same_v<Type, ast::ObjectId> ||
-                   std::is_same_v<Type, ast::StringPtr>, ast::StringPtr*>
-  getStringPtr(std::string& str) {
+  template <typename Type>
+  std::enable_if_t<std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId> ||
+                       std::is_same_v<Type, ast::ObjectId> || std::is_same_v<Type, ast::StringPtr>,
+                   ast::StringPtr*>
+      getStringPtr(std::string& str) {
     std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>>* table;
     if constexpr (std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId>) {
       table = &staticStringTable;
-    }
-    else if constexpr (std::is_same_v<Type, ast::StringPtr>) {
+    } else if constexpr (std::is_same_v<Type, ast::StringPtr>) {
       table = &rawStringTable;
-    }
-    else {
+    } else {
       table = &objectStringTable;
     }
     if (table->find(str) == table->end()) {
@@ -44,7 +38,7 @@ public:
   ast::Int* getIntNode(const int& integer);
   ast::Bool* getBoolNode(const bool& boolean);
 
-private:
+  private:
   MemoryManagement() = default;
 
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> staticStringTable{};
@@ -55,33 +49,28 @@ private:
   std::vector<void*> memory{};
 };
 
-template<typename Type, typename ...Args>
+template <typename Type, typename... Args>
 Type* make(Args... args) {
   auto& mm = MemoryManagement::getInstance();
-  Type *ptr{nullptr};
-  if constexpr(std::is_same_v<Type, ast::String>
-               || std::is_same_v<Type, ast::TypeId>
-               || std::is_same_v<Type, ast::ObjectId>) {
+  Type* ptr{nullptr};
+  if constexpr (std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId> ||
+                std::is_same_v<Type, ast::ObjectId>) {
     using FirstParamType = std::tuple_element_t<0, std::tuple<Args...>>;
     static_assert(sizeof...(args) == 1 && std::is_same_v<FirstParamType, std::string>,
                   "expected std::string as parameter");
     auto param = std::get<0>(std::make_tuple(args...));
     auto stringPtr = mm.getStringPtr<Type>(param);
     ptr = new Type(stringPtr);
-  }
-  else if constexpr(std::is_same_v<Type, ast::Int>) {
+  } else if constexpr (std::is_same_v<Type, ast::Int>) {
     ptr = mm.getIntNode(args...);
-  }
-  else if constexpr(std::is_same_v<Type, ast::Bool>) {
+  } else if constexpr (std::is_same_v<Type, ast::Bool>) {
     ptr = mm.getBoolNode(args...);
-  }
-  else if constexpr(sizeof...(args)) {
+  } else if constexpr (sizeof...(args)) {
     ptr = new Type(args...);
-    mm.obtain(static_cast<void *>(ptr));
-  }
-  else {
+    mm.obtain(static_cast<void*>(ptr));
+  } else {
     ptr = new Type();
-    mm.obtain(static_cast<void *>(ptr));
+    mm.obtain(static_cast<void*>(ptr));
   }
   return ptr;
 }

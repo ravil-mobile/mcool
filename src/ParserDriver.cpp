@@ -4,7 +4,6 @@
 #include <fstream>
 #include <iostream>
 
-
 void mcool::ParserDriver::parse() {
   isParserOk = true;
   astTree = mcool::AstTree{};
@@ -26,13 +25,11 @@ void mcool::ParserDriver::parse() {
   }
 }
 
-
 std::optional<mcool::AstTree> mcool::ParserDriver::getAst() {
   if (isParserOk) {
     isParserOk = false;
     return std::optional<mcool::AstTree>(astTree);
-  }
-  else {
+  } else {
     return std::optional<mcool::AstTree>{};
   }
 }

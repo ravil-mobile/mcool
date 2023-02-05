@@ -13,10 +13,9 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
-
 namespace mcool::tests::parser {
 class TestDriver {
-public:
+  public:
   explicit TestDriver(std::istream& stream) : stream(stream) {}
 
   auto run() {
@@ -31,7 +30,7 @@ public:
     return std::make_tuple(parserStatus, astTree);
   }
 
-private:
+  private:
   std::istream& stream;
   std::string inputFileName{"test-stream"};
 };
@@ -39,10 +38,10 @@ private:
 
 namespace mcool::tests {
 class AttrExtractor {
-public:
+  public:
   AttrExtractor(std::istream& stream, bool expectedAstStatus = true) {
     mcool::tests::parser::TestDriver driver(stream);
-    auto[status, ast] = driver.run();
+    auto [status, ast] = driver.run();
 
     assert(status == true);
     assert(ast.isAstOk() == expectedAstStatus);
@@ -51,30 +50,31 @@ public:
     assert(classes != nullptr);
   }
 
-  template<typename T>
-  void getAttr(T *&outputAttr, size_t classId, size_t attrId) {
+  template <typename T>
+  void getAttr(T*& outputAttr, size_t classId, size_t attrId) {
     constexpr auto requestedMethod = std::is_same_v<mcool::ast::SingleMethod, T>;
     constexpr auto requestedMember = std::is_same_v<mcool::ast::SingleMember, T>;
-    static_assert(requestedMethod || requestedMember, "requested not method nor member of a class ");
+    static_assert(requestedMethod || requestedMember,
+                  "requested not method nor member of a class ");
 
-    auto &coolClasses = classes->getData();
+    auto& coolClasses = classes->getData();
     ASSERT_TRUE(classId < coolClasses.size());
 
     auto classIt = coolClasses.begin();
     std::advance(classIt, classId);
 
-    auto &attrs = (*classIt)->getAttributes()->getData();
+    auto& attrs = (*classIt)->getAttributes()->getData();
     ASSERT_TRUE(attrId < attrs.size());
 
     auto attrIt = attrs.begin();
     std::advance(attrIt, attrId);
-    auto *attrPtr = (*attrIt);
+    auto* attrPtr = (*attrIt);
 
-    outputAttr = dynamic_cast<T *>(attrPtr);
+    outputAttr = dynamic_cast<T*>(attrPtr);
     ASSERT_TRUE(outputAttr != nullptr);
   }
 
-private:
+  private:
   mcool::ast::CoolClassList* classes{nullptr};
 };
 } // namespace mcool::tests

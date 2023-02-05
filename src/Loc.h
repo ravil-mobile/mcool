@@ -11,8 +11,7 @@ namespace mcool {
 struct Position {
   explicit Position() : line(0), column(0) {}
   explicit Position(int line, int column)
-    : line(static_cast<size_t>(line)),
-      column(static_cast<size_t>(column)) {}
+      : line(static_cast<size_t>(line)), column(static_cast<size_t>(column)) {}
   Position& operator=(const Position& other) = default;
 
   size_t line;
@@ -22,7 +21,7 @@ struct Position {
 struct Loc {
   explicit Loc() : begin(Position()), end(Position()), filename(nullptr) {}
   explicit Loc(Position begin, Position end, ast::StringPtr* filename)
-    : begin(begin), end(end), filename(filename) {}
+      : begin(begin), end(end), filename(filename) {}
   Loc& operator=(const Loc& other) = default;
 
   mcool::Position begin{};

@@ -10,7 +10,8 @@ inline void resetStream(std::stringstream& stream, std::string&& str) {
 }
 
 inline void removeFromBack(std::stringstream& stream, size_t numChar) {
-  if (numChar == 0) return;
+  if (numChar == 0)
+    return;
 
   auto str = stream.str();
   if (numChar < str.size()) {
