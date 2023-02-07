@@ -1,6 +1,6 @@
 #include "TypeDriver.h"
+#include "Types/Environment.h"
 #include "Semant/TypeChecker/InheritanceGraphBuilder.h"
-#include "Semant/Types/Environment.h"
 #include <iostream>
 
 bool mcool::TypeDriver::run(mcool::AstTree& classes) {
@@ -18,7 +18,7 @@ bool mcool::TypeDriver::run(mcool::AstTree& classes) {
   }
 
   context.setInheritanceGraph(std::move(graph));
-  semant::TypeEnvironments typeEnvironments{};
+  type::TypeEnvironments typeEnvironments{};
 
   return false;
 }

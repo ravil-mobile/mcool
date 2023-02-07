@@ -29,15 +29,15 @@ void AstCodeEmitter::visitRootNode(inheritance::tree::RootNode* node) {
   bodyStream << "  void setLocation(mcool::Loc& loc) { location = loc; }\n";
   bodyStream << "  mcool::Loc& getLocation() { return location; }\n\n";
 
-  bodyStream << "  void setSemantType(mcool::semant::Type* type) { semantType = type; }\n";
-  bodyStream << "  mcool::semant::Type* getSemantType() { return semantType; }\n";
+  bodyStream << "  void setSemantType(mcool::type::Type* type) { semantType = type; }\n";
+  bodyStream << "  mcool::type::Type* getSemantType() { return semantType; }\n";
 
   ast::genGetters(bodyStream, node->getAttributes());
   ast::genSetters(bodyStream, node->getAttributes());
 
   genAttributes(node);
   bodyStream << "  mcool::Loc location;\n";
-  bodyStream << "  mcool::semant::Type* semantType{nullptr};\n";
+  bodyStream << "  mcool::type::Type* semantType{nullptr};\n";
 
   bodyStream << "};\n\n";
 

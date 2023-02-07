@@ -1,7 +1,7 @@
-#include "ParserDriver.h"
+#include "Parser/ParserDriver.h"
+#include "Semant/TypeDriver.h"
 #include "Misc.h"
 #include "Context.h"
-#include "TypeDriver.h"
 #include "CLI/Error.hpp"
 #include <iostream>
 

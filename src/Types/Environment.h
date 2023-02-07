@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Semant/Types/Types.h"
-#include "Semant/Types/InheritanceGraph.h"
-#include "Semant/Types/SymbolTable.h"
+#include "Types/Types.h"
+#include "Types/InheritanceGraph.h"
+#include "Types/SymbolTable.h"
 #include <string>
 #include <unordered_map>
 #include <memory>
 #include <optional>
 #include <cassert>
 
-namespace mcool::semant {
+namespace mcool::type {
 class ClassEnvironment {
   public:
   ClassEnvironment(std::string userClassName) : className(userClassName) {}
@@ -60,4 +60,4 @@ class TypeEnvironments {
   private:
   std::unordered_map<std::string, std::unique_ptr<ClassEnvironment>> classes{};
 };
-} // namespace mcool::semant
+} // namespace mcool::type

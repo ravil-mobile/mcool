@@ -1,9 +1,9 @@
-#include "Semant/Types/InheritanceGraph.h"
+#include "Types/InheritanceGraph.h"
 #include <cassert>
 #include <utility>
 #include <functional>
 
-namespace mcool::semant {
+namespace mcool::type {
 Graph::Node::Node(mcool::ast::CoolClass* astNode) : classAstNode(astNode) {
   assert(astNode != nullptr);
   this->nodeName = std::string(astNode->getCoolType()->getNameAsStr());
@@ -61,4 +61,4 @@ void Graph::printGraph(std::ostream& os) const {
   os << std::endl;
 }
 
-} // namespace mcool::semant
+} // namespace mcool::type

@@ -5,7 +5,7 @@
 #include <optional>
 #include <cassert>
 
-namespace mcool::semant {
+namespace mcool::type {
 template <typename Key, typename Value>
 class SymbolTable {
   using ScopeType = mcool::OrderedDict<Key, Value>;
@@ -39,4 +39,4 @@ class SymbolTable {
   private:
   std::list<ScopeType> scopes{};
 };
-} // namespace mcool::semant
+} // namespace mcool::type

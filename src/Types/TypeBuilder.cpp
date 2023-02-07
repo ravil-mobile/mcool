@@ -1,8 +1,8 @@
-#include "Semant/Types/TypeBuilder.h"
+#include "Types/TypeBuilder.h"
 #include <cassert>
 #include <sstream>
 
-namespace mcool::semant {
+namespace mcool::type {
 TypeBuilder::~TypeBuilder() {
   for (auto& type : types) {
     delete type.second;
@@ -94,4 +94,4 @@ MethodType* TypeBuilder::getMethodType(const std::string& methodName,
 
   return methodType;
 }
-} // namespace mcool::semant
+} // namespace mcool::type

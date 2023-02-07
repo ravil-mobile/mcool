@@ -1,6 +1,6 @@
 #include "Misc.h"
 #include "ast.h"
-#include "AstTree.h"
+#include "Parser/AstTree.h"
 #include "Printers/Printer.h"
 #include "Printers/DotPrinter.h"
 

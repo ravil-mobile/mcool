@@ -1,9 +1,9 @@
 #pragma once
 
+#include "Parser/Loc.h"
 #include <string>
 #include <list>
 #include <ostream>
-#include <Loc.h>
 
 namespace mcool {
 class AstTree;

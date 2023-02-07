@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Scanner.h"
+#include "Parser/Scanner.h"
 #include "Parser.h"
 #include "ast.h"
-#include "TypeDriver.h"
+#include "Semant/TypeDriver.h"
 #include <vector>
 #include <string>
 #include <sstream>

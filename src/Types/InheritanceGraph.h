@@ -7,7 +7,7 @@
 #include <ostream>
 #include <cassert>
 
-namespace mcool::semant {
+namespace mcool::type {
 class Graph {
   public:
   class Node {
@@ -62,4 +62,4 @@ private:
 
 const Graph::Node* findCommonParentType(const Graph::Node* node1, const Graph::Node* node2);
 void findInheritanceNodes(Graph::Node* node, std::vector<Graph::Node*>& nodes);
-} // namespace mcool::semant
+} // namespace mcool::type

@@ -22,9 +22,9 @@
 
 
 %code requires {
-  #include "AstTree.h"
+  #include "Parser/AstTree.h"
+  #include "Parser/Loc.h"
   #include "MemoryManagement.h"
-  #include "Loc.h"
   #include <iostream>
   #include <string>
   #include <vector>
@@ -37,9 +37,9 @@
 
 %code top
 {
-  #include "Scanner.h"
+  #include "Parser/Scanner.h"
+  #include "Parser/AstTree.h"
   #include "Parser.h"
-  #include "AstTree.h"
 
   static mcool::Parser::symbol_type yylex(mcool::Scanner& scanner) {
     return scanner.get_next_token();

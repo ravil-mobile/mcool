@@ -1,7 +1,7 @@
 %{
     #include <iostream>
     #include <cstdlib>
-    #include "Scanner.h"
+    #include "Parser/Scanner.h"
     #include "Parser.h"
     #include "location.hh"
 

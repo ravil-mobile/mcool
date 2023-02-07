@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-namespace mcool::semant {
+namespace mcool::type {
 enum class TypeKind { Object, SelfType, Bool, Int, String, IO, DerivedType, MethodType };
 
 class Type {
@@ -99,4 +99,4 @@ class MethodType : public Type {
   std::vector<Type*> parameters{};
 };
 
-} // namespace mcool::semant
+} // namespace mcool::type

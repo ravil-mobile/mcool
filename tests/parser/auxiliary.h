@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scanner.h"
+#include "Parser/Scanner.h"
 #include "Parser.h"
 #include "ast.h"
 #include <vector>

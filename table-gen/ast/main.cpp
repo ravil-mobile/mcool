@@ -60,8 +60,8 @@ bool generateAstHeader(llvm::raw_ostream &OS,
 
   OS << "#pragma once\n";
   OS << "#include \"visitor.h\"\n";
-  OS << "#include \"Loc.h\"\n";
-  OS << "#include \"Semant/Types/Types.h\"\n";
+  OS << "#include \"Parser/Loc.h\"\n";
+  OS << "#include \"Types/Types.h\"\n";
   OS << "#include <string>\n";
   OS << "#include <list>\n";
   OS << "\n\n";

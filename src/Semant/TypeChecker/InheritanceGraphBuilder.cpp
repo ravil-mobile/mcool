@@ -4,7 +4,7 @@
 #include <sstream>
 
 mcool::semant::InheritanceGraphBuilder::InheritanceGraphBuilder() {
-  graph = std::make_unique<Graph>();
+  graph = std::make_unique<type::Graph>();
 }
 
 void mcool::semant::InheritanceGraphBuilder::initGraph(const std::list<ast::CoolClass*>& classes) {
@@ -85,11 +85,11 @@ void mcool::semant::InheritanceGraphBuilder::assignChildNodes() {
   }
 }
 
-void mcool::semant::InheritanceGraphBuilder::visitGraphNode(Graph::Node* node,
-                                                            std::deque<Graph::Node*>& stack,
+void mcool::semant::InheritanceGraphBuilder::visitGraphNode(type::Graph::Node* node,
+                                                            std::deque<type::Graph::Node*>& stack,
                                                             std::set<size_t>& discovered) {
 
-  auto isSameNode = [node](Graph::Node* otherNode) { return node->isSame(otherNode); };
+  auto isSameNode = [node](type::Graph::Node* otherNode) { return node->isSame(otherNode); };
   bool hasBeenVisisted = std::find_if(stack.begin(), stack.end(), isSameNode) != stack.end();
   if (hasBeenVisisted) {
     // we have already seen this node before
@@ -128,7 +128,7 @@ void mcool::semant::InheritanceGraphBuilder::checkInheritanceGraphCycles() {
     auto& node = nodeDescr.second;
     bool hasBeenDiscovered = discovered.find(node.getId()) != discovered.end();
     if (not hasBeenDiscovered) {
-      std::deque<Graph::Node*> stack{};
+      std::deque<type::Graph::Node*> stack{};
       visitGraphNode(&node, stack, discovered);
     }
   }

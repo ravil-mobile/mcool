@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Semant/Types/Types.h"
+#include "Types/Types.h"
 #include "Context.h"
 #include <unordered_map>
 
-namespace mcool::semant {
+namespace mcool::type {
 class TypeBuilder {
   public:
   ~TypeBuilder();
@@ -24,4 +24,4 @@ class TypeBuilder {
   StringType stringType{};
   IOType io{};
 };
-} // namespace mcool::semant
+} // namespace mcool::type

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AstTree.h"
+#include "Parser/AstTree.h"
 #include "Context.h"
 #include "Semant/TypeChecker/Error.h"
 

@@ -1,8 +1,8 @@
-#include "Semant/Types/Types.h"
+#include "Types/Types.h"
 #include <cstddef>
 #include <cassert>
 
-namespace mcool::semant {
+namespace mcool::type {
 bool MethodType::isSame(MethodType* type) {
   assert(type != nullptr);
 
@@ -23,4 +23,4 @@ bool MethodType::isSame(MethodType* type) {
 
   return true;
 }
-} // namespace mcool::semant
+} // namespace mcool::type
