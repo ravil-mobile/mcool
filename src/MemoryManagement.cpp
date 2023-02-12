@@ -7,11 +7,6 @@ MemoryManagement::~MemoryManagement() {
   }
 }
 
-MemoryManagement& MemoryManagement::getInstance() {
-  static MemoryManagement instance;
-  return instance;
-}
-
 ast::Int* MemoryManagement::getIntNode(const int& integer) {
   if (integerTable.find(integer) == integerTable.end()) {
     integerTable.insert({integer, std::make_unique<ast::Int>(integer)});

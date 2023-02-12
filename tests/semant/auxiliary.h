@@ -2,6 +2,7 @@
 
 #include "Parser/Scanner.h"
 #include "Parser.h"
+#include "Context.h"
 #include "ast.h"
 #include "Semant/TypeDriver.h"
 #include "Semant/TypeChecker/InheritanceGraphBuilder.h"
@@ -26,19 +27,22 @@ class TestDriver {
     mcool::AstTree astTree{};
 
     mcool::Scanner scanner(true);
-    mcool::Parser parser(scanner, astTree);
+    mcool::Parser parser(scanner, astTree, context.getMemoryManagement());
 
     scanner.set(&stream, &inputFileName);
     bool parserStatus = parser.parse() == 0;
 
-    mcool::AstTree::addBuildinClasses(astTree.get());
+    mcool::AstTree::addBuildinClasses(astTree.get(), &context);
 
     return std::make_tuple(parserStatus, astTree);
   }
 
+  mcool::Context& getContext() { return context; }
+
   private:
   std::istream& stream;
   std::string inputFileName{"test-stream"};
+  mcool::Context context{};
 };
 
 inline void applyTypeChecking(mcool::AstTree& ast, Context& context) {

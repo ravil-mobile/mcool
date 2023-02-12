@@ -13,9 +13,9 @@ class AstTree {
   mcool::ast::CoolClassList* get() { return this->tree; }
   void accept(mcool::ast::Visitor* visitor);
   void setError() { isOk = false; }
-  bool isAstOk() { return isOk; }
+  [[nodiscard]] bool isAstOk() const { return isOk; }
 
-  static void addBuildinClasses(ast::CoolClassList* classes);
+  static void addBuildinClasses(ast::CoolClassList* classes, mcool::Context* context);
 
   private:
   mcool::ast::CoolClassList* tree{nullptr};

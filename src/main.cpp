@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
   mcool::ParserDriver driver(config);
   driver.parse();
   auto ast = driver.getAst();
+  auto context = driver.getContext();
 
   if (not ast.has_value()) {
     std::cerr << "parsing failed. cannot continue" << std::endl;
@@ -35,9 +36,8 @@ int main(int argc, char* argv[]) {
 
   mcool::misc::analyseUntypedAst(astTree, config);
 
-  mcool::AstTree::addBuildinClasses(astTree.get());
+  mcool::AstTree::addBuildinClasses(astTree.get(), &context);
 
-  mcool::Context context{};
   mcool::TypeDriver typeDriver(context, config);
   auto isTypeCheclingOk = typeDriver.run(astTree);
   if (not isTypeCheclingOk) {

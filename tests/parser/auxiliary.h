@@ -2,6 +2,7 @@
 
 #include "Parser/Scanner.h"
 #include "Parser.h"
+#include "Context.h"
 #include "ast.h"
 #include <vector>
 #include <string>
@@ -10,6 +11,7 @@
 #include <tuple>
 #include <type_traits>
 #include <cassert>
+#include <utility>
 #include "gtest/gtest.h"
 #include "gmock/gmock-matchers.h"
 
@@ -22,7 +24,7 @@ class TestDriver {
     mcool::AstTree astTree{};
 
     mcool::Scanner scanner(true);
-    mcool::Parser parser(scanner, astTree);
+    mcool::Parser parser(scanner, astTree, context.getMemoryManagement());
 
     scanner.set(&stream, &inputFileName);
     bool parserStatus = parser.parse() == 0;
@@ -33,6 +35,7 @@ class TestDriver {
   private:
   std::istream& stream;
   std::string inputFileName{"test-stream"};
+  mcool::Context context{};
 };
 } // namespace mcool::tests::parser
 
@@ -40,8 +43,8 @@ namespace mcool::tests {
 class AttrExtractor {
   public:
   AttrExtractor(std::istream& stream, bool expectedAstStatus = true) {
-    mcool::tests::parser::TestDriver driver(stream);
-    auto [status, ast] = driver.run();
+    driver = std::make_unique<mcool::tests::parser::TestDriver>(stream);
+    auto [status, ast] = driver->run();
 
     assert(status == true);
     assert(ast.isAstOk() == expectedAstStatus);
@@ -76,5 +79,6 @@ class AttrExtractor {
 
   private:
   mcool::ast::CoolClassList* classes{nullptr};
+  std::unique_ptr<mcool::tests::parser::TestDriver> driver{nullptr};
 };
 } // namespace mcool::tests

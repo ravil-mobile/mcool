@@ -36,8 +36,7 @@ TEST(TypeChecking, CheckSimpleTypes) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, NewExpr) {
@@ -57,8 +56,7 @@ TEST(TypeChecking, NewExpr) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, LoopExpr) {
@@ -79,8 +77,7 @@ TEST(TypeChecking, LoopExpr) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, IfExpr) {
@@ -104,8 +101,7 @@ TEST(TypeChecking, IfExpr) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, AssignExpr) {
@@ -123,8 +119,7 @@ TEST(TypeChecking, AssignExpr) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, LetExpr) {
@@ -145,8 +140,7 @@ TEST(TypeChecking, LetExpr) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, MemberDefinitionInParentClass) {
@@ -169,8 +163,7 @@ TEST(TypeChecking, MemberDefinitionInParentClass) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, DynamicDispatchTest) {
@@ -196,8 +189,7 @@ TEST(TypeChecking, DynamicDispatchTest) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, DynamicDispatchOverloadingTest) {
@@ -231,8 +223,7 @@ TEST(TypeChecking, DynamicDispatchOverloadingTest) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, CaseTest) {
@@ -260,8 +251,7 @@ TEST(TypeChecking, CaseTest) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }
 
 TEST(TypeChecking, ReturnSelfTest) {
@@ -284,6 +274,5 @@ TEST(TypeChecking, ReturnSelfTest) {
   ASSERT_THAT(status, true);
   ASSERT_THAT(ast.isAstOk(), true);
 
-  mcool::Context context{};
-  mcool::tests::semant::applyTypeChecking(ast, context);
+  mcool::tests::semant::applyTypeChecking(ast, driver.getContext());
 }

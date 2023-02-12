@@ -11,8 +11,12 @@
 namespace mcool {
 class MemoryManagement {
   public:
+  MemoryManagement() = default;
+  MemoryManagement(MemoryManagement&& other) = default;
   ~MemoryManagement();
-  static MemoryManagement& getInstance();
+
+  template <typename Type, typename... Args>
+  Type* make(Args... args);
 
   void obtain(void* ptr) { memory.push_back(ptr); }
 
@@ -39,8 +43,6 @@ class MemoryManagement {
   ast::Bool* getBoolNode(const bool& boolean);
 
   private:
-  MemoryManagement() = default;
-
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> staticStringTable{};
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> rawStringTable{};
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> objectStringTable{};
@@ -50,8 +52,7 @@ class MemoryManagement {
 };
 
 template <typename Type, typename... Args>
-Type* make(Args... args) {
-  auto& mm = MemoryManagement::getInstance();
+Type* MemoryManagement::make(Args... args) {
   Type* ptr{nullptr};
   if constexpr (std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId> ||
                 std::is_same_v<Type, ast::ObjectId>) {
@@ -59,18 +60,18 @@ Type* make(Args... args) {
     static_assert(sizeof...(args) == 1 && std::is_same_v<FirstParamType, std::string>,
                   "expected std::string as parameter");
     auto param = std::get<0>(std::make_tuple(args...));
-    auto stringPtr = mm.getStringPtr<Type>(param);
+    auto stringPtr = this->getStringPtr<Type>(param);
     ptr = new Type(stringPtr);
   } else if constexpr (std::is_same_v<Type, ast::Int>) {
-    ptr = mm.getIntNode(args...);
+    ptr = this->getIntNode(args...);
   } else if constexpr (std::is_same_v<Type, ast::Bool>) {
-    ptr = mm.getBoolNode(args...);
+    ptr = this->getBoolNode(args...);
   } else if constexpr (sizeof...(args)) {
     ptr = new Type(args...);
-    mm.obtain(static_cast<void*>(ptr));
+    this->obtain(static_cast<void*>(ptr));
   } else {
     ptr = new Type();
-    mm.obtain(static_cast<void*>(ptr));
+    this->obtain(static_cast<void*>(ptr));
   }
   return ptr;
 }
