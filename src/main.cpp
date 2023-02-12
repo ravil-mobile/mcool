@@ -1,7 +1,7 @@
 #include "Parser/ParserDriver.h"
 #include "Semant/TypeDriver.h"
+#include "CodeGen/CodeGenDriver.h"
 #include "Misc.h"
-#include "Context.h"
 #include "CLI/Error.hpp"
 #include <iostream>
 
@@ -39,9 +39,16 @@ int main(int argc, char* argv[]) {
   mcool::AstTree::addBuildinClasses(astTree.get(), &context);
 
   mcool::TypeDriver typeDriver(context, config);
-  auto isTypeCheclingOk = typeDriver.run(astTree);
-  if (not isTypeCheclingOk) {
+  auto isTypeCheckingOk = typeDriver.run(astTree);
+  if (not isTypeCheckingOk) {
     typeDriver.printErrors(std::cerr);
+    return -1;
+  }
+
+  mcool::codegen::CodeGenDriver codeGenDriver(context, config);
+  auto isCodeGenOk = codeGenDriver.run(astTree);
+  if (not isCodeGenOk) {
+    std::cerr << "code generation failed\n";
     return -1;
   }
 
