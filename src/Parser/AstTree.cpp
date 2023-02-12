@@ -1,7 +1,8 @@
 #include "AstTree.h"
 #include "MemoryManagement.h"
+#include "Context.h"
 
-void mcool::AstTree::set(mcool::ast::CoolClassList *program) {
+void mcool::AstTree::set(mcool::ast::CoolClassList* program) {
   if (tree == nullptr) {
     tree = program;
   } else {
@@ -16,9 +17,10 @@ void mcool::AstTree::accept(mcool::ast::Visitor* visitor) {
   this->tree->accept(visitor);
 }
 
-void mcool::AstTree::addBuildinClasses(mcool::ast::CoolClassList* classes) {
+void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes) {
   if (classes == nullptr) {
     classes = make<ast::CoolClassList>();
+    return;
   }
 
   auto* objectClassName = make<ast::TypeId>(std::string("Object"));

@@ -10,7 +10,6 @@
 #include <set>
 
 namespace mcool::semant {
-
 class InheritanceGraphBuilder : public ast::Visitor, public semant::Error {
   public:
   InheritanceGraphBuilder();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Types/InheritanceGraph.h"
+#include "Types/TypeBuilder.h"
 #include <memory>
 #include <cassert>
 
@@ -8,30 +9,14 @@ namespace mcool {
 class Context {
   public:
   void setInheritanceGraph(std::unique_ptr<type::Graph> userGraph) {
-    this->graph = std::move(userGraph);
+    graph = std::move(userGraph);
+    typeBuilder = std::make_unique<type::TypeBuilder>(graph);
   }
   const std::unique_ptr<type::Graph>& getInheritanceGraph() { return graph; }
-
-  const type::Graph::Node& getInheritanceNode(type::Type* type) {
-    assert(type != nullptr);
-    auto name = type->getAsString();
-    auto it = graph->findNode(name);
-    if (it == graph->end()) {
-      throw std::runtime_error("no graph node found with `" + name + "` name");
-    }
-    return it->second;
-  }
-
-  const type::Graph::Node& getInheritanceNode(const std::string& name) {
-    auto it = graph->findNode(name);
-    if (it == graph->end()) {
-      throw std::runtime_error("no graph node found with `" + name + "` name");
-    }
-
-    return it->second;
-  }
+  std::unique_ptr<type::TypeBuilder>& getTypeBulder() { return typeBuilder; }
 
   private:
   std::unique_ptr<type::Graph> graph{nullptr};
+  std::unique_ptr<type::TypeBuilder> typeBuilder{nullptr};
 };
 } // namespace mcool

@@ -10,7 +10,7 @@ TypeBuilder::~TypeBuilder() {
   types.clear();
 }
 
-Type* TypeBuilder::getType(mcool::Context& context, const std::string& typeName) {
+Type* TypeBuilder::getType(const std::string& typeName) {
   Type* type{};
   if (typeName == "Object") {
     type = &objectType;
@@ -25,17 +25,16 @@ Type* TypeBuilder::getType(mcool::Context& context, const std::string& typeName)
   } else if (typeName == "IO") {
     type = &io;
   } else {
-    const auto& graph = context.getInheritanceGraph();
 
-    const auto it = graph->findNode(typeName);
-    bool found = it != graph->end();
-    if (found) {
-      assert(it->second.getParent() && "parent node is nullptr");
+    if (inheritanceGraph->containsNode(typeName)) {
+      const auto it = inheritanceGraph->findNode(typeName);
+      auto* parent = it->second.getParent();
+      assert(parent != nullptr && "parent node is nullptr");
       auto typeIt = types.find(typeName);
       if (typeIt != types.end()) {
         type = typeIt->second;
       } else {
-        type = new DerivedType(typeName, it->second.getParent()->getNodeName());
+        type = new DerivedType(typeName, parent->getNodeName());
         types[typeName] = type;
       }
     } else {
@@ -44,27 +43,6 @@ Type* TypeBuilder::getType(mcool::Context& context, const std::string& typeName)
   }
 
   return type;
-}
-
-bool MethodType::isSame(MethodType* type) {
-  assert(type != nullptr);
-
-  if (this->methodName != type->methodName) {
-    return false;
-  }
-
-  const size_t size{parameters.size()};
-  if (size != type->parameters.size()) {
-    return false;
-  }
-
-  for (size_t i = 0; i < size; ++i) {
-    if (parameters[i]->getAsString() != type->parameters[i]->getAsString()) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 MethodType* TypeBuilder::getMethodType(const std::string& methodName,

@@ -24,6 +24,14 @@ bool Graph::Node::isChildOf(const Node* other) const {
   }
 }
 
+const type::Graph::Node& Graph::getInheritanceNode(const std::string& name) {
+  if (containsNode(name)) {
+    return nodes.find(name)->second;
+  } else {
+    throw std::runtime_error("no graph node found with `" + name + "` name");
+  }
+}
+
 const Graph::Node* findCommonParentType(const Graph::Node* node1, const Graph::Node* node2) {
   if (node1->isNodeName("Object")) {
     return node1;

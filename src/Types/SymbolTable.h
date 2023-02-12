@@ -15,17 +15,17 @@ class SymbolTable {
 
   void pushScope() { scopes.push_back(ScopeType()); }
   void popScope() {
-    assert(scopes.empty());
+    assert(not scopes.empty());
     scopes.pop_back();
   }
 
   ScopeType& getTopScope() { return scopes.back(); }
   auto getNumScopes() { return scopes.size(); }
 
-  std::optional<Value> find(Key& key) {
+  std::optional<Value> lookup(const Key& key) {
     for (auto scope = scopes.rbegin(); scope != scopes.rend(); ++scope) {
       if (auto* value = scope->find(key)) {
-        return std::optional<Value>(&value);
+        return *value;
       }
     }
     return std::optional<Value>{};
@@ -34,6 +34,29 @@ class SymbolTable {
   void add(Key& key, Value& value) {
     auto& scope = scopes.back();
     scope.insert(key, value);
+  }
+
+  void add(const Key& key, Value& value) {
+    auto& scope = scopes.back();
+    scope.insert(key, value);
+  }
+
+  std::optional<Value> print(std::ostream& stream) {
+    size_t level{0};
+    for (auto scope = scopes.begin(); scope != scopes.end(); ++scope, ++level) {
+      stream << "level: " << level << '\n';
+      auto keys = scope->keys();
+      for (auto key : keys) {
+        if (std::is_same_v<Key, std::string>) {
+          stream << "key: " << key;
+        }
+        if (std::is_same_v<Value, Type*> || std::is_same_v<Value, MethodType*>) {
+          auto* value = (*scope)[key];
+          stream << "; value: " << value->getAsString();
+        }
+        stream << '\n';
+      }
+    }
   }
 
   private:

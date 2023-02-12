@@ -44,6 +44,7 @@ private:
   Graph() = default;
   Graph(const Graph& other) = default;
   std::unordered_map<std::string, Node>& getNodes() { return nodes; }
+  const type::Graph::Node& getInheritanceNode(const std::string& name);
   bool containsNode(const std::string& name) { return nodes.find(name) != nodes.end(); }
   size_t size() { return nodes.size(); }
 

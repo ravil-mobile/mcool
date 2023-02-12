@@ -13,6 +13,7 @@ class Type {
   virtual bool isBuiltinType() = 0;
   virtual std::string getAsString() = 0;
   virtual TypeKind getTypeKind() = 0;
+  virtual bool isSame(Type* other) = 0;
 };
 
 class BuiltinType : public Type {
@@ -26,6 +27,10 @@ class ObjectType : public BuiltinType {
   ~ObjectType() override = default;
   std::string getAsString() override { return "Object"; }
   TypeKind getTypeKind() override { return TypeKind::Object; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "Object";
+  }
 };
 
 class SelfType : public BuiltinType {
@@ -33,6 +38,10 @@ class SelfType : public BuiltinType {
   ~SelfType() override = default;
   std::string getAsString() override { return "SELF_TYPE"; }
   TypeKind getTypeKind() override { return TypeKind::SelfType; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "SELF_TYPE";
+  }
 };
 
 class BoolType : public BuiltinType {
@@ -40,6 +49,10 @@ class BoolType : public BuiltinType {
   ~BoolType() override = default;
   std::string getAsString() override { return "Bool"; }
   TypeKind getTypeKind() override { return TypeKind::Bool; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "Bool";
+  }
 };
 
 class IntType : public BuiltinType {
@@ -47,6 +60,10 @@ class IntType : public BuiltinType {
   ~IntType() override = default;
   std::string getAsString() override { return "Int"; }
   TypeKind getTypeKind() override { return TypeKind::Int; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "Int";
+  }
 };
 
 class StringType : public BuiltinType {
@@ -54,6 +71,10 @@ class StringType : public BuiltinType {
   ~StringType() override = default;
   std::string getAsString() override { return "String"; }
   TypeKind getTypeKind() override { return TypeKind::String; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "String";
+  }
 };
 
 class IOType : public BuiltinType {
@@ -61,6 +82,10 @@ class IOType : public BuiltinType {
   ~IOType() override = default;
   std::string getAsString() override { return "IO"; }
   TypeKind getTypeKind() override { return TypeKind::IO; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    return other->getAsString() == "IO";
+  }
 };
 
 class DerivedType : public Type {
@@ -73,6 +98,15 @@ class DerivedType : public Type {
   std::string getAsString() override { return typeName; }
   std::string getParentAsString() { return parentTypeName; }
   TypeKind getTypeKind() override { return TypeKind::DerivedType; }
+  bool isSame(Type* other) final {
+    assert(other != nullptr);
+    if (auto* otherType = dynamic_cast<DerivedType*>(other)) {
+      return otherType->getAsString() == typeName &&
+             otherType->getParentAsString() == parentTypeName;
+    } else {
+      return false;
+    }
+  }
 
   protected:
   std::string typeName{};
@@ -91,7 +125,7 @@ class MethodType : public Type {
   size_t getNumParameters() { return parameters.size(); }
   Type* getReturnType() { return returnType; }
   TypeKind getTypeKind() override { return TypeKind::MethodType; }
-  bool isSame(MethodType* type);
+  bool isSame(Type* other) final;
 
   protected:
   std::string methodName{};

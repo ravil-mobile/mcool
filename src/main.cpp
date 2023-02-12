@@ -30,20 +30,20 @@ int main(int argc, char* argv[]) {
   auto& astTree = ast.value();
   if (not astTree.isAstOk()) {
     std::cerr << "ast tree is not complete due to parsing errors" << std::endl;
+    return -1;
   }
 
   mcool::misc::analyseUntypedAst(astTree, config);
 
+  mcool::Context context{};
   mcool::AstTree::addBuildinClasses(astTree.get());
 
-  mcool::Context context{};
   mcool::TypeDriver typeDriver(context, config);
-  auto areTypesOK = typeDriver.run(astTree);
-  if (not areTypesOK) {
+  auto isTypeCheclingOk = typeDriver.run(astTree);
+  if (not isTypeCheclingOk) {
     typeDriver.printErrors(std::cerr);
+    return -1;
   }
-
-  std::cout << "type checking status: " << std::boolalpha << areTypesOK << std::endl;
 
   return 0;
 }
