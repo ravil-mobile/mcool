@@ -34,11 +34,14 @@ void TypeChecker::visitCoolClass(ast::CoolClass* coolClass) {
 
 void TypeChecker::visitAttributeList(ast::AttributeList* attributeList) {
   auto& attrs = attributeList->getData();
-  for (auto* attr : attrs) {
-    attr->accept(this);
+  if (not attrs.empty()) {
+    for (auto* attr : attrs) {
+      attr->accept(this);
+    }
+    auto* lastAttr = attributeList->getData().back();
+    assert(lastAttr != nullptr);
+    attributeList->setSemantType(lastAttr->getSemantType());
   }
-  auto* lastAttr = attributeList->getData().back();
-  attributeList->setSemantType(lastAttr->getSemantType());
 }
 
 void TypeChecker::visitSingleMember(ast::SingleMember* member) {
@@ -139,6 +142,7 @@ void TypeChecker::visitBlockExpr(ast::BlockExpr* block) {
     block->setSemantType(typeBuilder->getType("Object"));
   } else {
     auto* lastExpr = exprs.back();
+    assert(lastExpr != nullptr);
     block->setSemantType(lastExpr->getSemantType());
   }
 }

@@ -1,5 +1,4 @@
 #include "auxiliary.h"
-#include "Semant/TypeChecker/InheritanceGraphBuilder.h"
 
 TEST(Inheritance, NoParentClass) {
   std::stringstream stream;

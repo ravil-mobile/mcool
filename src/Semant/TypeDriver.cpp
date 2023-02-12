@@ -17,7 +17,6 @@ bool mcool::TypeDriver::run(mcool::AstTree& classes) {
   }
 
   context.setInheritanceGraph(std::move(graph));
-  context.getInheritanceGraph();
   semant::EnvironmentsBuilder envBuilder(context);
   auto env = envBuilder.build(classes.get());
   if (envBuilder.hasErrors()) {

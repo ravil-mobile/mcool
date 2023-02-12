@@ -35,9 +35,9 @@ int main(int argc, char* argv[]) {
 
   mcool::misc::analyseUntypedAst(astTree, config);
 
-  mcool::Context context{};
   mcool::AstTree::addBuildinClasses(astTree.get());
 
+  mcool::Context context{};
   mcool::TypeDriver typeDriver(context, config);
   auto isTypeCheclingOk = typeDriver.run(astTree);
   if (not isTypeCheclingOk) {

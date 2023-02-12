@@ -4,6 +4,9 @@
 #include "Parser.h"
 #include "ast.h"
 #include "Semant/TypeDriver.h"
+#include "Semant/TypeChecker/InheritanceGraphBuilder.h"
+#include "Semant/TypeChecker/EnvironmentsBuilder.h"
+#include "Semant/TypeChecker/TypeChecker.h"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -37,47 +40,29 @@ class TestDriver {
   std::istream& stream;
   std::string inputFileName{"test-stream"};
 };
+
+inline void applyTypeChecking(mcool::AstTree& ast, Context& context) {
+  mcool::semant::InheritanceGraphBuilder graphBuilder;
+  auto graph = graphBuilder.build(ast.get());
+  context.setInheritanceGraph(std::move(graph));
+
+  mcool::semant::EnvironmentsBuilder envBuilder(context);
+  auto env = envBuilder.build(ast.get());
+  if (envBuilder.hasErrors()) {
+    for (auto& errorMsg: envBuilder.getErrors()) {
+      std::cout << errorMsg << std::endl;
+    }
+  }
+  ASSERT_FALSE(envBuilder.hasErrors());
+
+  mcool::semant::TypeChecker typeChecker(context, env);
+  typeChecker.run(ast.get());
+  if (typeChecker.hasErrors()) {
+    for (auto& errorMsg: typeChecker.getErrors()) {
+      std::cout << errorMsg << std::endl;
+    }
+  }
+  ASSERT_FALSE(typeChecker.hasErrors());
+}
+
 } // namespace mcool::tests::parser
-
-namespace mcool::tests {
-class AttrExtractor {
-  public:
-  AttrExtractor(std::istream& stream, bool expectedAstStatus = true) {
-    mcool::tests::semant::TestDriver driver(stream);
-    auto [status, ast] = driver.run();
-
-    assert(status == true);
-    assert(ast.isAstOk() == expectedAstStatus);
-
-    classes = ast.get();
-    assert(classes != nullptr);
-  }
-
-  template <typename T>
-  void getAttr(T*& outputAttr, size_t classId, size_t attrId) {
-    constexpr auto requestedMethod = std::is_same_v<mcool::ast::SingleMethod, T>;
-    constexpr auto requestedMember = std::is_same_v<mcool::ast::SingleMember, T>;
-    static_assert(requestedMethod || requestedMember,
-                  "requested not method nor member of a class ");
-
-    auto& coolClasses = classes->getData();
-    ASSERT_TRUE(classId < coolClasses.size());
-
-    auto classIt = coolClasses.begin();
-    std::advance(classIt, classId);
-
-    auto& attrs = (*classIt)->getAttributes()->getData();
-    ASSERT_TRUE(attrId < attrs.size());
-
-    auto attrIt = attrs.begin();
-    std::advance(attrIt, attrId);
-    auto* attrPtr = (*attrIt);
-
-    outputAttr = dynamic_cast<T*>(attrPtr);
-    ASSERT_TRUE(outputAttr != nullptr);
-  }
-
-  private:
-  mcool::ast::CoolClassList* classes{nullptr};
-};
-} // namespace mcool::tests
