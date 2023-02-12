@@ -14,7 +14,7 @@ add_custom_command(
   ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
   --gen-ast-header
   -o=${PROJECT_BINARY_DIR}/generated/ast.h
-  ${PROJECT_SOURCE_DIR}/descriptions/ast.td
+  ${PROJECT_SOURCE_DIR}/src/Descriptions/ast.td
   WORKING_DIRECTORY
     ${PROJECT_BINARY_DIR}
   DEPENDS
@@ -29,7 +29,7 @@ add_custom_command(
         ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
         --gen-visitor-header
         -o=${PROJECT_BINARY_DIR}/generated/visitor.h
-        ${PROJECT_SOURCE_DIR}/descriptions/ast.td
+        ${PROJECT_SOURCE_DIR}/src/Descriptions/ast.td
         WORKING_DIRECTORY
         ${PROJECT_BINARY_DIR}
         DEPENDS
@@ -60,11 +60,11 @@ find_package(BISON REQUIRED)
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/generated)
 
 flex_target(scanner
-            ${PROJECT_SOURCE_DIR}/descriptions/scanner.flex
+            ${PROJECT_SOURCE_DIR}/src/Descriptions/scanner.flex
             ${PROJECT_BINARY_DIR}/generated/Scanner.cpp)
 
 bison_target(parser
-             ${PROJECT_SOURCE_DIR}/descriptions/parser.bison
+             ${PROJECT_SOURCE_DIR}/src/Descriptions/parser.bison
              ${PROJECT_BINARY_DIR}/generated/Parser.cpp
              DEFINES_FILE ${PROJECT_BINARY_DIR}/generated/Parser.h
              )
