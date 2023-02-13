@@ -94,6 +94,13 @@ add_dependencies(mcool-core ast-codegen)
 add_executable(${CMAKE_PROJECT_NAME} ${MAIN_FILE})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mcool-core)
 
+find_package(LLVM REQUIRED CONFIG)
+llvm_map_components_to_libnames(llvm_libs core support native)
+
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${LLVM_INCLUDE_DIRS})
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${llvm_libs})
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ${LLVM_DEFINITIONS})
+
 if (WITH_TESTS)
     enable_testing()
     add_subdirectory(tests)
