@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MemoryManagement.h"
+#include "MemoryManager.h"
 #include "Types/InheritanceGraph.h"
 #include "Types/TypeBuilder.h"
 #include <memory>
@@ -18,11 +18,11 @@ class Context {
   }
   const std::unique_ptr<type::Graph>& getInheritanceGraph() { return graph; }
   std::unique_ptr<type::TypeBuilder>& getTypeBulder() { return typeBuilder; }
-  mcool::MemoryManagement& getMemoryManagement() { return memoryManagement; }
+  mcool::MemoryManager& getMemoryManager() { return memoryManager; }
 
   private:
   std::unique_ptr<type::Graph> graph{nullptr};
   std::unique_ptr<type::TypeBuilder> typeBuilder{nullptr};
-  mcool::MemoryManagement memoryManagement{};
+  mcool::MemoryManager memoryManager{};
 };
 } // namespace mcool

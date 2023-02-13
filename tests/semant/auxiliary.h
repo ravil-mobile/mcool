@@ -27,7 +27,7 @@ class TestDriver {
     mcool::AstTree astTree{};
 
     mcool::Scanner scanner(true);
-    mcool::Parser parser(scanner, astTree, context.getMemoryManagement());
+    mcool::Parser parser(scanner, astTree, context.getMemoryManager());
 
     scanner.set(&stream, &inputFileName);
     bool parserStatus = parser.parse() == 0;

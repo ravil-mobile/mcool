@@ -19,13 +19,13 @@
 %lex-param { mcool::Scanner& scanner }
 %parse-param { mcool::Scanner& scanner }
 %parse-param { mcool::AstTree& astTree }
-%parse-param { mcool::MemoryManagement& mm }
+%parse-param { mcool::MemoryManager& mm }
 
 
 %code requires {
   #include "Parser/AstTree.h"
   #include "Parser/Loc.h"
-  #include "MemoryManagement.h"
+  #include "MemoryManager.h"
   #include <iostream>
   #include <string>
   #include <vector>
@@ -46,7 +46,7 @@
     return scanner.get_next_token();
   }
 
-  void setLoc(mcool::ast::Node* node, mcool::location &yyLoc, mcool::MemoryManagement& mm) {
+  void setLoc(mcool::ast::Node* node, mcool::location &yyLoc, mcool::MemoryManager& mm) {
     auto begin = mcool::Position{yyLoc.begin.line, yyLoc.begin.column};
     auto end = mcool::Position{yyLoc.end.line, yyLoc.end.column};
     auto* filename = mm.make<mcool::ast::StringPtr>(*(yyLoc.begin.filename));

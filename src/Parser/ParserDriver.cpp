@@ -9,7 +9,7 @@ void mcool::ParserDriver::parse() {
   astTree = mcool::AstTree{};
 
   mcool::Scanner scanner(true);
-  mcool::Parser parser(scanner, astTree, context.getMemoryManagement());
+  mcool::Parser parser(scanner, astTree, context.getMemoryManager());
 
   for (auto& inputFile : config.inputFiles) {
     std::ifstream fileStream(inputFile);

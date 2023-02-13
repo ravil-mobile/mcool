@@ -18,7 +18,7 @@ void mcool::AstTree::accept(mcool::ast::Visitor* visitor) {
 
 void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* context) {
   assert(context != nullptr);
-  auto& mm = context->getMemoryManagement();
+  auto& mm = context->getMemoryManager();
   if (classes == nullptr) {
     classes = mm.make<ast::CoolClassList>();
     return;

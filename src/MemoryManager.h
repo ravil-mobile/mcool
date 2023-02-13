@@ -9,11 +9,11 @@
 #include <type_traits>
 
 namespace mcool {
-class MemoryManagement {
+class MemoryManager {
   public:
-  MemoryManagement() = default;
-  MemoryManagement(MemoryManagement&& other) = default;
-  ~MemoryManagement();
+  MemoryManager() = default;
+  MemoryManager(MemoryManager&& other) = default;
+  ~MemoryManager();
 
   template <typename Type, typename... Args>
   Type* make(Args... args);
@@ -52,7 +52,7 @@ class MemoryManagement {
 };
 
 template <typename Type, typename... Args>
-Type* MemoryManagement::make(Args... args) {
+Type* MemoryManager::make(Args... args) {
   Type* ptr{nullptr};
   if constexpr (std::is_same_v<Type, ast::String> || std::is_same_v<Type, ast::TypeId> ||
                 std::is_same_v<Type, ast::ObjectId>) {
