@@ -63,4 +63,5 @@ private:
 
 const Graph::Node* findCommonParentType(const Graph::Node* node1, const Graph::Node* node2);
 void findInheritanceNodes(Graph::Node* node, std::vector<Graph::Node*>& nodes);
+void findInheritanceNodes(const type::Graph::Node& node, std::vector<Graph::Node*>& nodes);
 } // namespace mcool::type

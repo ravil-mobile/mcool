@@ -59,6 +59,9 @@ class SymbolTable {
     }
   }
 
+  auto begin() { return scopes.begin(); }
+  auto end() { return scopes.end(); }
+
   private:
   std::list<ScopeType> scopes{};
 };

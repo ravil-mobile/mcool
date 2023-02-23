@@ -42,6 +42,14 @@ class MemoryManager {
   ast::Int* getIntNode(const int& integer);
   ast::Bool* getBoolNode(const bool& boolean);
 
+  auto getStaticStrings() {
+    std::vector<std::string> strings{};
+    for (auto& item : staticStringTable) {
+      strings.push_back(item.first);
+    }
+    return strings;
+  }
+
   private:
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> staticStringTable{};
   std::unordered_map<std::string, std::unique_ptr<ast::StringPtr>> rawStringTable{};
@@ -49,6 +57,7 @@ class MemoryManager {
   std::unordered_map<int, std::unique_ptr<ast::Int>> integerTable{};
   std::unordered_map<bool, std::unique_ptr<ast::Bool>> booleanTable{};
   std::vector<void*> memory{};
+  int classTagCounter{0};
 };
 
 template <typename Type, typename... Args>
@@ -66,6 +75,9 @@ Type* MemoryManager::make(Args... args) {
     ptr = this->getIntNode(args...);
   } else if constexpr (std::is_same_v<Type, ast::Bool>) {
     ptr = this->getBoolNode(args...);
+  } else if constexpr(std::is_same_v<Type, ast::CoolClass>) {
+    ptr = new Type(args..., classTagCounter++);
+    this->obtain(static_cast<void*>(ptr));
   } else if constexpr (sizeof...(args)) {
     ptr = new Type(args...);
     this->obtain(static_cast<void*>(ptr));

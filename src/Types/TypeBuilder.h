@@ -8,9 +8,10 @@
 namespace mcool::type {
 class TypeBuilder {
   public:
-  TypeBuilder(std::unique_ptr<type::Graph>& graph) : inheritanceGraph(graph) {}
+  TypeBuilder() = default;
   ~TypeBuilder();
 
+  void setInheritanceGraph(type::Graph* graph) { inheritanceGraph = graph; }
   Type* getType(const std::string& typeName);
   MethodType* getMethodType(const std::string& methodName,
                             Type* methodReturnType,
@@ -26,6 +27,6 @@ class TypeBuilder {
   StringType stringType{};
   IOType io{};
 
-  std::unique_ptr<type::Graph>& inheritanceGraph;
+  type::Graph* inheritanceGraph{};
 };
 } // namespace mcool::type

@@ -1,24 +1,25 @@
 #pragma once
 
-#include "Parser/AstTree.h"
-#include "Context.h"
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/LLVMContext.h"
+#include "CodeGen/Environment.h"
+#include "llvm/Target/TargetMachine.h"
 #include <ostream>
+
 
 namespace mcool::codegen {
 class CodeGenDriver {
   public:
-  CodeGenDriver(mcool::Context& context, misc::Config& config)
-      : coolContext(context), config(config) {}
+  CodeGenDriver(mcool::Context& context, misc::Config& coolConfig)
+      : env(context, coolConfig) {
+  }
   bool run(mcool::AstTree& classes);
 
   private:
-  mcool::Context& coolContext;
-  misc::Config& config;
+  bool initDataLayout();
+  bool writeOutput();
+  bool readOutput();
 
-  std::unique_ptr<llvm::LLVMContext> llvmContext;
-  std::unique_ptr<llvm::Module> llvmModule;
-  std::unique_ptr<llvm::IRBuilder<>> llvmBuilder;
+  Environment env;
+  llvm::TargetMachine* targetMachine{};
+  std::string targetTriple{};
 };
 } // namespace mcool::codegen
