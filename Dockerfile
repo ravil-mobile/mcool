@@ -30,7 +30,8 @@ ln -s /usr/bin/clang++-12 /usr/bin/clang++ && \
 apt-get -y install zlib1g-dev
 
 COPY mcool /mcool
-COPY examples /mcool/examples
+COPY examples /mcool-examples
 
 RUN mkdir -p /mcool/build && cd /mcool/build && \
-cmake ../mcool -DWITH_TESTS=OFF && make -j2
+cmake .. -DWITH_TESTS=OFF && make -j2 && \
+make install && cd / && rm -rf /mcool

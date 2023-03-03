@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(WITH_TESTS "build with tests" ON)
+option(WITH_TESTS "build with tests" OFF)
 
 add_subdirectory(table-gen)
 
@@ -109,3 +109,5 @@ if (WITH_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+install(TARGETS ${CMAKE_PROJECT_NAME})
