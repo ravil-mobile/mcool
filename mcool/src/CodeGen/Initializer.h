@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CodeGen/BaseBuilder.h"
-#include "Types/SymbolTable.h"
+#include "SymbolTable.h"
 #include <unordered_map>
 #include <string>
 

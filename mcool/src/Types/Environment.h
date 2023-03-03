@@ -1,8 +1,8 @@
 #pragma once
 
+#include "SymbolTable.h"
 #include "Types/Types.h"
 #include "Types/InheritanceGraph.h"
-#include "Types/SymbolTable.h"
 #include <string>
 #include <unordered_map>
 #include <memory>

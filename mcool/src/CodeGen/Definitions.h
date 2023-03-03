@@ -3,7 +3,7 @@
 #include "llvm/IR/Value.h"
 
 #include "ast.h"
-#include "Types/SymbolTable.h"
+#include "SymbolTable.h"
 #include <unordered_map>
 
 namespace mcool::codegen {

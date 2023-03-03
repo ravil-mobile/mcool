@@ -1,6 +1,6 @@
 #include "CodeGen/Initializer.h"
 #include "CodeGen/Misc.h"
-#include "Types/SymbolTable.h"
+#include "SymbolTable.h"
 #include "llvm/IR/Verifier.h"
 #include <vector>
 
