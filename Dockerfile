@@ -29,12 +29,8 @@ ln -s /usr/bin/clang-12 /usr/bin/clang && \
 ln -s /usr/bin/clang++-12 /usr/bin/clang++ && \
 apt-get -y install zlib1g-dev
 
-COPY src /mcool/src
-COPY table-gen /mcool/table-gen
-COPY common /mcool/common
-COPY tests /mcool/tests
+COPY mcool /mcool
 COPY examples /mcool/examples
-COPY CMakeLists.txt /mcool/CMakeLists.txt
 
 RUN mkdir -p /mcool/build && cd /mcool/build && \
-cmake .. -DWITH_TESTS=OFF && make -j2
+cmake ../mcool -DWITH_TESTS=OFF && make -j2

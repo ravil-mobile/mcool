@@ -1,4 +1,5 @@
 build
 cmake-build-*
+mcool/cmake-build-*
 *.sw*
 .idea
