@@ -50,8 +50,13 @@ class Main inherits IO {
   };
 };
 
-$ mcool -i ./factorial.cl -o ./factorial.ll
-$ llc ./factorial.ll
-$ clang ./factorial.s -o ./factorial
+$ mcool -i ./factorial.cl -o ./factorial
+$ clang ./factorial.o -o ./factorial
 $ ./factorial
 ```
+
+Note, we use `clang` (or `gcc`) as a linker.
+
+#### Miscellaneous
+
+Use `mcool --help` to see all available compiler options

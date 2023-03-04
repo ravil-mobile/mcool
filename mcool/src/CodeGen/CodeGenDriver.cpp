@@ -6,12 +6,14 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/TargetRegistry.h"
 #include "llvm/Support/Host.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Support/FileSystem.h"
 #include <fstream>
 #include <iostream>
 
 namespace mcool::codegen {
 bool CodeGenDriver::run(mcool::AstTree& classes) {
-  auto isOk = initDataLayout();
+  bool isOk = initDataLayout();
   if (not isOk) {
     return false;
   }
@@ -27,12 +29,20 @@ bool CodeGenDriver::run(mcool::AstTree& classes) {
   codeBuilder.genMethods(classes);
   codeBuilder.generatedMainEntryPoint();
 
-  bool outputStatus = writeOutput();
-  if (outputStatus) {
-    readOutput();
+  if (env.coolConfig.emitLLVMIr) {
+    isOk = writeLLVMIr();
+    if (isOk) {
+      readLLVMIr();
+    }
   }
 
-  return true;
+  auto fileType = llvm::CGFT_ObjectFile;
+  if (env.coolConfig.writeAsmOutput) {
+    fileType = llvm::CGFT_AssemblyFile;
+  }
+
+  isOk = writeOutputFile(fileType);
+  return isOk;
 }
 
 bool CodeGenDriver::initDataLayout() {
@@ -63,9 +73,30 @@ bool CodeGenDriver::initDataLayout() {
   return true;
 }
 
+bool CodeGenDriver::writeOutputFile(llvm::CodeGenFileType fileType) {
+  const std::string fileSuffix = (fileType == llvm::CGFT_AssemblyFile) ? ".s" : ".o";
+  auto outputFile = env.coolConfig.outputFile + fileSuffix;
+  std::error_code errorCode;
+  llvm::raw_fd_ostream dest(outputFile, errorCode, llvm::sys::fs::OF_None);
 
-bool CodeGenDriver::writeOutput() {
-  auto& outputFile = env.coolConfig.outputFile;
+  if (errorCode) {
+    llvm::errs() << "Could not open file: " << errorCode.message() << '\n';
+    return false;
+  }
+
+  llvm::legacy::PassManager pass;
+  if (targetMachine->addPassesToEmitFile(pass, dest, nullptr, fileType)) {
+    llvm::errs() << "TargetMachine can't emit a file of this type" << '\n';
+    return false;
+  }
+
+  pass.run(*env.llvmModule);
+  dest.flush();
+  return true;
+}
+
+bool CodeGenDriver::writeLLVMIr() {
+  auto outputFile = env.coolConfig.outputFile + ".ll";
   std::error_code error{};
   llvm::raw_fd_ostream fstream(llvm::StringRef(outputFile), error);
   if (not error) {
@@ -78,8 +109,8 @@ bool CodeGenDriver::writeOutput() {
   return true;
 }
 
-bool CodeGenDriver::readOutput() {
-  auto& outputFile = env.coolConfig.outputFile;
+bool CodeGenDriver::readLLVMIr() {
+  auto outputFile = env.coolConfig.outputFile + ".ll";
   std::fstream stream(outputFile, std::ios::in);
   if (not stream.fail()) {
     std::string out;

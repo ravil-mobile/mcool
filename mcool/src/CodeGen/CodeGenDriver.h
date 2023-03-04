@@ -15,8 +15,9 @@ class CodeGenDriver {
 
   private:
   bool initDataLayout();
-  bool writeOutput();
-  bool readOutput();
+  bool writeOutputFile(llvm::CodeGenFileType fileType);
+  bool writeLLVMIr();
+  bool readLLVMIr();
 
   Environment env;
   llvm::TargetMachine* targetMachine{};

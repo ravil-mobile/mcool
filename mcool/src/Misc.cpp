@@ -21,6 +21,8 @@ Config readCmd(int argc, char* argv[]) {
   cmd.add_option("-o,--output", config.outputFile, "output file name");
   auto* dotOption = cmd.add_flag("--dot-output", "print ast in dot format (graphviz)");
   auto* inheritancePrintingOption = cmd.add_flag("--print-inheritance", "print inheritance graph");
+  auto* emitLLVMIr = cmd.add_flag("--emit-llvm-ir", "emits llvm ir");
+  auto* writeAsmOutput = cmd.add_flag("--asm", "write output in the assembly language");
   auto* verboseOption = cmd.add_flag("-v,--verbose", "verbose mode");
 
   try {
@@ -58,6 +60,14 @@ Config readCmd(int argc, char* argv[]) {
 
   if (*inheritancePrintingOption) {
     config.printInheritance = true;
+  }
+
+  if (*emitLLVMIr) {
+    config.emitLLVMIr = true;
+  }
+
+  if (*writeAsmOutput) {
+    config.writeAsmOutput = true;
   }
 
   if (*verboseOption) {

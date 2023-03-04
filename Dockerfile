@@ -33,5 +33,5 @@ COPY mcool /mcool
 COPY examples /mcool-examples
 
 RUN mkdir -p /mcool/build && cd /mcool/build && \
-cmake .. -DWITH_TESTS=OFF && make -j2 && \
+cmake .. -DWITH_TESTS=OFF && make -j $(nproc) && \
 make install && cd / && rm -rf /mcool
