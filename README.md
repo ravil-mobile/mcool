@@ -28,7 +28,7 @@ docker build -t mcool .
 #### Example
 
 ```
-$ cat ./example.cl
+$ cat ./factorial.cl
 
 class Main inherits IO {
   main(): Object {{
@@ -50,8 +50,8 @@ class Main inherits IO {
   };
 };
 
-$ mcool -i ./example.cl -o ./example.ll
-$ llc ./example.ll
-$ clang ./example.s -o ./example
-$ ./example
+$ mcool -i ./factorial.cl -o ./factorial.ll
+$ llc ./factorial.ll
+$ clang ./factorial.s -o ./factorial
+$ ./factorial
 ```

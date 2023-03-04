@@ -4,45 +4,52 @@
 
 namespace mcool::codegen {
 void BuiltinMethodsBuilder::build() {
+  /*
   genPrintfDecl();
   genMallocDecl();
   genFreeDecl();
   genExitDecl();
+  */
+  genCStdFunctions();
   genObjectCopy();
   genIOOutString();
   genIOOutInt();
+  genIOInInt();
 }
 
-void BuiltinMethodsBuilder::genPrintfDecl() {
+void BuiltinMethodsBuilder::genCStdFunctions() {
   auto* intType = llvm::Type::getInt32Ty(*context);
   auto* charPtrType = env.getSystemType(Environment::SystemType::CharPtrType);
-  auto* funcType = llvm::FunctionType::get(intType, {charPtrType}, true);
-  auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "printf", *module);
-  func->setCallingConv(llvm::CallingConv::C);
-}
-
-void BuiltinMethodsBuilder::genMallocDecl() {
   auto* bytePtrType = env.getSystemType(Environment::SystemType::BytePtrType);
   auto* sizeType = env.getSystemType(Environment::SystemType::SizeType);
-  auto* funcType = llvm::FunctionType::get(bytePtrType, {sizeType}, false);
-  auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "malloc", *module);
-  func->setCallingConv(llvm::CallingConv::C);
-}
-
-void BuiltinMethodsBuilder::genFreeDecl() {
   auto* voidType = llvm::Type::getVoidTy(*context);
-  auto* bytePtrType = env.getSystemType(Environment::SystemType::BytePtrType);
-  auto* funcType = llvm::FunctionType::get(voidType, {bytePtrType}, false);
-  auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "free", *module);
-  func->setCallingConv(llvm::CallingConv::C);
-}
 
-void BuiltinMethodsBuilder::genExitDecl() {
-  auto* voidType = llvm::Type::getVoidTy(*context);
-  auto* intType = llvm::Type::getInt32Ty(*context);
-  auto* funcType = llvm::FunctionType::get(voidType, intType, false);
-  auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "exit", *module);
-  func->setCallingConv(llvm::CallingConv::C);
+  {
+    auto* funcType = llvm::FunctionType::get(intType, {charPtrType}, true);
+    auto* func =
+        llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "printf", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
+  {
+    auto* funcType = llvm::FunctionType::get(bytePtrType, {sizeType}, false);
+    auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "malloc", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
+  {
+    auto* funcType = llvm::FunctionType::get(voidType, {bytePtrType}, false);
+    auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "free", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
+  {
+    auto* funcType = llvm::FunctionType::get(voidType, intType, false);
+    auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "exit", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
+  {
+    auto* funcType = llvm::FunctionType::get(voidType, {charPtrType}, true);
+    auto* func = llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "__isoc99_scanf", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
 }
 
 void BuiltinMethodsBuilder::genObjectCopy() {
@@ -80,8 +87,6 @@ void BuiltinMethodsBuilder::genObjectCopy() {
 }
 
 void BuiltinMethodsBuilder::genIOOutString() {
-  auto* coolIOPtrType = getPtrType("IO");
-  auto* coolStringPtrType = getPtrType("String");
   auto* coolObjectPtrType = getPtrType("Object");
 
   auto methodName = getMethodName("IO", "out_string");
@@ -107,8 +112,6 @@ void BuiltinMethodsBuilder::genIOOutString() {
 }
 
 void BuiltinMethodsBuilder::genIOOutInt() {
-  auto* coolIOPtrType = getPtrType("IO");
-  auto* coolIntPtrType = getPtrType("Int");
   auto* coolObjPtrType = getPtrType("Object");
 
   auto methodName = getMethodName("IO", "out_int");
@@ -133,6 +136,32 @@ void BuiltinMethodsBuilder::genIOOutInt() {
 
   auto* result = builder->CreateBitCast(function->getArg(0), coolObjPtrType);
   builder->CreateRet(result);
+  llvm::verifyFunction(*function, &(llvm::outs()));
+}
+
+void BuiltinMethodsBuilder::genIOInInt() {
+  auto* coolObjPtrType = getPtrType("Object");
+
+  auto methodName = getMethodName("IO", "in_int");
+  auto* function = module->getFunction(methodName);
+  assert(function != nullptr);
+
+  llvm::BasicBlock *BB = llvm::BasicBlock::Create(*context, "entry", function);
+  builder->SetInsertPoint(BB);
+
+  auto* str = builder->CreateGlobalStringPtr("%d", "", 0, module.get());
+  auto* intValueAddress = builder->CreateAlloca(builder->getInt32Ty());
+  auto* scanf = module->getFunction("__isoc99_scanf");
+  assert(scanf != nullptr);
+
+  builder->CreateCall(scanf, {str, intValueAddress});
+  auto* newIntObj = createNewClassInstanceOnHeap("Int");
+
+  auto* intValue = builder->CreateLoad(intValueAddress);
+  auto address = builder->CreateGEP(newIntObj, getGepIndices({0, 4}));
+  builder->CreateStore(intValue, address);
+
+  builder->CreateRet(newIntObj);
   llvm::verifyFunction(*function, &(llvm::outs()));
 }
 } // namespace mcool::codegen

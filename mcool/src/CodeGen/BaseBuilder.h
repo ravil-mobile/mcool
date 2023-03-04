@@ -35,7 +35,6 @@ class BaseBuilder {
   }
 
   auto* createNewClassInstanceOnHeap(const std::string& className) {
-    ;
     auto protoName = getProtoName(className);
     auto* proto = module->getGlobalVariable(protoName, true);
     assert(proto != nullptr);

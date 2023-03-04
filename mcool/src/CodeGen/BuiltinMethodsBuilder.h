@@ -8,13 +8,11 @@ public:
   explicit BuiltinMethodsBuilder(Environment& env) : BaseBuilder(env) {}
   void build();
 private:
-  void genPrintfDecl();
-  void genMallocDecl();
-  void genFreeDecl();
-  void genExitDecl();
+  void genCStdFunctions();
   void genObjectCopy();
   void genIOOutString();
   void genIOOutInt();
+  void genIOInInt();
 };
 
 } // namespace mcool::codegen

@@ -112,11 +112,11 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
     auto* inStringMethod =
         mm.make<ast::SingleMethod>(inStringName, emptyParams, strTypeName, noBody);
     attributeList->add(inStringMethod);
-
-    auto* inIntName = mm.make<ast::ObjectId>(std::string("in_int"));
-    auto* inIntMethod = mm.make<ast::SingleMethod>(inIntName, emptyParams, intTypeName, noBody);
-    attributeList->add(inIntMethod);
     */
+    auto* inIntName = mm.make<ast::ObjectId>(std::string("in_int"));
+    auto* inIntMethod = mm.make<ast::SingleMethod>(inIntName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
+    attributeList->add(inIntMethod);
+
     auto* ioClassName = mm.make<ast::TypeId>(std::string("IO"));
     auto* object =
         mm.make<ast::CoolClass>(ioClassName, objectClassName, attributeList, buildinFileName);
