@@ -25,7 +25,7 @@ Type* TypeBuilder::getType(const std::string& typeName) {
   } else if (typeName == "IO") {
     type = &io;
   } else {
-
+    assert(inheritanceGraph != nullptr);
     if (inheritanceGraph->containsNode(typeName)) {
       const auto it = inheritanceGraph->findNode(typeName);
       auto* parent = it->second.getParent();

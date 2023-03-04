@@ -9,12 +9,12 @@
 namespace mcool {
 class Context {
   public:
-  explicit Context() = default;
+  explicit Context() : typeBuilder(std::make_unique<type::TypeBuilder>()) {}
   Context(Context&& other) = default;
 
   void setInheritanceGraph(std::unique_ptr<type::Graph> userGraph) {
     graph = std::move(userGraph);
-    typeBuilder = std::make_unique<type::TypeBuilder>(graph);
+    typeBuilder->setInheritanceGraph(graph.get());
   }
   const std::unique_ptr<type::Graph>& getInheritanceGraph() { return graph; }
   std::unique_ptr<type::TypeBuilder>& getTypeBulder() { return typeBuilder; }

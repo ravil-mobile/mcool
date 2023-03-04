@@ -58,6 +58,11 @@ void findInheritanceNodes(Graph::Node* node, std::vector<Graph::Node*>& nodes) {
   }
 }
 
+void findInheritanceNodes(const type::Graph::Node& node, std::vector<Graph::Node*>& nodes) {
+  type::Graph::Node* classNodePtr{&(const_cast<type::Graph::Node&>(node))};
+  findInheritanceNodes(classNodePtr, nodes);
+}
+
 void Graph::printGraph(std::ostream& os) const {
   for (auto& node : nodes) {
     os << node.second.getNodeName() << ": ";

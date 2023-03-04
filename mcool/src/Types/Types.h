@@ -13,6 +13,7 @@ class Type {
   virtual bool isBuiltinType() = 0;
   virtual std::string getAsString() = 0;
   virtual TypeKind getTypeKind() = 0;
+  virtual bool hasImplicitConstructor() { return false; };
   virtual bool isSame(Type* other) = 0;
 };
 
@@ -49,6 +50,7 @@ class BoolType : public BuiltinType {
   ~BoolType() override = default;
   std::string getAsString() override { return "Bool"; }
   TypeKind getTypeKind() override { return TypeKind::Bool; }
+  bool hasImplicitConstructor() final { return true; }
   bool isSame(Type* other) final {
     assert(other != nullptr);
     return other->getAsString() == "Bool";
@@ -60,6 +62,7 @@ class IntType : public BuiltinType {
   ~IntType() override = default;
   std::string getAsString() override { return "Int"; }
   TypeKind getTypeKind() override { return TypeKind::Int; }
+  bool hasImplicitConstructor() final { return true; }
   bool isSame(Type* other) final {
     assert(other != nullptr);
     return other->getAsString() == "Int";
@@ -71,6 +74,7 @@ class StringType : public BuiltinType {
   ~StringType() override = default;
   std::string getAsString() override { return "String"; }
   TypeKind getTypeKind() override { return TypeKind::String; }
+  bool hasImplicitConstructor() final { return false; }
   bool isSame(Type* other) final {
     assert(other != nullptr);
     return other->getAsString() == "String";

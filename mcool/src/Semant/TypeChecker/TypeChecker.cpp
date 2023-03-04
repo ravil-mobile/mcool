@@ -21,7 +21,7 @@ void TypeChecker::visitCoolClass(ast::CoolClass* coolClass) {
       currClassEnv = classEnv.value();
 
       coolClass->getAttributes()->accept(this);
-      coolClass->setSemantType(selfType);
+      coolClass->setSemantType(selfType); // TODO: the same for default classes
     } else {
       std::stringstream errStream;
       errStream << "could not find class env. for `" << currClassName << "`. See at "
@@ -54,6 +54,7 @@ void TypeChecker::visitSingleMember(ast::SingleMember* member) {
   if (declType.value()->getAsString() == "SELF_TYPE") {
     declType = selfType;
   }
+  member->getId()->setSemantType(declType.value());
   member->setSemantType(declType.value());
 
   auto* initExpr = member->getInitExpr();
@@ -693,5 +694,4 @@ bool TypeChecker::isAllMethodArgsOk(type::MethodType* methodType, std::list<ast:
 
   return true;
 }
-
 } // namespace mcool::semant

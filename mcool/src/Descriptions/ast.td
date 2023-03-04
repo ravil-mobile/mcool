@@ -159,6 +159,7 @@ class CoolClass : NonTerminal {
   TypeId parentType;
   AttributeList attributes;
   String fileName;
+  int tag;
 }
 
 class CoolClassList : NonTerminal {

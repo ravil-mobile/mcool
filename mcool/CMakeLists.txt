@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(WITH_TESTS "build with tests" ON)
+option(WITH_TESTS "build with tests" OFF)
 
 add_subdirectory(table-gen)
 
@@ -95,13 +95,19 @@ add_executable(${CMAKE_PROJECT_NAME} ${MAIN_FILE})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mcool-core)
 
 find_package(LLVM REQUIRED CONFIG)
-llvm_map_components_to_libnames(llvm_libs core support native)
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+message(STATUS "Using LLVMConfig.cmake in: ${LLVM_DIR}")
+message(STATUS "Using LLVM include directory: ${LLVM_INCLUDE_DIRS}")
 
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${LLVM_INCLUDE_DIRS})
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${llvm_libs})
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE ${LLVM_DEFINITIONS})
+llvm_map_components_to_libnames(llvm_libs core support native mc mcparser)
+
+target_include_directories(mcool-core PUBLIC ${LLVM_INCLUDE_DIRS})
+target_link_libraries(mcool-core PUBLIC ${llvm_libs})
+target_compile_definitions(mcool-core PUBLIC ${LLVM_DEFINITIONS})
 
 if (WITH_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+install(TARGETS ${CMAKE_PROJECT_NAME})
