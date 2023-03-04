@@ -12,7 +12,7 @@ This a C++17/LLVM implementation of the language.
 
 #### Installation
 You can install `cool` on your machine as follows
-```
+```bash
 mkdir build && cd build
 cmake ../mcool -DCMAKE_INSTALL_PREFIX=<installation directory>
 make -j2
@@ -21,15 +21,17 @@ make install
 
 If you experience problems with installing dependencies you
 can build a Docker image
-```
+```bash
 docker build -t mcool .
 ```
 
 #### Example
 
+```bash
+$ cat ./fibonacci.cl
 ```
-$ cat ./factorial.cl
 
+```java
 class Main inherits IO {
   main(): Object {{
     out_string("Enter an integer greater-than or equal-to 0: ");
@@ -38,21 +40,23 @@ class Main inherits IO {
       if input < 0 then
         out_string("ERROR: Number must be greater-than or equal-to 0\n")
       else {
-        out_string("The factorial of ").out_int(input);
-        out_string(" is ").out_int(factorial(input));
+        out_string("The fibonacci number of ").out_int(input);
+        out_string(" is ").out_int(fibonacci(input));
         out_string("\n");
       }
       fi;
   }};
 
-  factorial(num: Int): Int {
-    if num = 0 then 1 else num * factorial(num - 1) fi
+  fibonacci(num: Int): Int {
+    if num = 0 then 0 else { if num = 1 then 1 else fibonacci(num - 1) + fibonacci(num - 2) fi; } fi
   };
 };
+```
 
-$ mcool -i ./factorial.cl -o ./factorial
-$ clang ./factorial.o -o ./factorial
-$ ./factorial
+```bash
+$ mcool -i ./fibonacci.cl -o ./fibonacci
+$ clang ./fibonacci.o -o ./fibonacci
+$ ./fibonacci
 ```
 
 Note, we use `clang` (or `gcc`) as a linker.

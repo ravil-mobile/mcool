@@ -281,7 +281,7 @@ void Initializer::genDispatchTables() {
     auto& coolClassName = coolClass->getCoolType()->getNameAsStr();
 
     auto dispTableName = getDispatchTableName(coolClassName);
-    auto dispTableTypeName = dispTableName + "_type";
+    auto dispTableTypeName = getDispatchTableTypeName(coolClassName);
     auto* dispTableType = llvm::StructType::create(*context, dispTableTypeName);
 
     std::vector<llvm::Type*> functionTypes{};
@@ -295,7 +295,7 @@ void Initializer::genDispatchTables() {
         auto* function = module->getFunction(functionName);
 
         if (function == nullptr) continue; // TODO
-        //assert(function != nullptr); // TODO
+
         auto* wrappedFunctionalPointer = llvm::PointerType::get(function->getFunctionType(), 0);
         functionTypes.push_back(wrappedFunctionalPointer);
         functionsPointers.push_back(function);

@@ -19,4 +19,9 @@ inline std::string getMethodName(const std::string& className, const std::string
 inline std::string getDispatchTableName(const std::string& className) {
   return "DispTable_" + className;
 }
+
+inline std::string getDispatchTableTypeName(const std::string& className) {
+  auto dispTableName = getDispatchTableName(className);
+  return dispTableName + "_type";
+}
 } // namespace mcool::codegen

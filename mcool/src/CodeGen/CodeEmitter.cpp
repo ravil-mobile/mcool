@@ -120,7 +120,8 @@ void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
   auto data = methodsTable.lookup(methodName);
   assert(data.has_value());
 
-  auto* dispatchTableAddress = builder->CreateGEP(objectPtr, getGepIndices({0, 3}));
+  auto* castedDispatchObj = builder->CreateBitCast(objectPtr, getPtrType(dispatchObjTypeName));
+  auto* dispatchTableAddress = builder->CreateGEP(castedDispatchObj, getGepIndices({0, 3}));
   auto* dispatchTable = builder->CreateLoad(dispatchTableAddress);
   auto* calleeAddress = builder->CreateGEP(dispatchTable, getGepIndices({0, data.value().offset}));
   auto* callee = builder->CreateLoad(calleeAddress);
@@ -130,8 +131,8 @@ void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
   auto* calleeWrappedPtrType = llvm::cast<llvm::PointerType>(callee->getType());
   auto* calleeFunctionPtrType = llvm::cast<llvm::FunctionType>(calleeWrappedPtrType->getElementType());
   auto* calleeSelfType = calleeFunctionPtrType->getFunctionParamType(0);
-  auto* castedObjectPtr = builder->CreateBitCast(objectPtr, calleeSelfType);
-  args.push_back(castedObjectPtr);
+  auto* castedCalleeSelfType = builder->CreateBitCast(objectPtr, calleeSelfType);
+  args.push_back(castedCalleeSelfType);
 
   for(auto* arg : dispatch->getArguments()->getData()) {
     arg->accept(this);
