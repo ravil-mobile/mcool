@@ -19,8 +19,8 @@ void CodeBuilder::visitCoolClass(ast::CoolClass* coolClass) {
 
   bool isDefaultClass = defaultClasses.find(currClassName) != defaultClasses.end();
   if (not isDefaultClass) {
-    for (auto *attr: coolClass->getAttributes()->getData()) {
-      if (auto *coolMethod = dynamic_cast<ast::SingleMethod *>(attr)) {
+    for (auto* attr : coolClass->getAttributes()->getData()) {
+      if (auto* coolMethod = dynamic_cast<ast::SingleMethod*>(attr)) {
         coolMethod->accept(this);
       }
     }
@@ -46,7 +46,9 @@ void CodeBuilder::visitSingleMember(ast::SingleMember* member) {
 
   if (hasInitValue) {
     newInstance = copyObject(initValue);
-    builder->CreateStore(newInstance, idAddress);
+    auto idTypeName = member->getId()->getSemantType()->getAsString();
+    auto* castedNewInstance = builder->CreateBitCast(newInstance, getPtrType(idTypeName));
+    builder->CreateStore(castedNewInstance, idAddress);
   }
 
   stack.push_back(newInstance);
@@ -70,7 +72,6 @@ void CodeBuilder::visitSingleMethod(ast::SingleMethod* coolMethod) {
 
   auto& returnTypeName = coolMethod->getReturnType()->getNameAsStr();
   currFuncReturnType = llvm::cast<llvm::PointerType>(getPtrType(returnTypeName));
-
 
   coolMethod->getBody()->accept(this);
 
@@ -96,9 +97,7 @@ void CodeBuilder::visitFormalList(ast::FormalList* formalList) {
   }
 }
 
-void CodeBuilder::visitBlockExpr(ast::BlockExpr* block) {
-  block->getExprs()->accept(this);
-}
+void CodeBuilder::visitBlockExpr(ast::BlockExpr* block) { block->getExprs()->accept(this); }
 
 void CodeBuilder::visitExpressions(ast::Expressions* exprs) {
   llvm::Value* result{nullptr};
@@ -123,18 +122,20 @@ void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
   auto* castedDispatchObj = builder->CreateBitCast(objectPtr, getPtrType(dispatchObjTypeName));
   auto* dispatchTableAddress = builder->CreateGEP(castedDispatchObj, getGepIndices({0, 3}));
   auto* dispatchTable = builder->CreateLoad(dispatchTableAddress);
+
   auto* calleeAddress = builder->CreateGEP(dispatchTable, getGepIndices({0, data.value().offset}));
   auto* callee = builder->CreateLoad(calleeAddress);
 
   llvm::SmallVector<llvm::Value*> args{};
 
   auto* calleeWrappedPtrType = llvm::cast<llvm::PointerType>(callee->getType());
-  auto* calleeFunctionPtrType = llvm::cast<llvm::FunctionType>(calleeWrappedPtrType->getElementType());
+  auto* calleeFunctionPtrType =
+      llvm::cast<llvm::FunctionType>(calleeWrappedPtrType->getElementType());
   auto* calleeSelfType = calleeFunctionPtrType->getFunctionParamType(0);
   auto* castedCalleeSelfType = builder->CreateBitCast(objectPtr, calleeSelfType);
   args.push_back(castedCalleeSelfType);
 
-  for(auto* arg : dispatch->getArguments()->getData()) {
+  for (auto* arg : dispatch->getArguments()->getData()) {
     arg->accept(this);
     args.push_back(popStack());
   }
@@ -143,7 +144,41 @@ void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
   stack.push_back(result);
 }
 
-void CodeBuilder::visitStaticDispatch(ast::StaticDispatch* dispatch) {}
+void CodeBuilder::visitStaticDispatch(ast::StaticDispatch* dispatch) {
+  dispatch->getObjectId()->accept(this);
+  auto* objectPtr = popStack();
+
+  auto* dispatchObjType = dispatch->getObjectId()->getSemantType();
+  auto dispatchObjTypeName = dispatchObjType->getAsString();
+  auto& methodsTable = env.globalMethodsTable[dispatchObjTypeName];
+  auto& methodName = dispatch->getMethodId()->getNameAsStr();
+  auto data = methodsTable.lookup(methodName);
+  assert(data.has_value());
+
+  auto& staticCastTypeName = dispatch->getCastType()->getNameAsStr();
+  auto dispatchTableName = getDispatchTableName(staticCastTypeName);
+  auto* dispatchTable = module->getGlobalVariable(dispatchTableName, true);
+
+  auto* calleeAddress = builder->CreateGEP(dispatchTable, getGepIndices({0, data.value().offset}));
+  auto* callee = builder->CreateLoad(calleeAddress);
+
+  llvm::SmallVector<llvm::Value*> args{};
+
+  auto* calleeWrappedPtrType = llvm::cast<llvm::PointerType>(callee->getType());
+  auto* calleeFunctionPtrType =
+      llvm::cast<llvm::FunctionType>(calleeWrappedPtrType->getElementType());
+  auto* calleeSelfType = calleeFunctionPtrType->getFunctionParamType(0);
+  auto* castedCalleeSelfType = builder->CreateBitCast(objectPtr, calleeSelfType);
+  args.push_back(castedCalleeSelfType);
+
+  for (auto* arg : dispatch->getArguments()->getData()) {
+    arg->accept(this);
+    args.push_back(popStack());
+  }
+
+  auto result = builder->CreateCall(calleeFunctionPtrType, callee, args);
+  stack.push_back(result);
+}
 
 void CodeBuilder::visitWhileLoop(ast::WhileLoop* loop) {
   auto* loopHeaderBB = llvm::BasicBlock::Create(*context);
@@ -229,7 +264,6 @@ void CodeBuilder::visitNotExpr(ast::NotExpr* noExpr) {
   stack.push_back(boolIntObj);
 }
 
-
 void CodeBuilder::visitNewExpr(ast::NewExpr* newExpr) {
   auto& newTypeName = newExpr->getNewType()->getNameAsStr();
   auto* newObject = createNewClassInstanceOnHeap(newTypeName);
@@ -298,8 +332,7 @@ void CodeBuilder::visitCaseExpr(ast::CaseExpr* caseExpr) {
     auto* result = popStack();
     if (result) {
       result = builder->CreateBitCast(result, targetPtrType);
-    }
-    else {
+    } else {
       result = llvm::ConstantPointerNull::get(targetPtrType);
     }
     results[caseCounter] = result;
@@ -331,8 +364,7 @@ void CodeBuilder::visitLetExpr(ast::LetExpr* letExpr) {
   if (auto* initExprValue = popStack()) {
     auto* copiedInitExpr = copyObject(initExprValue);
     builder->CreateStore(copiedInitExpr, varPtr);
-  }
-  else {
+  } else {
     auto* nullPtr = llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(varTypePtr));
     builder->CreateStore(nullPtr, varPtr);
   }
@@ -447,33 +479,21 @@ void CodeBuilder::visitIfThenElseExpr(ast::IfThenElseExpr* condExpr) {
   stack.push_back(phi);
 }
 
-void CodeBuilder::visitNoExpr(ast::NoExpr*) {
-  stack.push_back(nullptr);
-}
+void CodeBuilder::visitNoExpr(ast::NoExpr*) { stack.push_back(nullptr); }
 
-void CodeBuilder::visitPlusNode(ast::PlusNode* node) {
-  visitBinaryNode(node, BinaryOp::Plus);
-}
+void CodeBuilder::visitPlusNode(ast::PlusNode* node) { visitBinaryNode(node, BinaryOp::Plus); }
 
-void CodeBuilder::visitMinusNode(ast::MinusNode* node) {
-  visitBinaryNode(node, BinaryOp::Minus);
-}
+void CodeBuilder::visitMinusNode(ast::MinusNode* node) { visitBinaryNode(node, BinaryOp::Minus); }
 
 void CodeBuilder::visitMultiplyNode(ast::MultiplyNode* node) {
   visitBinaryNode(node, BinaryOp::Mult);
 }
 
-void CodeBuilder::visitDivideNode(ast::DivideNode* node) {
-  visitBinaryNode(node, BinaryOp::Div);
-}
+void CodeBuilder::visitDivideNode(ast::DivideNode* node) { visitBinaryNode(node, BinaryOp::Div); }
 
-void CodeBuilder::visitLessNode(ast::LessNode* node) {
-  visitBinaryNode(node, BinaryOp::Less);
-}
+void CodeBuilder::visitLessNode(ast::LessNode* node) { visitBinaryNode(node, BinaryOp::Less); }
 
-void CodeBuilder::visitEqualNode(ast::EqualNode* node) {
-  visitBinaryNode(node, BinaryOp::Eq);
-}
+void CodeBuilder::visitEqualNode(ast::EqualNode* node) { visitBinaryNode(node, BinaryOp::Eq); }
 
 void CodeBuilder::visitLessEqualNode(ast::LessEqualNode* node) {
   visitBinaryNode(node, BinaryOp::Leq);
@@ -492,34 +512,34 @@ void CodeBuilder::visitBinaryNode(ast::BinaryExpression* node, BinaryOp op) {
 
   llvm::Value* resultValue{};
   switch (op) {
-    case BinaryOp::Plus : {
-      resultValue = builder->CreateAdd(leftValue, rightValue);
-      break;
-    }
-    case BinaryOp::Minus : {
-      resultValue = builder->CreateSub(leftValue, rightValue);
-      break;
-    }
-    case BinaryOp::Mult : {
-      resultValue = builder->CreateMul(leftValue, rightValue);
-      break;
-    }
-    case BinaryOp::Div : {
-      resultValue = builder->CreateSDiv(leftValue, rightValue);
-      break;
-    }
-    case BinaryOp::Eq : {
-      auto* boolValue = builder->CreateICmpEQ(leftValue, rightValue);
-      resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
-    }
-    case BinaryOp::Less : {
-      auto* boolValue = builder->CreateICmpSLT(leftValue, rightValue);
-      resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
-    }
-    case BinaryOp::Leq : {
-      auto* boolValue = builder->CreateICmpSLE(leftValue, rightValue);
-      resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
-    }
+  case BinaryOp::Plus: {
+    resultValue = builder->CreateAdd(leftValue, rightValue);
+    break;
+  }
+  case BinaryOp::Minus: {
+    resultValue = builder->CreateSub(leftValue, rightValue);
+    break;
+  }
+  case BinaryOp::Mult: {
+    resultValue = builder->CreateMul(leftValue, rightValue);
+    break;
+  }
+  case BinaryOp::Div: {
+    resultValue = builder->CreateSDiv(leftValue, rightValue);
+    break;
+  }
+  case BinaryOp::Eq: {
+    auto* boolValue = builder->CreateICmpEQ(leftValue, rightValue);
+    resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
+  }
+  case BinaryOp::Less: {
+    auto* boolValue = builder->CreateICmpSLT(leftValue, rightValue);
+    resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
+  }
+  case BinaryOp::Leq: {
+    auto* boolValue = builder->CreateICmpSLE(leftValue, rightValue);
+    resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
+  }
   }
   auto resultTypeName = node->getSemantType()->getAsString();
   auto* resultObjPtr = createNewClassInstanceOnStack(resultTypeName);
@@ -536,19 +556,19 @@ void CodeBuilder::visitAssignExpr(ast::AssignExpr* node) {
   node->getInitExpr()->accept(this);
   if (auto* initValue = popStack()) {
     auto* copiedInitValue = copyObject(initValue);
-    builder->CreateStore(copiedInitValue, idAddress);
+
+    auto idTypeName = node->getSemantType()->getAsString();
+    auto* castedCopiedInitValue = builder->CreateBitCast(copiedInitValue, getPtrType(idTypeName));
+    builder->CreateStore(castedCopiedInitValue, idAddress);
 
     auto* idValue = builder->CreateLoad(idAddress);
     stack.push_back(idValue);
-  }
-  else {
+  } else {
     stack.push_back(nullptr);
   }
 }
 
-void CodeBuilder::visitPrimaryExpr(ast::PrimaryExpr* node) {
-  node->getTerm()->accept(this);
-}
+void CodeBuilder::visitPrimaryExpr(ast::PrimaryExpr* node) { node->getTerm()->accept(this); }
 
 void CodeBuilder::visitObjectId(ast::ObjectId* id) {
   getLObjValue(id);
@@ -561,8 +581,7 @@ void CodeBuilder::getLObjValue(ast::ObjectId* id) {
   auto& idName = id->getNameAsStr();
   if (auto currScopeResults = currSymbolTable.lookup(idName)) {
     stack.push_back(currScopeResults.value());
-  }
-  else {
+  } else {
     auto* selfPtrAddress = currSymbolTable.lookup("self").value();
     auto* selfPtr = builder->CreateLoad(selfPtrAddress);
 
@@ -571,8 +590,7 @@ void CodeBuilder::getLObjValue(ast::ObjectId* id) {
       auto [_, offset] = classScopeResult.value();
       auto* address = builder->CreateGEP(selfPtr, getGepIndices({0, offset}));
       stack.push_back(address);
-    }
-    else {
+    } else {
       assert(false && "symbol was not found during code generation");
     }
   }
@@ -604,8 +622,8 @@ void CodeBuilder::visitString(ast::String* str) {
   }
 
   auto* stringPtr = createNewClassInstanceOnStack("String");
-  auto *address = builder->CreateGEP(stringPtr, getGepIndices({0, 5}));
-  auto *strLiteral = builder->CreateGlobalStringPtr(str->getValueAsStr(), "", 0, module.get());
+  auto* address = builder->CreateGEP(stringPtr, getGepIndices({0, 5}));
+  auto* strLiteral = builder->CreateGlobalStringPtr(str->getValueAsStr(), "", 0, module.get());
   builder->CreateStore(strLiteral, address);
 
   address = builder->CreateGEP(stringPtr, getGepIndices({0, 4}));

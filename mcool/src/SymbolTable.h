@@ -31,6 +31,15 @@ class SymbolTable {
     return std::optional<Value>{};
   };
 
+  Value& operator[](Key& key) {
+    for (auto scope = scopes.rbegin(); scope != scopes.rend(); ++scope) {
+      if (scope->contains(key)) {
+        return (*scope)[key];
+      }
+    }
+    assert(true && "key have not found");
+  }
+
   void add(Key& key, Value& value) {
     auto& scope = scopes.back();
     scope.insert(key, value);

@@ -74,17 +74,19 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
     // construct Object class
     auto* attributeList = mm.make<ast::AttributeList>();
 
-    /*
     auto* abort = mm.make<ast::ObjectId>(std::string("abort"));
-    auto* abortMethod = mm.make<ast::SingleMethod>(abort, emptyParams, objectClassName, noBody);
+    auto* abortMethod = mm.make<ast::SingleMethod>(
+        abort, emptyParams, objectClassName, makeNoBodyAs(objectClassName));
     attributeList->add(abortMethod);
 
     auto* typeName = mm.make<ast::ObjectId>(std::string("type_name"));
-    auto* typeNameMethod = mm.make<ast::SingleMethod>(typeName, emptyParams, strTypeName, noBody);
+    auto* typeNameMethod =
+        mm.make<ast::SingleMethod>(typeName, emptyParams, strTypeName, makeNoBodyAs(strTypeName));
     attributeList->add(typeNameMethod);
-    */
+
     auto* copyName = mm.make<ast::ObjectId>(std::string("copy"));
-    auto* copyMethod = mm.make<ast::SingleMethod>(copyName, emptyParams, selfTypeName, makeNoBodyAs(selfTypeName));
+    auto* copyMethod =
+        mm.make<ast::SingleMethod>(copyName, emptyParams, selfTypeName, makeNoBodyAs(selfTypeName));
     attributeList->add(copyMethod);
 
     auto* object =
@@ -99,22 +101,24 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
 
     auto* outStringName = mm.make<ast::ObjectId>(std::string("out_string"));
     auto* outStringParams = buildFormalList({{"str", strTypeName}});
-    auto* outStringMethod =
-        mm.make<ast::SingleMethod>(outStringName, outStringParams, selfTypeName, makeNoBodyAs(selfTypeName));
+    auto* outStringMethod = mm.make<ast::SingleMethod>(
+        outStringName, outStringParams, selfTypeName, makeNoBodyAs(selfTypeName));
     attributeList->add(outStringMethod);
 
     auto* outIntName = mm.make<ast::ObjectId>(std::string("out_int"));
     auto* outIntParams = buildFormalList({{"num", intTypeName}});
-    auto* outIntMethod = mm.make<ast::SingleMethod>(outIntName, outIntParams, selfTypeName, makeNoBodyAs(selfTypeName));
+    auto* outIntMethod = mm.make<ast::SingleMethod>(
+        outIntName, outIntParams, selfTypeName, makeNoBodyAs(selfTypeName));
     attributeList->add(outIntMethod);
-    /*
+
     auto* inStringName = mm.make<ast::ObjectId>(std::string("in_string"));
-    auto* inStringMethod =
-        mm.make<ast::SingleMethod>(inStringName, emptyParams, strTypeName, noBody);
+    auto* inStringMethod = mm.make<ast::SingleMethod>(
+        inStringName, emptyParams, strTypeName, makeNoBodyAs(strTypeName));
     attributeList->add(inStringMethod);
-    */
+
     auto* inIntName = mm.make<ast::ObjectId>(std::string("in_int"));
-    auto* inIntMethod = mm.make<ast::SingleMethod>(inIntName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
+    auto* inIntMethod =
+        mm.make<ast::SingleMethod>(inIntName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
     attributeList->add(inIntMethod);
 
     auto* ioClassName = mm.make<ast::TypeId>(std::string("IO"));
@@ -160,20 +164,23 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
     // construct String class
     auto* attributeList = mm.make<ast::AttributeList>();
 
+    /*
     auto* valName = mm.make<ast::ObjectId>(std::string("val"));
     valName->setSemantType(intSemantType);
     auto* valMember = mm.make<ast::SingleMember>(valName, intTypeName, makeNoBodyAs(intTypeName));
     attributeList->add(valMember);
 
-    /*
     auto* strFieldName = mm.make<ast::ObjectId>(std::string("str_field"));
     auto* strFieldMember = mm.make<ast::SingleMember>(strFieldName, strTypeName, noBody);
     attributeList->add(strFieldMember);
+    */
 
     auto* lengthName = mm.make<ast::ObjectId>(std::string("length"));
-    auto* lengthMethod = mm.make<ast::SingleMethod>(lengthName, emptyParams, intTypeName, noBody);
+    auto* lengthMethod =
+        mm.make<ast::SingleMethod>(lengthName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
     attributeList->add(lengthMethod);
 
+    /*
     auto* concatName = mm.make<ast::ObjectId>(std::string("concat"));
     auto* concatParams = buildFormalList({{"arg", strTypeName}});
     auto* concatMethod = mm.make<ast::SingleMethod>(concatName, concatParams, strTypeName, noBody);

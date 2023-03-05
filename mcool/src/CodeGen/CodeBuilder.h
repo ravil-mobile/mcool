@@ -52,7 +52,8 @@ class CodeBuilder : public BaseBuilder, public ast::Visitor {
   void visitBinaryNode(ast::BinaryExpression* node, BinaryOp op);
   void getLObjValue(ast::ObjectId* id);
 
-  void callParentsConstructors(llvm::Value* objPtr, std::vector<type::Graph::Node*>& inheritanceChain);
+  void callParentsConstructors(llvm::Value* objPtr,
+                               std::vector<type::Graph::Node*>& inheritanceChain);
 
   llvm::Value* popStack() {
     auto* value = stack.back();

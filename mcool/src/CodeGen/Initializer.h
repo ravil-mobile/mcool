@@ -20,7 +20,6 @@ class Initializer : public BaseBuilder {
     genDispatchTables();
     genCoolClassTypes();
     genCoolClassPrototypes();
-    initClassTagTable();
   }
 
   private:

@@ -93,11 +93,25 @@ class BaseBuilder {
     builder->CreateCall(abortFunc, builder->getInt32(errCode));
   }
 
-  llvm::AllocaInst* genAlloca(llvm::Type *ty, llvm::Value *arraySize = nullptr) {
+  llvm::AllocaInst* genAlloca(llvm::Type* ty, llvm::Value* arraySize = nullptr) {
     auto* parentFunction = builder->GetInsertBlock()->getParent();
     llvm::IRBuilder<> tmpBuilder(&(parentFunction->getEntryBlock()),
                                  parentFunction->getEntryBlock().begin());
     return tmpBuilder.CreateAlloca(ty, arraySize);
+  }
+
+  llvm::Value* extractClassName(llvm::Value* classInstancePtr) {
+    auto* objPtrType = getPtrType("Object");
+    auto* objPtr = builder->CreateBitCast(classInstancePtr, objPtrType);
+    auto* classTagAddress = builder->CreateGEP(objPtr, getGepIndices({0, 1}));
+    llvm::Value* classTag = builder->CreateLoad(classTagAddress);
+
+    llvm::Value* classNameTable = module->getGlobalVariable(getClassNameTableName(), true);
+    assert(classNameTable != nullptr);
+
+    auto* classNameAddress =
+        builder->CreateInBoundsGEP(classNameTable, {builder->getInt32(0), classTag});
+    return builder->CreateLoad(classNameAddress);
   }
 
   protected:

@@ -3,6 +3,7 @@
 #include "SymbolTable.h"
 #include "llvm/IR/Verifier.h"
 #include <vector>
+#include <map>
 
 namespace mcool::codegen {
 std::vector<llvm::Type*> getCompulsoryTypes(Environment& env) {
@@ -28,21 +29,20 @@ void Initializer::genCoolClassTypes() {
 
     auto& coolClassName = coolClass->getCoolType()->getNameAsStr();
     auto dispatchTableName = getDispatchTableName(coolClassName);
-    auto* dispatchTableType = llvm::StructType::getTypeByName(*context, dispatchTableName + "_type");
+    auto* dispatchTableType =
+        llvm::StructType::getTypeByName(*context, dispatchTableName + "_type");
     assert(dispatchTableType != nullptr);
     memberTypes.push_back(llvm::PointerType::get(dispatchTableType, 0));
 
     if (coolClassName == "Int" || coolClassName == "Bool") {
       memberTypes.push_back(llvm::Type::getInt32Ty(*context));
-    }
-    else if (coolClassName == "String") {
+    } else if (coolClassName == "String") {
       auto* coolIntType = llvm::StructType::getTypeByName(*context, "Int");
       assert(coolIntType != nullptr);
       auto* coolIntPtrType = llvm::PointerType::get(coolIntType, 0);
       memberTypes.push_back(coolIntPtrType);
       memberTypes.push_back(llvm::Type::getInt8PtrTy(*context));
-    }
-    else {
+    } else {
       auto& classMembersTable = env.globalMembersTable[coolClassName];
       for (auto& scope : classMembersTable) {
         auto classMembers = scope.values();
@@ -144,8 +144,7 @@ void Initializer::createGlobalVariable(ast::CoolClass* coolClass, const std::str
   if ((coolClassName == "Int") || (coolClassName == "Bool")) {
     auto* intType = llvm::Type::getInt32Ty(*context);
     constants.push_back(llvm::Constant::getIntegerValue(intType, llvm::APInt(32, 0)));
-  }
-  else if (coolClassName == "String") {
+  } else if (coolClassName == "String") {
     createGlobalVariable(lookup["Int"], "zero_int");
     auto* zero = module->getNamedGlobal("zero_int");
     assert(zero != nullptr);
@@ -153,8 +152,7 @@ void Initializer::createGlobalVariable(ast::CoolClass* coolClass, const std::str
 
     auto* emptyString = builder->CreateGlobalStringPtr("", "empty_str", 0, module.get());
     constants.push_back(emptyString);
-  }
-  else {
+  } else {
     auto& classMembersTable = env.globalMembersTable[coolClassName];
     for (auto& scope : classMembersTable) {
       auto classMembers = scope.values();
@@ -189,30 +187,29 @@ void Initializer::genCoolClassPrototypes() {
 }
 
 void Initializer::genConstructorDeclarations() {
-  for (auto *coolClass: classes.get()->getData()) {
-    auto &coolClassName = coolClass->getCoolType()->getNameAsStr();
+  for (auto* coolClass : classes.get()->getData()) {
+    auto& coolClassName = coolClass->getCoolType()->getNameAsStr();
     auto constructorName = getConstructorName(coolClassName);
 
-    auto *coolClassPtrType = getPtrType(coolClassName);
+    auto* coolClassPtrType = getPtrType(coolClassName);
 
-    auto *funcType = llvm::FunctionType::get(coolClassPtrType, coolClassPtrType, false);
-    auto *func = llvm::Function::Create(funcType,
-                                        llvm::Function::InternalLinkage,
-                                        constructorName,
-                                        module.get());
+    auto* funcType = llvm::FunctionType::get(coolClassPtrType, coolClassPtrType, false);
+    auto* func = llvm::Function::Create(
+        funcType, llvm::Function::InternalLinkage, constructorName, module.get());
     func->setCallingConv(llvm::CallingConv::C);
   }
 }
 
 void Initializer::genMethodDeclarations() {
   for (auto* coolClass : classes.get()->getData()) {
-    auto *returnOpaqueType = getPtrType("Object");
+    auto* returnOpaqueType = getPtrType("Object");
     auto coolClassName = coolClass->getCoolType()->getNameAsStr();
     for (auto* attr : coolClass->getAttributes()->getData()) {
       if (auto* method = dynamic_cast<ast::SingleMethod*>(attr)) {
 
         auto& returnTypeName = method->getReturnType()->getNameAsStr();
-        auto* returnType = (returnTypeName == "SELF_TYPE") ? returnOpaqueType : getPtrType(returnTypeName);
+        auto* returnType =
+            (returnTypeName == "SELF_TYPE") ? returnOpaqueType : getPtrType(returnTypeName);
         assert(returnType != nullptr);
 
         auto* coolClassPtrType = getPtrType(coolClassName);
@@ -225,16 +222,13 @@ void Initializer::genMethodDeclarations() {
 
         auto methodName = getMethodName(coolClassName, method->getId()->getNameAsStr());
         auto* funcType = llvm::FunctionType::get(returnType, argsTypes, false);
-        auto* func = llvm::Function::Create(funcType,
-                                            llvm::Function::InternalLinkage,
-                                            methodName,
-                                            module.get());
+        auto* func = llvm::Function::Create(
+            funcType, llvm::Function::InternalLinkage, methodName, module.get());
         func->setCallingConv(llvm::CallingConv::C);
       }
     }
   }
 }
-
 
 MethodsTable createMethodsTable(std::vector<type::Graph::Node*>& inheritanceChain) {
   MethodsTable methodsTable;
@@ -251,10 +245,19 @@ MethodsTable createMethodsTable(std::vector<type::Graph::Node*>& inheritanceChai
 
     for (auto* attr : childCoolClass->getAttributes()->getData()) {
       if (auto* method = dynamic_cast<ast::SingleMethod*>(attr)) {
-        auto data = MethodsTableData{childCoolClass, method, offsetCounter};
-        methodsTable.add(method->getId()->getNameAsStr(), data);
+        auto& methodName = method->getId()->getNameAsStr();
+        // TODO: maybe there is a better solution
+        if (auto result = methodsTable.lookup(methodName)) {
+          auto data = result.value();
+          data.owner = childCoolClass;
+          methodsTable[methodName] = data;
+        } else {
+          auto data = MethodsTableData{childCoolClass, method, offsetCounter};
+          methodsTable.add(method->getId()->getNameAsStr(), data);
+          ++offsetCounter;
+        }
+
         addScope = true;
-        ++offsetCounter;
       }
     }
   }
@@ -294,7 +297,8 @@ void Initializer::genDispatchTables() {
         auto functionName = getMethodName(ownerName, methodName);
         auto* function = module->getFunction(functionName);
 
-        if (function == nullptr) continue; // TODO
+        if (function == nullptr)
+          continue; // TODO
 
         auto* wrappedFunctionalPointer = llvm::PointerType::get(function->getFunctionType(), 0);
         functionTypes.push_back(wrappedFunctionalPointer);
@@ -312,10 +316,29 @@ void Initializer::genDispatchTables() {
 }
 
 void Initializer::initClassTagTable() {
-  for (auto *coolClass: classes.get()->getData()) {
+
+  std::map<int, llvm::Constant*> classTagMap{};
+  for (auto* coolClass : classes.get()->getData()) {
     auto& coolClassName = coolClass->getCoolType()->getNameAsStr();
     auto coolClassTag = coolClass->getTag();
     env.classTagTable.insert({coolClassName, coolClassTag});
+
+    auto* strGlobalPtr = builder->CreateGlobalStringPtr(coolClassName, "", 0, module.get());
+    classTagMap[coolClassTag] = strGlobalPtr;
   }
+
+  auto* charPtrType = env.getSystemType(Environment::SystemType::CharPtrType);
+  auto* classNameTableType = llvm::ArrayType::get(charPtrType, classTagMap.size());
+  auto classNameTableName = getClassNameTableName();
+  module->getOrInsertGlobal(classNameTableName, classNameTableType);
+
+  auto* classNameTable = module->getNamedGlobal(classNameTableName);
+  std::vector<llvm::Constant*> constants{};
+  for (auto [_, strGlobalPtr] : classTagMap) {
+    constants.push_back(strGlobalPtr);
+  }
+  auto* constArray = llvm::ConstantArray::get(classNameTableType, constants);
+  classNameTable->setInitializer(constArray);
+  classNameTable->setLinkage(llvm::GlobalValue::PrivateLinkage);
 }
 } // namespace mcool::codegen

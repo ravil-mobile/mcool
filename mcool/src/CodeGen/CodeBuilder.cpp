@@ -100,6 +100,6 @@ void CodeBuilder::generatedMainEntryPoint() {
 
   auto* zero = llvm::Constant::getIntegerValue(intType, llvm::APInt(32, 0));
   builder->CreateRet(zero);
-  llvm::verifyFunction(*function, &(llvm::outs()));
+  llvm::verifyFunction(*function, &(llvm::errs()));
 }
 } // namespace mcool::codegen

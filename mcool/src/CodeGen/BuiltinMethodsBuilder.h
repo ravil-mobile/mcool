@@ -4,15 +4,21 @@
 
 namespace mcool::codegen {
 class BuiltinMethodsBuilder : public BaseBuilder {
-public:
+  public:
   explicit BuiltinMethodsBuilder(Environment& env) : BaseBuilder(env) {}
   void build();
-private:
+
+  private:
   void genCStdFunctions();
+  void genClearStdinBuffer();
   void genObjectCopy();
+  void genObjectAbort();
+  void genObjectTypeName();
   void genIOOutString();
   void genIOOutInt();
   void genIOInInt();
+  void genIOInString();
+  void genStringLength();
 };
 
 } // namespace mcool::codegen
