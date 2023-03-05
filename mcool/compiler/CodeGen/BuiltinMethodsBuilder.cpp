@@ -72,6 +72,12 @@ void BuiltinMethodsBuilder::genCStdFunctions() {
         llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "strcat", *module);
     func->setCallingConv(llvm::CallingConv::C);
   }
+  {
+    auto* funcType = llvm::FunctionType::get(intType, {charPtrType, charPtrType}, false);
+    auto* func =
+        llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "strcmp", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
 }
 
 void BuiltinMethodsBuilder::genClearStdinBuffer() {

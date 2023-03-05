@@ -48,8 +48,10 @@ class CodeBuilder : public BaseBuilder, public ast::Visitor {
   void visitInt(ast::Int* item) override;
   void visitString(ast::String* str) override;
 
-  enum class BinaryOp { Plus, Minus, Mult, Div, Eq, Less, Leq };
-  void visitBinaryNode(ast::BinaryExpression* node, BinaryOp op);
+  enum class IntegralBinaryOp { Plus, Minus, Mult, Div, Eq, Less, Leq };
+  void visitBinaryNode(ast::BinaryExpression* node, IntegralBinaryOp op);
+  void compareStringObjects(ast::BinaryExpression* node);
+  void compareGeneralCoolObjects(ast::BinaryExpression* node);
   void getLObjValue(ast::ObjectId* id);
 
   void callParentsConstructors(llvm::Value* objPtr,

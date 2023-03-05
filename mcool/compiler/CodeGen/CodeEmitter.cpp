@@ -485,25 +485,87 @@ void CodeBuilder::visitIfThenElseExpr(ast::IfThenElseExpr* condExpr) {
 
 void CodeBuilder::visitNoExpr(ast::NoExpr*) { stack.push_back(nullptr); }
 
-void CodeBuilder::visitPlusNode(ast::PlusNode* node) { visitBinaryNode(node, BinaryOp::Plus); }
+void CodeBuilder::visitEqualNode(ast::EqualNode* node) {
+  auto* semantType = node->getLeft()->getSemantType();
+  auto semantTypeName = semantType->getAsString();
 
-void CodeBuilder::visitMinusNode(ast::MinusNode* node) { visitBinaryNode(node, BinaryOp::Minus); }
+  if ((semantTypeName == "Int") || (semantTypeName == "Bool")) {
+    visitBinaryNode(node, IntegralBinaryOp::Eq);
+  } else if (semantTypeName == "String") {
+    compareStringObjects(node);
+  } else {
+    compareGeneralCoolObjects(node);
+  }
+}
+
+void CodeBuilder::compareStringObjects(ast::BinaryExpression* node) {
+  node->getRight()->accept(this);
+  auto* rightStingObj = popStack();
+  auto* address = builder->CreateGEP(rightStingObj, getGepIndices({0, 5}));
+  auto* rightStr = builder->CreateLoad(address);
+
+  node->getLeft()->accept(this);
+  auto* leftStingObj = popStack();
+  address = builder->CreateGEP(leftStingObj, getGepIndices({0, 5}));
+  auto* leftStr = builder->CreateLoad(address);
+
+  auto* strcmpFunc = module->getFunction("strcmp");
+  assert(strcmpFunc != nullptr);
+  llvm::Value* resultValue = builder->CreateCall(strcmpFunc, {rightStr, leftStr});
+  resultValue = builder->CreateICmpEQ(resultValue, builder->getInt32(0));
+  resultValue = builder->CreateZExt(resultValue, builder->getInt32Ty());
+
+  auto resultTypeName = node->getSemantType()->getAsString();
+  auto* resultObjPtr = createNewClassInstanceOnStack(resultTypeName);
+  auto* resultValueAddress = builder->CreateGEP(resultObjPtr, getGepIndices({0, 4}));
+  builder->CreateStore(resultValue, resultValueAddress);
+
+  stack.push_back(resultObjPtr);
+}
+
+void CodeBuilder::compareGeneralCoolObjects(ast::BinaryExpression* node) {
+  node->getRight()->accept(this);
+  auto* rightCoolObj = popStack();
+
+  node->getLeft()->accept(this);
+  auto* leftCoolObj = popStack();
+
+  auto* resultValue = builder->CreateICmpEQ(rightCoolObj, leftCoolObj);
+  resultValue = builder->CreateZExt(resultValue, builder->getInt32Ty());
+
+  auto resultTypeName = node->getSemantType()->getAsString();
+  auto* resultObjPtr = createNewClassInstanceOnStack(resultTypeName);
+  auto* resultValueAddress = builder->CreateGEP(resultObjPtr, getGepIndices({0, 4}));
+  builder->CreateStore(resultValue, resultValueAddress);
+
+  stack.push_back(resultObjPtr);
+}
+
+void CodeBuilder::visitPlusNode(ast::PlusNode* node) {
+  visitBinaryNode(node, IntegralBinaryOp::Plus);
+}
+
+void CodeBuilder::visitMinusNode(ast::MinusNode* node) {
+  visitBinaryNode(node, IntegralBinaryOp::Minus);
+}
 
 void CodeBuilder::visitMultiplyNode(ast::MultiplyNode* node) {
-  visitBinaryNode(node, BinaryOp::Mult);
+  visitBinaryNode(node, IntegralBinaryOp::Mult);
 }
 
-void CodeBuilder::visitDivideNode(ast::DivideNode* node) { visitBinaryNode(node, BinaryOp::Div); }
+void CodeBuilder::visitDivideNode(ast::DivideNode* node) {
+  visitBinaryNode(node, IntegralBinaryOp::Div);
+}
 
-void CodeBuilder::visitLessNode(ast::LessNode* node) { visitBinaryNode(node, BinaryOp::Less); }
-
-void CodeBuilder::visitEqualNode(ast::EqualNode* node) { visitBinaryNode(node, BinaryOp::Eq); }
+void CodeBuilder::visitLessNode(ast::LessNode* node) {
+  visitBinaryNode(node, IntegralBinaryOp::Less);
+}
 
 void CodeBuilder::visitLessEqualNode(ast::LessEqualNode* node) {
-  visitBinaryNode(node, BinaryOp::Leq);
+  visitBinaryNode(node, IntegralBinaryOp::Leq);
 }
 
-void CodeBuilder::visitBinaryNode(ast::BinaryExpression* node, BinaryOp op) {
+void CodeBuilder::visitBinaryNode(ast::BinaryExpression* node, IntegralBinaryOp op) {
   node->getRight()->accept(this);
   auto* rightIntObj = popStack();
   auto* rightValueAddress = builder->CreateGEP(rightIntObj, getGepIndices({0, 4}));
@@ -516,31 +578,31 @@ void CodeBuilder::visitBinaryNode(ast::BinaryExpression* node, BinaryOp op) {
 
   llvm::Value* resultValue{};
   switch (op) {
-  case BinaryOp::Plus: {
+  case IntegralBinaryOp::Plus: {
     resultValue = builder->CreateAdd(leftValue, rightValue);
     break;
   }
-  case BinaryOp::Minus: {
+  case IntegralBinaryOp::Minus: {
     resultValue = builder->CreateSub(leftValue, rightValue);
     break;
   }
-  case BinaryOp::Mult: {
+  case IntegralBinaryOp::Mult: {
     resultValue = builder->CreateMul(leftValue, rightValue);
     break;
   }
-  case BinaryOp::Div: {
+  case IntegralBinaryOp::Div: {
     resultValue = builder->CreateSDiv(leftValue, rightValue);
     break;
   }
-  case BinaryOp::Eq: {
+  case IntegralBinaryOp::Eq: {
     auto* boolValue = builder->CreateICmpEQ(leftValue, rightValue);
     resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
   }
-  case BinaryOp::Less: {
+  case IntegralBinaryOp::Less: {
     auto* boolValue = builder->CreateICmpSLT(leftValue, rightValue);
     resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
   }
-  case BinaryOp::Leq: {
+  case IntegralBinaryOp::Leq: {
     auto* boolValue = builder->CreateICmpSLE(leftValue, rightValue);
     resultValue = builder->CreateZExt(boolValue, builder->getInt32Ty());
   }
