@@ -19,12 +19,6 @@ make -j2
 make install
 ```
 
-If you experience problems with installing dependencies you
-can build a Docker image
-```bash
-docker build -t mcool .
-```
-
 #### Example
 
 ```bash
@@ -60,6 +54,22 @@ $ ./fibonacci
 ```
 
 Note, we use `clang` (or `gcc`) as a linker.
+
+#### Run COOL with Docker
+If you experience problems with installing dependencies you
+can build a Docker image from the provided Dockerfile
+
+```bash
+docker build --build-arg UID=$(id -u) --build-arg GID=$(id -u) -t mcool .
+```
+
+Let's assume that your cool source files are located in `$(pwd)/dir`.
+Then you can compile your program as follows
+
+```bash
+docker run --rm -v $(pwd)/dir:/home/user/workspace mcool:latest mcool -i ./<file>.cl -o ./<file>
+gcc ./dir/<file>.o -o ./dir/<file>
+```
 
 #### Miscellaneous
 
