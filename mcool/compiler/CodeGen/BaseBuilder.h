@@ -114,6 +114,15 @@ class BaseBuilder {
     return builder->CreateLoad(classNameAddress);
   }
 
+  void assertNotNullptr(llvm::Value* coolObjPtr) {
+    auto* objPtrType = getPtrType("Object");
+    auto* objPtr = builder->CreateBitCast(coolObjPtr, objPtrType);
+
+    auto* assertNotNullptrFunc = module->getFunction("_assert_not_nullptr");
+    assert(assertNotNullptrFunc != nullptr);
+    builder->CreateCall(assertNotNullptrFunc, objPtr);
+  }
+
   protected:
   Environment& env;
   std::unique_ptr<llvm::LLVMContext>& context;

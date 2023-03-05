@@ -16,6 +16,7 @@ void BuiltinMethodsBuilder::build() {
   genStringLength();
   genStringConcat();
   genStringSubstr();
+  genNullPtrCheck();
 }
 
 void BuiltinMethodsBuilder::genCStdFunctions() {
@@ -478,4 +479,40 @@ void BuiltinMethodsBuilder::genStringSubstr() {
   builder->CreateRet(newStringObj);
   llvm::verifyFunction(*function, &(llvm::errs()));
 }
+
+void BuiltinMethodsBuilder::genNullPtrCheck() {
+  auto* voidType = llvm::Type::getVoidTy(*context);
+  auto* objPtrType = getPtrType("Object");
+  auto* funcType = llvm::FunctionType::get(voidType, {objPtrType}, false);
+  auto* function = llvm::Function::Create(
+      funcType, llvm::Function::ExternalLinkage, "_assert_not_nullptr", *module);
+  function->setCallingConv(llvm::CallingConv::C);
+
+  auto* entryBB = llvm::BasicBlock::Create(*context, "entry", function);
+  auto* abortBB = llvm::BasicBlock::Create(*context);
+  auto* exitBB = llvm::BasicBlock::Create(*context);
+
+  builder->SetInsertPoint(entryBB);
+  auto* nullPtr = llvm::ConstantPointerNull::get(llvm::cast<llvm::PointerType>(objPtrType));
+  auto* result = builder->CreateICmpEQ(function->getArg(0), nullPtr);
+  builder->CreateCondBr(result, abortBB, exitBB);
+
+  function->getBasicBlockList().push_back(abortBB);
+  builder->SetInsertPoint(abortBB);
+  auto* printfFunc = module->getFunction("printf");
+  assert(printfFunc != nullptr);
+  auto* errorMsg =
+      builder->CreateGlobalStringPtr("Operating on nullptr. Aborting.\n", "", 0, module.get());
+  builder->CreateCall(printfFunc, errorMsg);
+
+  auto* abortFunc = module->getFunction("exit");
+  assert(abortFunc != nullptr);
+  builder->CreateCall(abortFunc, builder->getInt32(-1));
+  builder->CreateRet(nullptr);
+
+  function->getBasicBlockList().push_back(exitBB);
+  builder->SetInsertPoint(exitBB);
+  builder->CreateRet(nullptr);
+}
+
 } // namespace mcool::codegen

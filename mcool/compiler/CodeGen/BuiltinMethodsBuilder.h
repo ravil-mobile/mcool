@@ -21,6 +21,7 @@ class BuiltinMethodsBuilder : public BaseBuilder {
   void genStringLength();
   void genStringConcat();
   void genStringSubstr();
+  void genNullPtrCheck();
 };
 
 } // namespace mcool::codegen

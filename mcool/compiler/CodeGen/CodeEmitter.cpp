@@ -111,6 +111,7 @@ void CodeBuilder::visitExpressions(ast::Expressions* exprs) {
 void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
   dispatch->getObjectId()->accept(this);
   auto* objectPtr = popStack();
+  assertNotNullptr(objectPtr);
 
   auto* dispatchObjType = dispatch->getObjectId()->getSemantType();
   auto dispatchObjTypeName = dispatchObjType->getAsString();
@@ -147,6 +148,7 @@ void CodeBuilder::visitDispatch(ast::Dispatch* dispatch) {
 void CodeBuilder::visitStaticDispatch(ast::StaticDispatch* dispatch) {
   dispatch->getObjectId()->accept(this);
   auto* objectPtr = popStack();
+  assertNotNullptr(objectPtr);
 
   auto* dispatchObjType = dispatch->getObjectId()->getSemantType();
   auto dispatchObjTypeName = dispatchObjType->getAsString();
@@ -278,6 +280,8 @@ void CodeBuilder::visitNewExpr(ast::NewExpr* newExpr) {
 void CodeBuilder::visitCaseExpr(ast::CaseExpr* caseExpr) {
   caseExpr->getExpr()->accept(this);
   auto* exprValue = popStack();
+  assertNotNullptr(exprValue);
+
   auto* address = builder->CreateGEP(exprValue, getGepIndices({0, 1}));
   auto* exprClassTag = builder->CreateLoad(address);
 
