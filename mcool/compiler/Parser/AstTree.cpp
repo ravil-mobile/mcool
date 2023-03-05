@@ -180,12 +180,12 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
         mm.make<ast::SingleMethod>(lengthName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
     attributeList->add(lengthMethod);
 
-    /*
     auto* concatName = mm.make<ast::ObjectId>(std::string("concat"));
     auto* concatParams = buildFormalList({{"arg", strTypeName}});
-    auto* concatMethod = mm.make<ast::SingleMethod>(concatName, concatParams, strTypeName, noBody);
+    auto* concatMethod = mm.make<ast::SingleMethod>(
+        concatName, concatParams, strTypeName, makeNoBodyAs(strTypeName));
     attributeList->add(concatMethod);
-
+    /*
     auto* substrName = mm.make<ast::ObjectId>(std::string("substr"));
     auto* substrParams = buildFormalList({{"arg", intTypeName}, {"arg2", intTypeName}});
     auto* substrMethod = mm.make<ast::SingleMethod>(substrName, substrParams, strTypeName, noBody);

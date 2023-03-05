@@ -19,6 +19,7 @@ class BuiltinMethodsBuilder : public BaseBuilder {
   void genIOInInt();
   void genIOInString();
   void genStringLength();
+  void genStringConcat();
 };
 
 } // namespace mcool::codegen

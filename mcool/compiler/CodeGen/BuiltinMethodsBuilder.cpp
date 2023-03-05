@@ -14,6 +14,7 @@ void BuiltinMethodsBuilder::build() {
   genIOInInt();
   genIOInString();
   genStringLength();
+  genStringConcat();
 }
 
 void BuiltinMethodsBuilder::genCStdFunctions() {
@@ -61,6 +62,12 @@ void BuiltinMethodsBuilder::genCStdFunctions() {
     auto* funcType = llvm::FunctionType::get(intType, {}, false);
     auto* func =
         llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "getchar", *module);
+    func->setCallingConv(llvm::CallingConv::C);
+  }
+  {
+    auto* funcType = llvm::FunctionType::get(charPtrType, {charPtrType, charPtrType}, false);
+    auto* func =
+        llvm::Function::Create(funcType, llvm::Function::ExternalLinkage, "strcat", *module);
     func->setCallingConv(llvm::CallingConv::C);
   }
 }
@@ -370,6 +377,55 @@ void BuiltinMethodsBuilder::genStringLength() {
   auto* newIntObj =
       builder->CreateCall(copyObjFunc, builder->CreateBitCast(stringSizeObj, objPtrType));
   builder->CreateRet(builder->CreateBitCast(newIntObj, getPtrType("Int")));
+  llvm::verifyFunction(*function, &(llvm::errs()));
+}
+
+void BuiltinMethodsBuilder::genStringConcat() {
+  auto methodName = getMethodName("String", "concat");
+  auto* function = module->getFunction(methodName);
+  assert(function != nullptr);
+
+  auto* entryBB = llvm::BasicBlock::Create(*context, "entry", function);
+  builder->SetInsertPoint(entryBB);
+
+  auto getStringSizeAddress = [this](llvm::Value* stringPtrObj) -> llvm::Value* {
+    auto* stringSizeObjAddress = builder->CreateGEP(stringPtrObj, getGepIndices({0, 4}));
+    auto* stringSizeObj = builder->CreateLoad(stringSizeObjAddress);
+    return builder->CreateGEP(stringSizeObj, getGepIndices({0, 4}));
+  };
+
+  auto* firstStringObjPtr = function->getArg(0);
+  auto* address = getStringSizeAddress(firstStringObjPtr);
+  auto* firstStringSize = builder->CreateLoad(address);
+
+  auto* secondStringObjPtr = function->getArg(1);
+  address = getStringSizeAddress(secondStringObjPtr);
+  auto* secondStringSize = builder->CreateLoad(address);
+
+  auto* resultStringSize = builder->CreateAdd(firstStringSize, secondStringSize);
+  auto* mallocFunc = module->getFunction("malloc");
+  assert(mallocFunc != nullptr);
+  auto* systemSizeType = env.getSystemType(Environment::SystemType::SizeType);
+  auto* stringMemory =
+      builder->CreateCall(mallocFunc, builder->CreateSExt(resultStringSize, systemSizeType));
+
+  address = builder->CreateGEP(firstStringObjPtr, getGepIndices({0, 5}));
+  auto* firstStringMemory = builder->CreateLoad(address);
+  builder->CreateMemCpy(stringMemory, stdAlign, firstStringMemory, stdAlign, firstStringSize);
+
+  auto* strcatFunc = module->getFunction("strcat");
+  assert(strcatFunc != nullptr);
+  address = builder->CreateGEP(secondStringObjPtr, getGepIndices({0, 5}));
+  auto* secondStringMemory = builder->CreateLoad(address);
+  builder->CreateCall(strcatFunc, {stringMemory, secondStringMemory});
+
+  auto* newStringObj = createNewClassInstanceOnHeap("String");
+  address = getStringSizeAddress(newStringObj);
+  builder->CreateStore(resultStringSize, address);
+  auto* stringMemoryAddress = builder->CreateGEP(newStringObj, getGepIndices({0, 5}));
+  builder->CreateStore(stringMemory, stringMemoryAddress);
+
+  builder->CreateRet(newStringObj);
   llvm::verifyFunction(*function, &(llvm::errs()));
 }
 } // namespace mcool::codegen

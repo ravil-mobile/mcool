@@ -615,13 +615,13 @@ void CodeBuilder::visitInt(ast::Int* item) {
 void CodeBuilder::visitString(ast::String* str) {
   llvm::Value* intPtr{nullptr};
   {
-    intPtr = createNewClassInstanceOnStack("Int");
+    intPtr = createNewClassInstanceOnHeap("Int");
     auto* valueAddress = builder->CreateGEP(intPtr, getGepIndices({0, 4}));
     auto* literalConstant = builder->getInt32(str->getValueAsStr().size());
     builder->CreateStore(literalConstant, valueAddress);
   }
 
-  auto* stringPtr = createNewClassInstanceOnStack("String");
+  auto* stringPtr = createNewClassInstanceOnHeap("String");
   auto* address = builder->CreateGEP(stringPtr, getGepIndices({0, 5}));
   auto* strLiteral = builder->CreateGlobalStringPtr(str->getValueAsStr(), "", 0, module.get());
   builder->CreateStore(strLiteral, address);
