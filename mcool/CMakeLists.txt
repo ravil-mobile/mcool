@@ -7,14 +7,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(WITH_TESTS "build with tests" OFF)
 
-add_subdirectory(table-gen)
+add_subdirectory(tablegen)
 
 add_custom_command(
   COMMAND
-  ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
+  ${PROJECT_BINARY_DIR}/tablegen/ast/ast-tablegen
   --gen-ast-header
   -o=${PROJECT_BINARY_DIR}/generated/ast.h
-  ${PROJECT_SOURCE_DIR}/src/Descriptions/ast.td
+  ${PROJECT_SOURCE_DIR}/compiler/Descriptions/ast.td
   WORKING_DIRECTORY
     ${PROJECT_BINARY_DIR}
   DEPENDS
@@ -26,10 +26,10 @@ add_custom_command(
 
 add_custom_command(
         COMMAND
-        ${PROJECT_BINARY_DIR}/table-gen/ast/ast-tablegen
+        ${PROJECT_BINARY_DIR}/tablegen/ast/ast-tablegen
         --gen-visitor-header
         -o=${PROJECT_BINARY_DIR}/generated/visitor.h
-        ${PROJECT_SOURCE_DIR}/src/Descriptions/ast.td
+        ${PROJECT_SOURCE_DIR}/compiler/Descriptions/ast.td
         WORKING_DIRECTORY
         ${PROJECT_BINARY_DIR}
         DEPENDS
@@ -60,19 +60,19 @@ find_package(BISON REQUIRED)
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/generated)
 
 flex_target(scanner
-            ${PROJECT_SOURCE_DIR}/src/Descriptions/scanner.flex
+            ${PROJECT_SOURCE_DIR}/compiler/Descriptions/scanner.flex
             ${PROJECT_BINARY_DIR}/generated/Scanner.cpp)
 
 bison_target(parser
-             ${PROJECT_SOURCE_DIR}/src/Descriptions/parser.bison
+             ${PROJECT_SOURCE_DIR}/compiler/Descriptions/parser.bison
              ${PROJECT_BINARY_DIR}/generated/Parser.cpp
              DEFINES_FILE ${PROJECT_BINARY_DIR}/generated/Parser.h
              )
 
 add_flex_bison_dependency(scanner parser)
 
-set(MAIN_FILE ${PROJECT_SOURCE_DIR}/src/main.cpp)
-file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+set(MAIN_FILE ${PROJECT_SOURCE_DIR}/compiler/main.cpp)
+file(GLOB_RECURSE SRC_FILES ${PROJECT_SOURCE_DIR}/compiler/*.cpp)
 list(REMOVE_ITEM SRC_FILES ${MAIN_FILE})
 
 add_library(mcool-core
@@ -82,7 +82,7 @@ add_library(mcool-core
 )
 
 target_include_directories(mcool-core PUBLIC
-  ${PROJECT_SOURCE_DIR}/src
+  ${PROJECT_SOURCE_DIR}/compiler
   ${PROJECT_SOURCE_DIR}/common
   ${PROJECT_BINARY_DIR}/generated)
 
