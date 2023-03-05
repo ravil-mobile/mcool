@@ -2,7 +2,9 @@
 #include "Semant/TypeChecker/InheritanceGraphBuilder.h"
 #include "Semant/TypeChecker/EnvironmentsBuilder.h"
 #include "Semant/TypeChecker/TypeChecker.h"
+#include "Semant/EntryPointChecker.h"
 #include <iostream>
+#include <sstream>
 
 bool mcool::TypeDriver::run(mcool::AstTree& classes) {
   semant::InheritanceGraphBuilder graphBuilder{};
@@ -28,6 +30,13 @@ bool mcool::TypeDriver::run(mcool::AstTree& classes) {
   typeChecker.run(classes.get());
   if (typeChecker.hasErrors()) {
     errorLogger.retrieveErrors(&typeChecker);
+    return false;
+  }
+
+  semant::EntryPointChecker entryPointChecker{};
+  entryPointChecker.run(classes.get());
+  if (entryPointChecker.hasErrors()) {
+    errorLogger.retrieveErrors(&entryPointChecker);
     return false;
   }
 
