@@ -1,6 +1,6 @@
 ## COOL -  Classroom Object Oriented Language
 
-This a C++17/LLVM implementation of the language.
+This is a C++17/LLVM implementation of the language.
 
 #### Dependencies
 
@@ -64,3 +64,13 @@ Note, we use `clang` (or `gcc`) as a linker.
 #### Miscellaneous
 
 Use `mcool --help` to see all available compiler options
+
+#### Current Status
+
+|      Systems      |       Status       |        Tests       |
+|:-----------------:|:------------------:|:------------------:|
+|       Lexer       | :heavy_check_mark: | :heavy_check_mark: |
+|       Parser      | :heavy_check_mark: | :heavy_check_mark: |
+|   Type Checking   | :heavy_check_mark: | :heavy_check_mark: |
+|  Code Generation  | :heavy_check_mark: |         :x:        |
+| Garbage Collector |         :x:        |         :x:        |
