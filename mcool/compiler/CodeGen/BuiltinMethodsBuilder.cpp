@@ -15,6 +15,7 @@ void BuiltinMethodsBuilder::build() {
   genIOInString();
   genStringLength();
   genStringConcat();
+  genStringSubstr();
 }
 
 void BuiltinMethodsBuilder::genCStdFunctions() {
@@ -422,6 +423,55 @@ void BuiltinMethodsBuilder::genStringConcat() {
   auto* newStringObj = createNewClassInstanceOnHeap("String");
   address = getStringSizeAddress(newStringObj);
   builder->CreateStore(resultStringSize, address);
+  auto* stringMemoryAddress = builder->CreateGEP(newStringObj, getGepIndices({0, 5}));
+  builder->CreateStore(stringMemory, stringMemoryAddress);
+
+  builder->CreateRet(newStringObj);
+  llvm::verifyFunction(*function, &(llvm::errs()));
+}
+
+void BuiltinMethodsBuilder::genStringSubstr() {
+  auto methodName = getMethodName("String", "substr");
+  auto* function = module->getFunction(methodName);
+  assert(function != nullptr);
+
+  auto* entryBB = llvm::BasicBlock::Create(*context, "entry", function);
+  builder->SetInsertPoint(entryBB);
+
+  auto* mallocFunc = module->getFunction("malloc");
+  assert(mallocFunc != nullptr);
+  auto* lengthIntObjPtr = function->getArg(2);
+  auto* address = builder->CreateGEP(lengthIntObjPtr, getGepIndices({0, 4}));
+  llvm::Value* stringSize = builder->CreateLoad(address);
+
+  auto* newIntObj = createNewClassInstanceOnHeap("Int");
+  address = builder->CreateGEP(newIntObj, getGepIndices({0, 4}));
+  builder->CreateStore(stringSize, address);
+
+  auto* systemSizeType = env.getSystemType(Environment::SystemType::SizeType);
+  stringSize = builder->CreateSExt(stringSize, systemSizeType);
+  auto* augmentedStringSize = builder->CreateAdd(stringSize, builder->getInt64(1));
+  auto* stringMemory = builder->CreateCall(mallocFunc, augmentedStringSize);
+
+  constexpr auto nullChar = static_cast<uint8_t>('\0');
+  builder->CreateMemSet(stringMemory, builder->getInt8(nullChar), augmentedStringSize, stdAlign);
+
+  auto* indexIntObjPtr = function->getArg(1);
+  address = builder->CreateGEP(indexIntObjPtr, getGepIndices({0, 4}));
+  auto* startIndex = builder->CreateLoad(address);
+
+  auto* firstStringObjPtr = function->getArg(0);
+
+  // TODO: combine two subsequent GEPs
+  llvm::SmallVector<llvm::Value*> gepIndices{builder->getInt32(0), builder->getInt32(5)};
+  address = builder->CreateGEP(firstStringObjPtr, gepIndices);
+  llvm::Value* str = builder->CreateLoad(address);
+  str = builder->CreateInBoundsGEP(str, startIndex);
+  builder->CreateMemCpy(stringMemory, stdAlign, str, stdAlign, stringSize);
+
+  auto* newStringObj = createNewClassInstanceOnHeap("String");
+  auto* stringSizeAddress = builder->CreateGEP(newStringObj, getGepIndices({0, 4}));
+  builder->CreateStore(newIntObj, stringSizeAddress);
   auto* stringMemoryAddress = builder->CreateGEP(newStringObj, getGepIndices({0, 5}));
   builder->CreateStore(stringMemory, stringMemoryAddress);
 

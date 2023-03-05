@@ -164,17 +164,6 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
     // construct String class
     auto* attributeList = mm.make<ast::AttributeList>();
 
-    /*
-    auto* valName = mm.make<ast::ObjectId>(std::string("val"));
-    valName->setSemantType(intSemantType);
-    auto* valMember = mm.make<ast::SingleMember>(valName, intTypeName, makeNoBodyAs(intTypeName));
-    attributeList->add(valMember);
-
-    auto* strFieldName = mm.make<ast::ObjectId>(std::string("str_field"));
-    auto* strFieldMember = mm.make<ast::SingleMember>(strFieldName, strTypeName, noBody);
-    attributeList->add(strFieldMember);
-    */
-
     auto* lengthName = mm.make<ast::ObjectId>(std::string("length"));
     auto* lengthMethod =
         mm.make<ast::SingleMethod>(lengthName, emptyParams, intTypeName, makeNoBodyAs(intTypeName));
@@ -185,12 +174,12 @@ void mcool::AstTree::addBuildinClasses(ast::CoolClassList* classes, Context* con
     auto* concatMethod = mm.make<ast::SingleMethod>(
         concatName, concatParams, strTypeName, makeNoBodyAs(strTypeName));
     attributeList->add(concatMethod);
-    /*
+
     auto* substrName = mm.make<ast::ObjectId>(std::string("substr"));
     auto* substrParams = buildFormalList({{"arg", intTypeName}, {"arg2", intTypeName}});
-    auto* substrMethod = mm.make<ast::SingleMethod>(substrName, substrParams, strTypeName, noBody);
+    auto* substrMethod = mm.make<ast::SingleMethod>(
+        substrName, substrParams, strTypeName, makeNoBodyAs(strTypeName));
     attributeList->add(substrMethod);
-    */
 
     auto* strClassName = mm.make<ast::TypeId>(std::string("String"));
     auto* object =
